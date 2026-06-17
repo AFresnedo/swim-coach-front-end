@@ -13,8 +13,11 @@ export default function Home() {
           <a href="#how-it-works" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
             How it works
           </a>
+          <a href="/sign-in" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+            Sign in
+          </a>
           <a
-            href="#get-started"
+            href="/sign-up"
             className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
           >
             Get started
@@ -37,7 +40,7 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-4">
           <a
             id="get-started"
-            href="#"
+            href="/sign-up"
             className="rounded-full bg-blue-600 px-8 py-3.5 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
           >
             Start training free
@@ -178,7 +181,7 @@ export default function Home() {
           SwimCoach.
         </p>
         <a
-          href="#"
+          href="/sign-up"
           className="rounded-full bg-blue-600 px-10 py-4 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
         >
           Create your free account
