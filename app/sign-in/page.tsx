@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { apiFetch, setToken } from "@/lib/api";
+
+interface LoginResponse {
+  access_token: string;
+  token_type: string;
+}
 
 export default function SignInPage() {
   const router = useRouter();
@@ -12,22 +17,22 @@ export default function SignInPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const { error } = await authClient.signIn.email({
-      email,
-      password,
-      callbackURL: "/",
-    });
-
-    if (error) {
-      setError(error.message ?? "Sign in failed. Please try again.");
-      setLoading(false);
-    } else {
+    try {
+      const data = await apiFetch<LoginResponse>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      setToken(data.access_token);
       router.push("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign in failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 

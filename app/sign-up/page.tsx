@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { apiFetch, setToken } from "@/lib/api";
+
+interface RegisterResponse {
+  access_token: string;
+  token_type: string;
+}
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -13,23 +18,22 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const { error } = await authClient.signUp.email({
-      name,
-      email,
-      password,
-      callbackURL: "/",
-    });
-
-    if (error) {
-      setError(error.message ?? "Sign up failed. Please try again.");
-      setLoading(false);
-    } else {
+    try {
+      const data = await apiFetch<RegisterResponse>("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ name, email, password }),
+      });
+      setToken(data.access_token);
       router.push("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign up failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
