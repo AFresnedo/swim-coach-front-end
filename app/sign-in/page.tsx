@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { apiFetch, setToken } from "@/lib/api";
-
-interface LoginResponse {
-  access_token: string;
-  token_type: string;
-}
+import { frontApiFetch } from "@/lib/api";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -23,11 +18,10 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const data = await apiFetch<LoginResponse>("/auth/login", {
+      await frontApiFetch("/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      setToken(data.access_token);
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed. Please try again.");

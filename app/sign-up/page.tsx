@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { apiFetch, setToken } from "@/lib/api";
-
-interface RegisterResponse {
-  access_token: string;
-  token_type: string;
-}
+import { frontApiFetch } from "@/lib/api";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -24,11 +19,10 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const data = await apiFetch<RegisterResponse>("/auth/register", {
+      await frontApiFetch("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
       });
-      setToken(data.access_token);
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign up failed. Please try again.");
