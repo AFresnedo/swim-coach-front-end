@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { AUTH_COOKIE } from "@/lib/constants";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   const { access_token } = await backRes.json();
   const cookieStore = await cookies();
-  cookieStore.set("access_token", access_token, {
+  cookieStore.set(AUTH_COOKIE, access_token, {
     httpOnly: true,
     secure: IS_PROD,
     sameSite: "strict",
