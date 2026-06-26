@@ -1,4 +1,11 @@
-export default function Header() {
+import { cookies } from "next/headers";
+import { AUTH_COOKIE } from "@/lib/constants";
+import LoginButtons from "@/components/LoginButtons";
+
+export default async function Header() {
+  const cookieStore = await cookies();
+  const isLoggedIn = cookieStore.has(AUTH_COOKIE);
+
   return (
     <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-100 dark:border-zinc-800">
       <a href="/" className="text-xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
@@ -11,15 +18,7 @@ export default function Header() {
         <a href="/#how-it-works" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
           How it works
         </a>
-        <a href="/sign-in" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-          Sign in
-        </a>
-        <a
-          href="/sign-up"
-          className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
-        >
-          Get started
-        </a>
+        <LoginButtons isLoggedIn={isLoggedIn} />
       </nav>
     </header>
   );
