@@ -1,12 +1,6 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { AUTH_COOKIE } from "@/lib/constants";
 import ProfileForm from "@/components/ProfileForm";
 
-export default async function ProfilePage() {
-  const cookieStore = await cookies();
-  if (!cookieStore.has(AUTH_COOKIE)) redirect("/sign-in");
-
+export default function ProfilePage() {
   return (
     <div className="min-h-full flex items-center justify-center px-6 py-24 bg-white dark:bg-zinc-950">
       <div className="w-full max-w-sm">
