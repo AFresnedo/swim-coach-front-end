@@ -23,6 +23,7 @@ export default function SignInPage() {
         body: JSON.stringify({ email, password }),
       });
       router.push("/");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed. Please try again.");
     } finally {
