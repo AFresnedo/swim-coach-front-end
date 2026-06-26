@@ -33,10 +33,6 @@ export default function SignInPage() {
   return (
     <div className="min-h-full flex items-center justify-center px-6 py-24 bg-white dark:bg-zinc-950">
       <div className="w-full max-w-sm">
-        <Link href="/" className="block mb-8 text-xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
-          SwimCoach
-        </Link>
-
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">
           Welcome back
         </h1>
