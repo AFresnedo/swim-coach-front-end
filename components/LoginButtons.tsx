@@ -16,7 +16,7 @@ export default function LoginButtons({ isLoggedIn }: { isLoggedIn: boolean }) {
     return (
       <button
         onClick={handleLogout}
-        className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
       >
         Log out
       </button>
