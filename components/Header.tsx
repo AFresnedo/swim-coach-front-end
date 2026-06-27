@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/constants";
-import LoginButtons from "@/components/LoginButtons";
+import UserNav from "@/components/UserNav";
 
 export default async function Header() {
   const cookieStore = await cookies();
@@ -18,7 +18,7 @@ export default async function Header() {
         <a href="/#how-it-works" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
           How it works
         </a>
-        <LoginButtons isLoggedIn={isLoggedIn} />
+        <UserNav isLoggedIn={isLoggedIn} />
       </nav>
     </header>
   );

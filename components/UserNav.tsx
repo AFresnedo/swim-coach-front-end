@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { frontApiFetch } from "@/lib/api";
 
-export default function LoginButtons({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
   const router = useRouter();
 
   async function handleLogout() {
