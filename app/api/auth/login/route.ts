@@ -8,11 +8,17 @@ const IS_PROD = process.env.NODE_ENV === "production";
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const backRes = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  let backRes: Response;
+  try {
+    backRes = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (err: unknown) {
+    console.error("[auth/login] fetch failed:", (err as NodeJS.ErrnoException)?.cause ?? err);
+    return NextResponse.json({ detail: "Server unavailable" }, { status: 502 });
+  }
 
   if (!backRes.ok) {
     const error = await backRes.json().catch(() => ({}));
