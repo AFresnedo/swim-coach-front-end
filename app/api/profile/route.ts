@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/constants";
+import { safeFetch } from "@/lib/server-api";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   let backRes: Response;
   try {
-    backRes = await fetch(`${API_URL}/profile`, {
+    backRes = await safeFetch("profile", `${API_URL}/profile`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,8 +25,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify(body),
     });
-  } catch (err: unknown) {
-    console.error("[profile] fetch failed:", (err as NodeJS.ErrnoException)?.cause ?? err);
+  } catch {
     return NextResponse.json({ detail: "Server unavailable" }, { status: 502 });
   }
 

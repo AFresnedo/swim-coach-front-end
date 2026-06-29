@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/constants";
+import { safeFetch } from "@/lib/server-api";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -10,13 +11,12 @@ export async function POST(req: NextRequest) {
 
   let backRes: Response;
   try {
-    backRes = await fetch(`${API_URL}/auth/login`, {
+    backRes = await safeFetch("auth/login", `${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-  } catch (err: unknown) {
-    console.error("[auth/login] fetch failed:", (err as NodeJS.ErrnoException)?.cause ?? err);
+  } catch {
     return NextResponse.json({ detail: "Server unavailable" }, { status: 502 });
   }
 

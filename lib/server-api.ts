@@ -1,6 +1,15 @@
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/constants";
 
+export async function safeFetch(label: string, ...args: Parameters<typeof fetch>): Promise<Response> {
+  try {
+    return await fetch(...args);
+  } catch (err: unknown) {
+    console.error(`[${label}] fetch failed:`, (err as NodeJS.ErrnoException)?.cause ?? err);
+    throw new Error("Server unavailable");
+  }
+}
+
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
 export async function backApiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
