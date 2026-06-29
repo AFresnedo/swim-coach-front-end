@@ -9,7 +9,8 @@ export async function frontApiFetch<T>(path: string, options: RequestInit = {}):
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail ?? `Request failed: ${res.status}`);
+    const detail = typeof body.detail === "string" ? body.detail : `Request failed: ${res.status}`;
+    throw new Error(detail);
   }
 
   return res.json();
