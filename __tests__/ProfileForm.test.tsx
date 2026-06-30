@@ -54,6 +54,7 @@ describe("ProfileForm", () => {
   it("submits metric values as-is", async () => {
     render(<ProfileForm />);
     fillMetricForm();
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalledOnce());
@@ -71,6 +72,7 @@ describe("ProfileForm", () => {
     fireEvent.change(screen.getByPlaceholderText("in"), { target: { value: "10" } });
     fireEvent.change(screen.getByPlaceholderText("lbs"), { target: { value: "154" } });
     fireEvent.change(screen.getByLabelText("Sex"), { target: { value: "female" } });
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalledOnce());
@@ -86,6 +88,7 @@ describe("ProfileForm", () => {
   it("shows 'Profile saved.' after successful submit", async () => {
     render(<ProfileForm />);
     fillMetricForm();
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
     expect(await screen.findByText("Profile saved.")).toBeDefined();
   });
@@ -94,6 +97,7 @@ describe("ProfileForm", () => {
     mockFetch.mockRejectedValue(new Error("Server error"));
     render(<ProfileForm />);
     fillMetricForm();
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
     expect(await screen.findByText("Server error")).toBeDefined();
   });
@@ -107,12 +111,14 @@ describe("ProfileForm", () => {
     );
     render(<ProfileForm />);
     fillMetricForm();
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
     await waitFor(() => expect(screen.getByRole("button", { name: /saving/i })).toBeDefined());
     expect((screen.getByRole("button", { name: /saving/i }) as HTMLButtonElement).disabled).toBe(
       true,
     );
+    // biome-ignore lint/style/noNonNullAssertion: resolve is always assigned before this line
     resolve!();
   });
 });
