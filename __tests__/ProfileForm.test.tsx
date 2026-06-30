@@ -2,11 +2,12 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ProfileForm from "@/components/ProfileForm";
 
-vi.mock("@/lib/api", () => ({
-  frontApiFetch: vi.fn(),
-}));
+vi.mock("@/lib/api", async (importActual) => {
+  const actual = await importActual<typeof import("@/lib/api")>();
+  return { ...actual, frontApiFetch: vi.fn() };
+});
 
-import { frontApiFetch } from "@/lib/api";
+import { ApiError, frontApiFetch } from "@/lib/api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
@@ -94,7 +95,7 @@ describe("ProfileForm", () => {
   });
 
   it("shows error message when submission fails", async () => {
-    mockFetch.mockRejectedValue(new Error("Server error"));
+    mockFetch.mockRejectedValue(new ApiError("Server error"));
     render(<ProfileForm />);
     fillMetricForm();
     // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests

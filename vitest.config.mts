@@ -6,5 +6,6 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     environment: "jsdom",
+    exclude: ["e2e/**", "node_modules/**"],
   },
 });
