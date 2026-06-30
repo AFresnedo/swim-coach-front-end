@@ -43,7 +43,7 @@ export default function ProfileForm() {
       await frontApiFetch("/api/profile", {
         method: "POST",
         body: JSON.stringify({
-          age: parseInt(age),
+          age: parseInt(age, 10),
           height_cm: Math.round(height_cm * 10) / 10,
           weight_kg: Math.round(weight_kg * 10) / 10,
           sex,
@@ -105,9 +105,12 @@ export default function ProfileForm() {
 
       {/* Height */}
       <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Height</label>
+        <label htmlFor={units === "metric" ? "height-cm" : "height-ft"} className={labelClass}>
+          Height
+        </label>
         {units === "metric" ? (
           <input
+            id="height-cm"
             type="number"
             required
             min={50}
@@ -120,6 +123,7 @@ export default function ProfileForm() {
         ) : (
           <div className="flex gap-2">
             <input
+              id="height-ft"
               type="number"
               required
               min={1}
@@ -148,9 +152,12 @@ export default function ProfileForm() {
 
       {/* Weight */}
       <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Weight</label>
+        <label htmlFor={units === "metric" ? "weight-kg" : "weight-lbs"} className={labelClass}>
+          Weight
+        </label>
         {units === "metric" ? (
           <input
+            id="weight-kg"
             type="number"
             required
             min={20}
@@ -162,6 +169,7 @@ export default function ProfileForm() {
           />
         ) : (
           <input
+            id="weight-lbs"
             type="number"
             required
             min={44}
