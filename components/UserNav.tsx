@@ -15,7 +15,10 @@ export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
   if (isLoggedIn) {
     return (
       <>
-        <a href="/profile" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+        <a
+          href="/profile"
+          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
           Profile
         </a>
         <button

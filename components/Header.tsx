@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { AUTH_COOKIE } from "@/lib/constants";
 import UserNav from "@/components/UserNav";
+import { AUTH_COOKIE } from "@/lib/constants";
 
 export default async function Header() {
   const cookieStore = await cookies();
@@ -12,10 +12,16 @@ export default async function Header() {
         SwimCoach
       </a>
       <nav className="flex items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
-        <a href="/#features" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+        <a
+          href="/#features"
+          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
           Features
         </a>
-        <a href="/#how-it-works" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+        <a
+          href="/#how-it-works"
+          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
           How it works
         </a>
         <UserNav isLoggedIn={isLoggedIn} />

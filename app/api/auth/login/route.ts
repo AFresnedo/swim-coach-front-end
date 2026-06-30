@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/constants";
-import { safeFetch, normalizeError } from "@/lib/server-api";
+import { normalizeError, safeFetch } from "@/lib/server-api";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -22,7 +22,9 @@ export async function POST(req: NextRequest) {
 
   if (!backRes.ok) {
     const error = await backRes.json().catch(() => ({}));
-    return NextResponse.json(normalizeError(error.detail, "Login failed"), { status: backRes.status });
+    return NextResponse.json(normalizeError(error.detail, "Login failed"), {
+      status: backRes.status,
+    });
   }
 
   const { access_token } = await backRes.json();

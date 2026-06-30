@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { frontApiFetch, ApiError } from "@/lib/api";
+import { ApiError, frontApiFetch } from "@/lib/api";
 
 type UnitSystem = "metric" | "imperial";
 
@@ -37,10 +37,7 @@ export default function ProfileForm() {
         ? parseFloat(heightCm)
         : (parseFloat(heightFt) * 12 + parseFloat(heightIn)) * 2.54;
 
-    const weight_kg =
-      units === "metric"
-        ? parseFloat(weightKg)
-        : parseFloat(weightLbs) * 0.453592;
+    const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * 0.453592;
 
     try {
       await frontApiFetch("/api/profile", {
@@ -87,7 +84,9 @@ export default function ProfileForm() {
 
       {/* Age */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="age" className={labelClass}>Age</label>
+        <label htmlFor="age" className={labelClass}>
+          Age
+        </label>
         <input
           id="age"
           type="number"
@@ -99,7 +98,9 @@ export default function ProfileForm() {
           className={`${inputClass} ${fieldErrors.age ? inputErrorClass : inputNormalClass}`}
           placeholder="Years"
         />
-        {fieldErrors.age && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.age}</p>}
+        {fieldErrors.age && (
+          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.age}</p>
+        )}
       </div>
 
       {/* Height */}
@@ -140,7 +141,9 @@ export default function ProfileForm() {
             />
           </div>
         )}
-        {fieldErrors.height_cm && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.height_cm}</p>}
+        {fieldErrors.height_cm && (
+          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.height_cm}</p>
+        )}
       </div>
 
       {/* Weight */}
@@ -169,12 +172,16 @@ export default function ProfileForm() {
             placeholder="lbs"
           />
         )}
-        {fieldErrors.weight_kg && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.weight_kg}</p>}
+        {fieldErrors.weight_kg && (
+          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.weight_kg}</p>
+        )}
       </div>
 
       {/* Sex */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="sex" className={labelClass}>Sex</label>
+        <label htmlFor="sex" className={labelClass}>
+          Sex
+        </label>
         <select
           id="sex"
           required
@@ -182,11 +189,15 @@ export default function ProfileForm() {
           onChange={(e) => setSex(e.target.value)}
           className={`${inputClass} ${fieldErrors.sex ? inputErrorClass : inputNormalClass}`}
         >
-          <option value="" disabled>Select…</option>
+          <option value="" disabled>
+            Select…
+          </option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
-        {fieldErrors.sex && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.sex}</p>}
+        {fieldErrors.sex && (
+          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.sex}</p>
+        )}
       </div>
 
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}

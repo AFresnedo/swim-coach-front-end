@@ -47,31 +47,24 @@ export default function BreaststrokePage() {
             🐸 Breaststroke
           </h1>
           <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl leading-relaxed">
-            Breaststroke is the most technical of the four strokes. The
-            pull-breathe-kick-glide cycle must be timed precisely — too much
-            overlap creates drag, too long a glide loses momentum. Mastering the
-            timing is what separates good breaststroke swimmers from great ones.
+            Breaststroke is the most technical of the four strokes. The pull-breathe-kick-glide
+            cycle must be timed precisely — too much overlap creates drag, too long a glide loses
+            momentum. Mastering the timing is what separates good breaststroke swimmers from great
+            ones.
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-6">
-          Drills
-        </h2>
+        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-6">Drills</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {drills.map(({ name, focus, desc }) => (
-            <div
-              key={name}
-              className="rounded-2xl border border-zinc-100 dark:border-zinc-800 p-6"
-            >
+            <div key={name} className="rounded-2xl border border-zinc-100 dark:border-zinc-800 p-6">
               <span className="inline-block rounded-full bg-blue-50 dark:bg-blue-950 px-3 py-0.5 text-xs font-medium text-blue-600 dark:text-blue-400 mb-3">
                 {focus}
               </span>
               <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
                 {name}
               </h3>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                {desc}
-              </p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>

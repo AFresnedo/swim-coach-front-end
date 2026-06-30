@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ProfileForm from "@/components/ProfileForm";
 
 vi.mock("@/lib/api", () => ({
@@ -7,6 +7,7 @@ vi.mock("@/lib/api", () => ({
 }));
 
 import { frontApiFetch } from "@/lib/api";
+
 const mockFetch = vi.mocked(frontApiFetch);
 
 function fillMetricForm() {
@@ -99,13 +100,19 @@ describe("ProfileForm", () => {
 
   it("shows 'Saving…' and disables button during submission", async () => {
     let resolve: () => void;
-    mockFetch.mockReturnValue(new Promise((r) => { resolve = () => r({ ok: true }); }));
+    mockFetch.mockReturnValue(
+      new Promise((r) => {
+        resolve = () => r({ ok: true });
+      }),
+    );
     render(<ProfileForm />);
     fillMetricForm();
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
     await waitFor(() => expect(screen.getByRole("button", { name: /saving/i })).toBeDefined());
-    expect((screen.getByRole("button", { name: /saving/i }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: /saving/i }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
     resolve!();
   });
 });

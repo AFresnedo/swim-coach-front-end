@@ -5,7 +5,7 @@ type FastAPIValidationError = { loc: (string | number)[]; msg: string };
 
 export function normalizeError(
   detail: unknown,
-  fallback: string
+  fallback: string,
 ): { detail: string; errors?: Record<string, string> } {
   if (typeof detail === "string") return { detail };
   if (Array.isArray(detail)) {
@@ -19,7 +19,10 @@ export function normalizeError(
   return { detail: fallback };
 }
 
-export async function safeFetch(label: string, ...args: Parameters<typeof fetch>): Promise<Response> {
+export async function safeFetch(
+  label: string,
+  ...args: Parameters<typeof fetch>
+): Promise<Response> {
   try {
     return await fetch(...args);
   } catch (err: unknown) {

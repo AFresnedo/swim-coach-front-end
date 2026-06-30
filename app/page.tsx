@@ -7,11 +7,13 @@ export default function Home() {
           Built for swimmers, by swimmers
         </span>
         <h1 className="text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight mb-6">
-          Cut seconds off your lap time.<br />Build the fitness to go further.
+          Cut seconds off your lap time.
+          <br />
+          Build the fitness to go further.
         </h1>
         <p className="max-w-2xl text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10">
-          SwimCoach gives you personalized training plans, lap-time tracking, and
-          performance insights — so every session in the water counts.
+          SwimCoach gives you personalized training plans, lap-time tracking, and performance
+          insights — so every session in the water counts.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
@@ -52,8 +54,8 @@ export default function Home() {
           Everything you need to swim faster
         </h2>
         <p className="text-center text-zinc-500 dark:text-zinc-400 mb-16 max-w-xl mx-auto">
-          SwimCoach combines smart analytics with proven training science to help
-          you reach peak performance.
+          SwimCoach combines smart analytics with proven training science to help you reach peak
+          performance.
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
@@ -105,10 +107,7 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section
-        id="how-it-works"
-        className="bg-zinc-50 dark:bg-zinc-900 py-24 px-6"
-      >
+      <section id="how-it-works" className="bg-zinc-50 dark:bg-zinc-900 py-24 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-zinc-900 dark:text-zinc-50 mb-16">
             How it works
@@ -138,9 +137,7 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
                   {title}
                 </h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  {desc}
-                </p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">{desc}</p>
               </li>
             ))}
           </ol>
@@ -153,8 +150,7 @@ export default function Home() {
           Ready to dive in?
         </h2>
         <p className="text-zinc-500 dark:text-zinc-400 mb-8 max-w-md">
-          Join thousands of swimmers already hitting new personal bests with
-          SwimCoach.
+          Join thousands of swimmers already hitting new personal bests with SwimCoach.
         </p>
         <a
           href="/sign-up"

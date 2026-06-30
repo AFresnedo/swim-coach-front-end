@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page }) => {
   const email = `test_${Date.now()}@example.com`;

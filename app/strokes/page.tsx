@@ -33,8 +33,8 @@ export default function StrokesPage() {
           Strokes
         </h1>
         <p className="text-lg text-zinc-500 dark:text-zinc-400 mb-12 max-w-2xl">
-          Drills, technique tips, and training resources for all four competitive
-          strokes. Choose a stroke to get started.
+          Drills, technique tips, and training resources for all four competitive strokes. Choose a
+          stroke to get started.
         </p>
 
         <div className="grid sm:grid-cols-2 gap-6">

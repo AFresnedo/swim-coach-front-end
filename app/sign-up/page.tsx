@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { frontApiFetch, ApiError } from "@/lib/api";
+import { ApiError, frontApiFetch } from "@/lib/api";
 
-const inputClass = "rounded-lg border bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full";
+const inputClass =
+  "rounded-lg border bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full";
 const inputErrorClass = "border-red-400 dark:border-red-500";
 const inputNormalClass = "border-zinc-200 dark:border-zinc-700";
 
@@ -68,7 +69,9 @@ export default function SignUpPage() {
               className={`${inputClass} ${fieldErrors.name ? inputErrorClass : inputNormalClass}`}
               placeholder="Jane Smith"
             />
-            {fieldErrors.name && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.name}</p>}
+            {fieldErrors.name && (
+              <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.name}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -85,11 +88,16 @@ export default function SignUpPage() {
               className={`${inputClass} ${fieldErrors.email ? inputErrorClass : inputNormalClass}`}
               placeholder="you@example.com"
             />
-            {fieldErrors.email && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.email}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
               Password
             </label>
             <input
@@ -103,12 +111,12 @@ export default function SignUpPage() {
               className={`${inputClass} ${fieldErrors.password ? inputErrorClass : inputNormalClass}`}
               placeholder="At least 8 characters"
             />
-            {fieldErrors.password && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.password}</p>}
+            {fieldErrors.password && (
+              <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.password}</p>
+            )}
           </div>
 
-          {error && (
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
           <button
             type="submit"
@@ -121,7 +129,10 @@ export default function SignUpPage() {
 
         <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
           Already have an account?{" "}
-          <Link href="/sign-in" className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+          <Link
+            href="/sign-in"
+            className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
             Sign in
           </Link>
         </p>
