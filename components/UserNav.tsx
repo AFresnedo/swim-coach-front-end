@@ -22,6 +22,7 @@ export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
           Profile
         </a>
         <button
+          type="button"
           onClick={handleLogout}
           className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
         >
