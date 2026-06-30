@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/constants";
-import { safeFetch } from "@/lib/server-api";
+import { safeFetch, normalizeError } from "@/lib/server-api";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
@@ -31,10 +31,7 @@ export async function POST(req: NextRequest) {
 
   if (!backRes.ok) {
     const error = await backRes.json().catch(() => ({}));
-    return NextResponse.json(
-      { detail: error.detail ?? "Failed to save profile" },
-      { status: backRes.status }
-    );
+    return NextResponse.json(normalizeError(error.detail, "Failed to save profile"), { status: backRes.status });
   }
 
   return NextResponse.json({ ok: true });

@@ -3,18 +3,24 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { frontApiFetch } from "@/lib/api";
+import { frontApiFetch, ApiError } from "@/lib/api";
+
+const inputClass = "rounded-lg border bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full";
+const inputErrorClass = "border-red-400 dark:border-red-500";
+const inputNormalClass = "border-zinc-200 dark:border-zinc-700";
 
 export default function SignInPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -25,7 +31,12 @@ export default function SignInPage() {
       router.push("/");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed. Please try again.");
+      if (err instanceof ApiError) {
+        setError(err.message);
+        if (err.errors) setFieldErrors(err.errors);
+      } else {
+        setError("Sign in failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -53,9 +64,10 @@ export default function SignInPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`${inputClass} ${fieldErrors.email ? inputErrorClass : inputNormalClass}`}
               placeholder="you@example.com"
             />
+            {fieldErrors.email && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.email}</p>}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -69,9 +81,10 @@ export default function SignInPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`${inputClass} ${fieldErrors.password ? inputErrorClass : inputNormalClass}`}
               placeholder="••••••••"
             />
+            {fieldErrors.password && <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.password}</p>}
           </div>
 
           {error && (

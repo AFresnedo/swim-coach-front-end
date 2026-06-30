@@ -1,6 +1,24 @@
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/constants";
 
+type FastAPIValidationError = { loc: (string | number)[]; msg: string };
+
+export function normalizeError(
+  detail: unknown,
+  fallback: string
+): { detail: string; errors?: Record<string, string> } {
+  if (typeof detail === "string") return { detail };
+  if (Array.isArray(detail)) {
+    const errors: Record<string, string> = {};
+    for (const e of detail as FastAPIValidationError[]) {
+      const field = String(e.loc?.at(-1) ?? "");
+      if (field) errors[field] = e.msg;
+    }
+    return { detail: "Validation failed", errors };
+  }
+  return { detail: fallback };
+}
+
 export async function safeFetch(label: string, ...args: Parameters<typeof fetch>): Promise<Response> {
   try {
     return await fetch(...args);
