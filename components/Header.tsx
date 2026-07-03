@@ -7,20 +7,20 @@ export default async function Header() {
   const isLoggedIn = cookieStore.has(AUTH_COOKIE);
 
   return (
-    <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-100 dark:border-zinc-800">
-      <a href="/" className="text-xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-5 border-b border-cyan-900/10 dark:border-cyan-400/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+      <a href="/" className="text-xl font-bold tracking-tight text-gradient-aqua">
         SwimCoach
       </a>
-      <nav className="flex items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+      <nav className="flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
         <a
           href="/#features"
-          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
         >
           Features
         </a>
         <a
           href="/#how-it-works"
-          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
         >
           How it works
         </a>

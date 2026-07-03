@@ -1,39 +1,65 @@
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-full bg-white dark:bg-zinc-950">
+    <div className="flex flex-col min-h-full bg-white dark:bg-slate-950">
       {/* Hero */}
-      <section className="flex flex-col items-center text-center px-6 pt-24 pb-20 max-w-4xl mx-auto w-full">
-        <span className="mb-4 inline-block rounded-full bg-blue-50 dark:bg-blue-950 px-4 py-1 text-sm font-medium text-blue-600 dark:text-blue-400">
-          Built for swimmers, by swimmers
-        </span>
-        <h1 className="text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight mb-6">
-          Cut seconds off your lap time.
-          <br />
-          Build the fitness to go further.
-        </h1>
-        <p className="max-w-2xl text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10">
-          SwimCoach gives you personalized training plans, lap-time tracking, and performance
-          insights — so every session in the water counts.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            id="get-started"
-            href="/sign-up"
-            className="rounded-full bg-blue-600 px-8 py-3.5 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
-          >
-            Start training free
-          </a>
-          <a
-            href="#how-it-works"
-            className="rounded-full border border-zinc-200 dark:border-zinc-700 px-8 py-3.5 text-base font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-          >
-            See how it works
-          </a>
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"
+        />
+        <div
+          aria-hidden
+          className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-cyan-300/40 dark:bg-cyan-500/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-sky-300/40 dark:bg-sky-500/10 blur-3xl"
+        />
+        <div className="relative flex flex-col items-center text-center px-6 pt-24 pb-28 max-w-4xl mx-auto w-full">
+          <span className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-indigo-100 dark:bg-indigo-400/10 px-4 py-1 text-sm font-medium text-indigo-700 dark:text-indigo-300">
+            ☀️ Built for swimmers, by swimmers
+          </span>
+          <h1 className="text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50 leading-tight mb-6">
+            Cut seconds off your lap time.
+            <br />
+            <span className="text-gradient-aqua">Build the fitness to go further.</span>
+          </h1>
+          <p className="max-w-2xl text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10">
+            SwimCoach gives you personalized training plans, lap-time tracking, and performance
+            insights — so every session in the water counts.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a
+              id="get-started"
+              href="/sign-up"
+              className="rounded-full bg-gradient-aqua px-8 py-3.5 text-base font-semibold text-white shadow-aqua hover:brightness-110 transition-[filter]"
+            >
+              Start training free
+            </a>
+            <a
+              href="#how-it-works"
+              className="rounded-full border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 backdrop-blur px-8 py-3.5 text-base font-semibold text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+            >
+              See how it works
+            </a>
+          </div>
         </div>
+        <svg
+          aria-hidden
+          role="presentation"
+          viewBox="0 0 1440 80"
+          className="relative block w-full text-white dark:text-slate-950"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="currentColor"
+            d="M0,32 C240,80 480,0 720,24 C960,48 1200,80 1440,32 L1440,80 L0,80 Z"
+          />
+        </svg>
       </section>
 
       {/* Stats */}
-      <section className="bg-blue-600 py-12">
+      <section className="bg-gradient-aqua py-12">
         <div className="max-w-4xl mx-auto px-6 grid grid-cols-3 gap-8 text-center text-white">
           {[
             { value: "10,000+", label: "Swimmers training" },
@@ -42,7 +68,7 @@ export default function Home() {
           ].map(({ value, label }) => (
             <div key={label}>
               <p className="text-3xl font-bold">{value}</p>
-              <p className="mt-1 text-blue-100 text-sm">{label}</p>
+              <p className="mt-1 text-cyan-50 text-sm">{label}</p>
             </div>
           ))}
         </div>
@@ -50,10 +76,10 @@ export default function Home() {
 
       {/* Features */}
       <section id="features" className="py-24 px-6 max-w-5xl mx-auto w-full">
-        <h2 className="text-3xl font-bold text-center text-zinc-900 dark:text-zinc-50 mb-4">
+        <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-slate-50 mb-4">
           Everything you need to swim faster
         </h2>
-        <p className="text-center text-zinc-500 dark:text-zinc-400 mb-16 max-w-xl mx-auto">
+        <p className="text-center text-slate-600 dark:text-slate-400 mb-16 max-w-xl mx-auto">
           SwimCoach combines smart analytics with proven training science to help you reach peak
           performance.
         </p>
@@ -92,13 +118,15 @@ export default function Home() {
           ].map(({ icon, title, desc }) => (
             <div
               key={title}
-              className="rounded-2xl border border-zinc-100 dark:border-zinc-800 p-6 hover:shadow-md transition-shadow"
+              className="group rounded-2xl border border-slate-100 dark:border-slate-800 p-6 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
             >
-              <span className="text-3xl">{icon}</span>
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-aqua text-2xl shadow-aqua">
+                {icon}
+              </span>
+              <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-slate-50">
                 {title}
               </h3>
-              <p className="mt-2 text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
+              <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                 {desc}
               </p>
             </div>
@@ -107,9 +135,9 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="bg-zinc-50 dark:bg-zinc-900 py-24 px-6">
+      <section id="how-it-works" className="bg-slate-50 dark:bg-slate-900 py-24 px-6">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-zinc-900 dark:text-zinc-50 mb-16">
+          <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-slate-50 mb-16">
             How it works
           </h2>
           <ol className="grid sm:grid-cols-3 gap-10">
@@ -131,13 +159,13 @@ export default function Home() {
               },
             ].map(({ step, title, desc }) => (
               <li key={step} className="flex flex-col items-center text-center">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white text-xl font-bold mb-4">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-aqua text-white text-xl font-bold mb-4 shadow-aqua">
                   {step}
                 </span>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-2">
                   {title}
                 </h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">{desc}</p>
+                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{desc}</p>
               </li>
             ))}
           </ol>
@@ -145,23 +173,29 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6 flex flex-col items-center text-center">
-        <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
-          Ready to dive in?
-        </h2>
-        <p className="text-zinc-500 dark:text-zinc-400 mb-8 max-w-md">
-          Join thousands of swimmers already hitting new personal bests with SwimCoach.
-        </p>
-        <a
-          href="/sign-up"
-          className="rounded-full bg-blue-600 px-10 py-4 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
-        >
-          Create your free account
-        </a>
+      <section className="relative overflow-hidden py-24 px-6 flex flex-col items-center text-center">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-white via-cyan-50/60 to-white dark:from-slate-950 dark:via-slate-900/60 dark:to-slate-950"
+        />
+        <div className="relative">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mb-4">
+            Ready to dive in?
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
+            Join thousands of swimmers already hitting new personal bests with SwimCoach.
+          </p>
+          <a
+            href="/sign-up"
+            className="rounded-full bg-gradient-aqua px-10 py-4 text-base font-semibold text-white shadow-aqua hover:brightness-110 transition-[filter]"
+          >
+            Create your free account
+          </a>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-zinc-100 dark:border-zinc-800 py-8 px-8 flex items-center justify-between text-sm text-zinc-400">
+      <footer className="mt-auto border-t border-slate-100 dark:border-slate-800 py-8 px-8 flex items-center justify-between text-sm text-slate-400">
         <span>© {new Date().getFullYear()} SwimCoach</span>
         <span>Built for the water</span>
       </footer>

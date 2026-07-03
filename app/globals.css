@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f3fbfd;
+  --foreground: #05283a;
 }
 
 @theme inline {
@@ -14,13 +14,43 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #05131f;
+    --foreground: #e3f6fb;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--color-cyan-400);
+  color: #04212f;
+}
+
+.text-gradient-aqua {
+  background: linear-gradient(
+    90deg,
+    var(--color-sky-600),
+    var(--color-cyan-500) 55%,
+    var(--color-teal-400)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-aqua {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-sky-600),
+    var(--color-cyan-500) 55%,
+    var(--color-teal-400)
+  );
+}
+
+.shadow-aqua {
+  box-shadow: 0 8px 24px -8px color-mix(in oklch, var(--color-cyan-500) 45%, transparent);
 }

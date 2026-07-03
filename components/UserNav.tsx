@@ -17,14 +17,14 @@ export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
       <>
         <a
           href="/profile"
-          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
         >
           Profile
         </a>
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
+          className="rounded-full bg-gradient-aqua px-4 py-2 text-white shadow-aqua hover:brightness-110 transition-[filter]"
         >
           Log out
         </button>
@@ -34,12 +34,12 @@ export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   return (
     <>
-      <a href="/sign-in" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+      <a href="/sign-in" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
         Sign in
       </a>
       <a
         href="/sign-up"
-        className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
+        className="rounded-full bg-gradient-aqua px-4 py-2 text-white shadow-aqua hover:brightness-110 transition-[filter]"
       >
         Get started
       </a>

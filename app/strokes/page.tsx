@@ -27,12 +27,12 @@ const strokes = [
 
 export default function StrokesPage() {
   return (
-    <div className="min-h-full bg-white dark:bg-zinc-950 px-6 py-16">
+    <div className="min-h-full bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-3">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 mb-3">
           Strokes
         </h1>
-        <p className="text-lg text-zinc-500 dark:text-zinc-400 mb-12 max-w-2xl">
+        <p className="text-lg text-slate-600 dark:text-slate-400 mb-12 max-w-2xl">
           Drills, technique tips, and training resources for all four competitive strokes. Choose a
           stroke to get started.
         </p>
@@ -42,16 +42,18 @@ export default function StrokesPage() {
             <a
               key={slug}
               href={`/strokes/${slug}`}
-              className="group rounded-2xl border border-zinc-100 dark:border-zinc-800 p-8 hover:shadow-md hover:border-zinc-200 dark:hover:border-zinc-700 transition-all"
+              className="group rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
             >
-              <span className="text-4xl">{icon}</span>
-              <h2 className="mt-4 text-xl font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-aqua text-3xl shadow-aqua">
+                {icon}
+              </span>
+              <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-50 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                 {name}
               </h2>
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 {desc}
               </p>
-              <span className="mt-4 inline-block text-sm font-medium text-blue-600 dark:text-blue-400">
+              <span className="mt-4 inline-block text-sm font-medium text-cyan-600 dark:text-cyan-400">
                 View drills →
               </span>
             </a>
