@@ -86,6 +86,18 @@ describe("ProfileForm", () => {
     expect(body.sex).toBe("female");
   });
 
+  it("submits 'prefer_not_to_say' when selected for sex", async () => {
+    render(<ProfileForm />);
+    fillMetricForm();
+    fireEvent.change(screen.getByLabelText("Sex"), { target: { value: "prefer_not_to_say" } });
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
+    fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
+
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledOnce());
+    const body = JSON.parse((mockFetch.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.sex).toBe("prefer_not_to_say");
+  });
+
   it("shows 'Profile saved.' after successful submit", async () => {
     render(<ProfileForm />);
     fillMetricForm();
