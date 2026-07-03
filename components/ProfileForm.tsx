@@ -6,10 +6,10 @@ import { ApiError, frontApiFetch } from "@/lib/api";
 type UnitSystem = "metric" | "imperial";
 
 const inputClass =
-  "rounded-lg border bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full";
+  "rounded-lg border bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 w-full";
 const inputErrorClass = "border-red-400 dark:border-red-500";
-const inputNormalClass = "border-zinc-200 dark:border-zinc-700";
-const labelClass = "text-sm font-medium text-zinc-700 dark:text-zinc-300";
+const inputNormalClass = "border-slate-200 dark:border-slate-700";
+const labelClass = "text-sm font-medium text-slate-700 dark:text-slate-300";
 
 export default function ProfileForm() {
   const [units, setUnits] = useState<UnitSystem>("metric");
@@ -65,7 +65,7 @@ export default function ProfileForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Unit toggle */}
-      <div className="flex rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden text-sm font-medium">
+      <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden text-sm font-medium">
         {(["metric", "imperial"] as UnitSystem[]).map((u) => (
           <button
             key={u}
@@ -73,8 +73,8 @@ export default function ProfileForm() {
             onClick={() => setUnits(u)}
             className={`flex-1 py-2 transition-colors capitalize ${
               units === u
-                ? "bg-blue-600 text-white"
-                : "bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                ? "bg-gradient-aqua text-white"
+                : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
             }`}
           >
             {u}
@@ -214,7 +214,7 @@ export default function ProfileForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
       >
         {loading ? "Saving…" : "Save profile"}
       </button>
