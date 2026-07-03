@@ -195,6 +195,7 @@ export default function ProfileForm() {
           required
           value={sex}
           onChange={(e) => setSex(e.target.value)}
+          aria-describedby="sex-hint"
           className={`${inputClass} ${fieldErrors.sex ? inputErrorClass : inputNormalClass}`}
         >
           <option value="" disabled>
@@ -202,7 +203,11 @@ export default function ProfileForm() {
           </option>
           <option value="male">Male</option>
           <option value="female">Female</option>
+          <option value="prefer_not_to_say">Prefer not to say</option>
         </select>
+        <p id="sex-hint" className="text-xs text-slate-500 dark:text-slate-400">
+          Used to calculate performance benchmarks.
+        </p>
         {fieldErrors.sex && (
           <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.sex}</p>
         )}
