@@ -5,7 +5,7 @@ import { normalizeError, safeFetch } from "@/lib/server-api";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE)?.value;
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   let backRes: Response;
   try {
     backRes = await safeFetch("profile", `${API_URL}/profile`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

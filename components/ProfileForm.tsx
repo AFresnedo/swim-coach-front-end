@@ -41,7 +41,7 @@ export default function ProfileForm() {
 
     try {
       await frontApiFetch("/api/profile", {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify({
           age: parseInt(age, 10),
           height_cm: Math.round(height_cm * 10) / 10,
