@@ -1,3 +1,41 @@
+import { Suspense } from "react";
+import { safeFetch } from "@/lib/server-api";
+
+const API_URL = process.env.API_URL ?? "http://localhost:8000";
+
+export async function getUserCount(): Promise<number | null> {
+  try {
+    const res = await safeFetch("users-count", `${API_URL}/users/count`, {
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.user_count;
+  } catch {
+    return null;
+  }
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <p className="text-3xl font-bold">{value}</p>
+      <p className="mt-1 text-cyan-50 text-sm">{label}</p>
+    </div>
+  );
+}
+
+async function SwimmerCountStat() {
+  const count = await getUserCount();
+  return (
+    <Stat
+      value={count !== null ? count.toLocaleString() : "Fetching..."}
+      label="Swimmers training"
+    />
+  );
+}
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-full bg-white dark:bg-slate-950">
@@ -61,15 +99,14 @@ export default function Home() {
       {/* Stats */}
       <section className="bg-gradient-aqua py-12">
         <div className="max-w-4xl mx-auto px-6 grid grid-cols-3 gap-8 text-center text-white">
+          <Suspense fallback={<Stat value="Fetching..." label="Swimmers training" />}>
+            <SwimmerCountStat />
+          </Suspense>
           {[
-            { value: "10,000+", label: "Swimmers training" },
             { value: "2.4s", label: "Avg. lap-time improvement" },
             { value: "500+", label: "Workouts in the library" },
           ].map(({ value, label }) => (
-            <div key={label}>
-              <p className="text-3xl font-bold">{value}</p>
-              <p className="mt-1 text-cyan-50 text-sm">{label}</p>
-            </div>
+            <Stat key={label} value={value} label={label} />
           ))}
         </div>
       </section>
