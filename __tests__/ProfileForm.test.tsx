@@ -60,7 +60,7 @@ describe("ProfileForm", () => {
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalledOnce());
     expect(mockFetch).toHaveBeenCalledWith("/api/profile", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({ age: 25, height_cm: 175, weight_kg: 70, sex: "male" }),
     });
   });
