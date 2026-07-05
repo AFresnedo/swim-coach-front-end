@@ -20,6 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -33,7 +35,7 @@ jobs:
         run: npx next typegen
 
       - name: Lint & format
-        run: npm run check
+        run: npm run check:ci
 
       - name: Type check
         run: npx tsc --noEmit

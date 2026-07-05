@@ -9,6 +9,7 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
+    "check:ci": "biome check --changed",
     "test": "vitest",
     "test:e2e": "playwright test"
   },
