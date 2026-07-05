@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import UserNav from "@/components/UserNav";
+import AccountMenu from "@/components/AccountMenu";
 import { AUTH_COOKIE } from "@/lib/constants";
 
 export default async function Header() {
@@ -30,7 +30,32 @@ export default async function Header() {
         >
           Strokes
         </a>
-        <UserNav isLoggedIn={isLoggedIn} />
+        {isLoggedIn ? (
+          <>
+            <a
+              href="/goals"
+              className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            >
+              Goals
+            </a>
+            <AccountMenu />
+          </>
+        ) : (
+          <>
+            <a
+              href="/sign-in"
+              className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            >
+              Sign in
+            </a>
+            <a
+              href="/sign-up"
+              className="rounded-full bg-gradient-aqua px-4 py-2 text-white shadow-aqua hover:brightness-110 transition-[filter]"
+            >
+              Get started
+            </a>
+          </>
+        )}
       </nav>
     </header>
   );
