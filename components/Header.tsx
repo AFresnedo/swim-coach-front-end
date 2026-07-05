@@ -24,6 +24,12 @@ export default async function Header() {
         >
           How it works
         </a>
+        <a
+          href="/strokes"
+          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+        >
+          Strokes
+        </a>
         <UserNav isLoggedIn={isLoggedIn} />
       </nav>
     </header>
