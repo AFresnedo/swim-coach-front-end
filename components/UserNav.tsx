@@ -16,6 +16,12 @@ export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
     return (
       <>
         <a
+          href="/goals"
+          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+        >
+          Goals
+        </a>
+        <a
           href="/profile"
           className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
         >
@@ -34,7 +40,10 @@ export default function UserNav({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   return (
     <>
-      <a href="/sign-in" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+      <a
+        href="/sign-in"
+        className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+      >
         Sign in
       </a>
       <a
