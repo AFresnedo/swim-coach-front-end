@@ -7,7 +7,7 @@ export default async function Header() {
   const isLoggedIn = cookieStore.has(AUTH_COOKIE);
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-5 border-b border-cyan-900/10 dark:border-cyan-400/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-[var(--z-header)] flex items-center justify-between px-8 py-5 border-b border-cyan-900/10 dark:border-cyan-400/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
       <a href="/" className="text-xl font-bold tracking-tight text-gradient-aqua">
         SwimCoach
       </a>

@@ -39,7 +39,7 @@ export default function AccountMenu() {
       <MenuItems
         anchor="bottom end"
         transition
-        className="w-44 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 py-1.5 shadow-lg shadow-cyan-500/5 [--anchor-gap:0.5rem] origin-top transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+        className="z-[calc(var(--z-header)+10)] w-44 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 py-1.5 shadow-lg shadow-cyan-500/5 [--anchor-gap:0.5rem] origin-top transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         <MenuItem>
           <a
