@@ -46,7 +46,9 @@ describe("AccountMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
 
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", { method: "POST" }));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", { method: "POST" }),
+    );
     expect(push).toHaveBeenCalledWith("/");
     expect(refresh).toHaveBeenCalled();
   });

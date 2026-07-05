@@ -16,7 +16,15 @@ export default function AccountMenu() {
   return (
     <Menu as="div" className="relative">
       <MenuButton className="group flex items-center gap-1.5 rounded-full border border-cyan-900/10 dark:border-cyan-400/10 px-4 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:border-cyan-900/20 dark:hover:border-cyan-400/20 transition-colors data-[active]:text-slate-900 dark:data-[active]:text-slate-100">
-        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75}>
+        <svg
+          aria-hidden
+          role="presentation"
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.75}
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -26,6 +34,7 @@ export default function AccountMenu() {
         Account
         <svg
           aria-hidden
+          role="presentation"
           viewBox="0 0 24 24"
           className="h-3.5 w-3.5 transition-transform group-data-[open]:rotate-180"
           fill="none"
