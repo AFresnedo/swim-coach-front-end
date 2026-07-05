@@ -1,3 +1,7 @@
+import { cookies } from "next/headers";
+import DrillsSection from "@/components/DrillsSection";
+import { AUTH_COOKIE } from "@/lib/constants";
+
 const drills = [
   {
     name: "Pull Buoy Pull",
@@ -31,7 +35,10 @@ const drills = [
   },
 ];
 
-export default function BreaststrokePage() {
+export default async function BreaststrokePage() {
+  const cookieStore = await cookies();
+  const isLoggedIn = cookieStore.has(AUTH_COOKIE);
+
   return (
     <div className="min-h-full bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
       <div className="max-w-5xl mx-auto">
@@ -54,20 +61,7 @@ export default function BreaststrokePage() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 mb-6">Drills</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {drills.map(({ name, focus, desc }) => (
-            <div key={name} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-              <span className="inline-block rounded-full bg-cyan-50 dark:bg-cyan-500/10 px-3 py-0.5 text-xs font-medium text-cyan-700 dark:text-cyan-400 mb-3">
-                {focus}
-              </span>
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50 mb-2">
-                {name}
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
+        <DrillsSection drills={drills} isLoggedIn={isLoggedIn} />
       </div>
     </div>
   );
