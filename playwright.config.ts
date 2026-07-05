@@ -9,4 +9,5 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: true,
   },
+  globalSetup: "./e2e/global-setup",
 });
