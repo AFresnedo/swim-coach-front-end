@@ -14,15 +14,31 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   await page.goto("/goals");
   await expect(page.getByText(/no active goals yet/i)).toBeVisible();
 
-  // Create
-  await page.getByLabel("New goal").fill("Swim a sub-1:00 100m free");
-  await page.getByRole("button", { name: "Add goal" }).click();
+  // Create — assert on the actual POST response, not just the resulting DOM,
+  // so this fails loudly if the backend ever stops persisting/echoing a field.
+  const [createResponse] = await Promise.all([
+    page.waitForResponse((res) => res.url().includes("/api/goals") && res.request().method() === "POST"),
+    (async () => {
+      await page.getByLabel("New goal").fill("Swim a sub-1:00 100m free");
+      await page.getByRole("button", { name: "Add goal" }).click();
+    })(),
+  ]);
+  const created = await createResponse.json();
+  expect(created).toMatchObject({ text: "Swim a sub-1:00 100m free", is_active: true });
   await expect(page.getByText("Swim a sub-1:00 100m free")).toBeVisible();
 
   // Edit
-  await page.getByRole("button", { name: "Edit" }).click();
-  await page.getByLabel("Edit goal").fill("Swim a sub-58 100m free");
-  await page.getByRole("button", { name: "Save" }).click();
+  const [editResponse] = await Promise.all([
+    page.waitForResponse(
+      (res) => res.url().includes(`/api/goals/${created.id}`) && res.request().method() === "PATCH",
+    ),
+    (async () => {
+      await page.getByRole("button", { name: "Edit" }).click();
+      await page.getByLabel("Edit goal").fill("Swim a sub-58 100m free");
+      await page.getByRole("button", { name: "Save" }).click();
+    })(),
+  ]);
+  expect(await editResponse.json()).toMatchObject({ id: created.id, text: "Swim a sub-58 100m free" });
   await expect(page.getByText("Swim a sub-58 100m free")).toBeVisible();
 
   // Deactivate — confirm stays disabled until a reason is picked
@@ -31,7 +47,18 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   await expect(confirmButton).toBeDisabled();
   await page.getByLabel("Reason").selectOption("reached");
   await expect(confirmButton).toBeEnabled();
-  await confirmButton.click();
+
+  const [deactivateResponse] = await Promise.all([
+    page.waitForResponse(
+      (res) => res.url().includes(`/api/goals/${created.id}/deactivate`) && res.request().method() === "PATCH",
+    ),
+    confirmButton.click(),
+  ]);
+  expect(await deactivateResponse.json()).toMatchObject({
+    id: created.id,
+    is_active: false,
+    deactivation_reason: "reached",
+  });
 
   // Active filter hides it; All filter shows it read-only with reason
   await expect(page.getByText("Swim a sub-58 100m free")).not.toBeVisible();
