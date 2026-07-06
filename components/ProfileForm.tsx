@@ -11,6 +11,7 @@ type Profile = {
   height_cm: number;
   weight_kg: number;
   sex: string;
+  unit_preference: UnitSystem;
 };
 
 function cmToFtIn(cm: number) {
@@ -57,6 +58,7 @@ export default function ProfileForm() {
         setWeightKg(String(profile.weight_kg));
         setWeightLbs(String(kgToLbs(profile.weight_kg)));
         setSex(profile.sex);
+        setUnits(profile.unit_preference);
       })
       .catch(() => {
         if (!cancelled) setError("Failed to load your profile. Please try again.");
@@ -92,6 +94,7 @@ export default function ProfileForm() {
           height_cm: Math.round(height_cm * 10) / 10,
           weight_kg: Math.round(weight_kg * 10) / 10,
           sex,
+          unit_preference: units,
         }),
       });
       setSaved(true);
