@@ -24,6 +24,12 @@ export async function GET() {
     return NextResponse.json({ detail: "Server unavailable" }, { status: 502 });
   }
 
+  // No profile yet is a normal state for a new user, not a load failure —
+  // translate the backend's 404 into an empty success instead of an error.
+  if (backRes.status === 404) {
+    return NextResponse.json(null);
+  }
+
   if (!backRes.ok) {
     const error = await backRes.json().catch(() => ({}));
     return NextResponse.json(normalizeError(error.detail, "Failed to load profile"), {
