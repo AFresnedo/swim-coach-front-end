@@ -11,6 +11,14 @@ import { ApiError, frontApiFetch } from "@/lib/api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
+// Waits for pending promise continuations (state updates from a resolved
+// mock fetch) to actually land, wrapped in act(), before the test proceeds.
+// The call count itself is already true the instant it's called — awaiting
+// it is what matters, not the specific condition it polls.
+async function settleAsyncEffects(expectedCallCount: number) {
+  await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(expectedCallCount));
+}
+
 const activeGoal = {
   id: 1,
   user_id: 1,
@@ -71,7 +79,7 @@ describe("GoalsList", () => {
   it("submits a new goal via POST /api/goals", async () => {
     mockFetch.mockResolvedValueOnce([]);
     render(<GoalsList />);
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
+    await settleAsyncEffects(1);
 
     mockFetch.mockResolvedValueOnce({ ...activeGoal, id: 3, text: "Swim 200 IM under 3 minutes" });
     fireEvent.change(screen.getByLabelText("New goal"), {
@@ -141,7 +149,7 @@ describe("GoalsList", () => {
   });
 
   it("shows an error message when loading goals fails", async () => {
-    mockFetch.mockRejectedValue(new ApiError("Server error"));
+    mockFetch.mockRejectedValue(new ApiError("Server error", 500));
     render(<GoalsList />);
     expect(await screen.findByText("Server error")).toBeDefined();
   });

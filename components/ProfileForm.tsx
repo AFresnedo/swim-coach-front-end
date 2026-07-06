@@ -1,10 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ApiError, frontApiFetch } from "@/lib/api";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 
 type UnitSystem = "metric" | "imperial";
+
+type Profile = {
+  age: number;
+  height_cm: number;
+  weight_kg: number;
+  sex: string;
+};
+
+function cmToFtIn(cm: number) {
+  const totalInches = cm / 2.54;
+  let ft = Math.floor(totalInches / 12);
+  let inches = Math.round(totalInches % 12);
+  if (inches === 12) {
+    ft += 1;
+    inches = 0;
+  }
+  return { ft, inches };
+}
+
+function kgToLbs(kg: number) {
+  return Math.round(kg / 0.453592);
+}
 
 export default function ProfileForm() {
   const [units, setUnits] = useState<UnitSystem>("metric");
@@ -15,10 +37,38 @@ export default function ProfileForm() {
   const [weightKg, setWeightKg] = useState("");
   const [weightLbs, setWeightLbs] = useState("");
   const [sex, setSex] = useState("");
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    frontApiFetch<Profile | null>("/api/profile")
+      .then((profile) => {
+        if (cancelled || !profile) return;
+        const { ft, inches } = cmToFtIn(profile.height_cm);
+        setAge(String(profile.age));
+        setHeightCm(String(profile.height_cm));
+        setHeightFt(String(ft));
+        setHeightIn(String(inches));
+        setWeightKg(String(profile.weight_kg));
+        setWeightLbs(String(kgToLbs(profile.weight_kg)));
+        setSex(profile.sex);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Failed to load your profile. Please try again.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingProfile(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -59,6 +109,10 @@ export default function ProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {loadingProfile && (
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading your profile…</p>
+      )}
+
       {/* Unit toggle */}
       <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden text-sm font-medium">
         {(["metric", "imperial"] as UnitSystem[]).map((u) => (
@@ -107,6 +161,7 @@ export default function ProfileForm() {
           <input
             id="height-cm"
             type="number"
+            step="any"
             required
             min={50}
             max={280}
@@ -154,6 +209,7 @@ export default function ProfileForm() {
           <input
             id="weight-kg"
             type="number"
+            step="any"
             required
             min={20}
             max={400}
@@ -166,6 +222,7 @@ export default function ProfileForm() {
           <input
             id="weight-lbs"
             type="number"
+            step="any"
             required
             min={44}
             max={880}
