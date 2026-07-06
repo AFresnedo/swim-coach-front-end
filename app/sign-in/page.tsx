@@ -53,7 +53,10 @@ export default function SignInPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
               Email
             </label>
             <input

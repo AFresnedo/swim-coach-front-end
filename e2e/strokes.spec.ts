@@ -1,6 +1,9 @@
 import { expect, test } from "./fixtures";
 
-test("strokes hub and stroke pages are public, drills require sign-in", async ({ page, testUser }) => {
+test("strokes hub and stroke pages are public, drills require sign-in", async ({
+  page,
+  testUser,
+}) => {
   // Nav link is reachable from the home page while logged out
   await page.goto("/");
   await page.getByRole("link", { name: "Strokes" }).click();

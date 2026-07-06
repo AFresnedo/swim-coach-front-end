@@ -56,7 +56,10 @@ export default function SignUpPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <label
+              htmlFor="name"
+              className="text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
               Full name
             </label>
             <input
@@ -75,7 +78,10 @@ export default function SignUpPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
               Email
             </label>
             <input
