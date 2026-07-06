@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PasswordField } from "@/components/PasswordField";
 import { ApiError, frontApiFetch } from "@/lib/api";
 
 const inputClass =
@@ -74,27 +75,15 @@ export default function SignInPage() {
             )}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`${inputClass} ${fieldErrors.password ? inputErrorClass : inputNormalClass}`}
-              placeholder="••••••••"
-            />
-            {fieldErrors.password && (
-              <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.password}</p>
-            )}
-          </div>
+          <PasswordField
+            id="password"
+            label="Password"
+            autoComplete="current-password"
+            value={password}
+            onChange={setPassword}
+            error={fieldErrors.password}
+            placeholder="••••••••"
+          />
 
           {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 

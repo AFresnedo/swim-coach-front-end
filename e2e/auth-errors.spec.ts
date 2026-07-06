@@ -9,7 +9,8 @@ test("sign-in with wrong password shows an error and does not log in", async ({
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -19,7 +20,7 @@ test("sign-in with wrong password shows an error and does not log in", async ({
 
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill("WrongPassword1!");
+  await page.getByRole("textbox", { name: "Password" }).fill("WrongPassword1!");
   await page.getByRole("button", { name: /sign in/i }).click();
 
   await expect(page.getByText("Incorrect email or password")).toBeVisible();
@@ -36,7 +37,8 @@ test("sign-up with an already-registered email shows an error and does not log i
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -47,7 +49,8 @@ test("sign-up with an already-registered email shows an error and does not log i
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User Again");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill("AnotherPassword1!");
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill("AnotherPassword1!");
+  await page.getByRole("textbox", { name: "Confirm password" }).fill("AnotherPassword1!");
   await page.getByRole("button", { name: /create account/i }).click();
 
   await expect(page.getByText("Email already registered")).toBeVisible();

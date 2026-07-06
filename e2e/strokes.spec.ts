@@ -31,7 +31,8 @@ test("strokes hub and stroke pages are public, drills require sign-in", async ({
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -59,7 +60,8 @@ for (const { slug, heading, firstDrill } of otherStrokes) {
     await page.goto("/sign-up");
     await page.getByLabel("Name").fill("Test User");
     await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password").fill(password);
+    await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+    await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
     await page.getByRole("button", { name: /create account/i }).click();
     await expect(page).toHaveURL("/");
 

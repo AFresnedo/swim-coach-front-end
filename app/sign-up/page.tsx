@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PasswordField } from "@/components/PasswordField";
 import { ApiError, frontApiFetch } from "@/lib/api";
 
 const inputClass =
@@ -15,6 +16,7 @@ export default function SignUpPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,12 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
     setFieldErrors({});
+
+    if (password !== confirmPassword) {
+      setFieldErrors({ confirmPassword: "Passwords do not match" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -99,28 +107,27 @@ export default function SignUpPage() {
             )}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`${inputClass} ${fieldErrors.password ? inputErrorClass : inputNormalClass}`}
-              placeholder="At least 8 characters"
-            />
-            {fieldErrors.password && (
-              <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.password}</p>
-            )}
-          </div>
+          <PasswordField
+            id="password"
+            label="Password"
+            autoComplete="new-password"
+            minLength={8}
+            value={password}
+            onChange={setPassword}
+            error={fieldErrors.password}
+            placeholder="At least 8 characters"
+          />
+
+          <PasswordField
+            id="confirm-password"
+            label="Confirm password"
+            autoComplete="new-password"
+            minLength={8}
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            error={fieldErrors.confirmPassword}
+            placeholder="Re-enter your password"
+          />
 
           {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 

@@ -14,7 +14,8 @@ test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page,
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
 
   // 3. After sign-up: logged-in nav, Profile/Log out live behind the Account menu
@@ -39,7 +40,7 @@ test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page,
   // 6. Sign in
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("button", { name: /sign in/i }).click();
 
   // 7. After sign-in: logged-in nav again
