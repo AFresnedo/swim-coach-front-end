@@ -34,8 +34,13 @@ jobs:
       - name: Generate route types
         run: npx next typegen
 
-      - name: Lint & format
+      - name: Lint & format (changed files)
+        if: github.event_name == 'pull_request'
         run: npm run check:ci
+
+      - name: Lint & format (full repo)
+        if: github.event_name == 'push'
+        run: npm run check:ci:full
 
       - name: Type check
         run: npx tsc --noEmit
