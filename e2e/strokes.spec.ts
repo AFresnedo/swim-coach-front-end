@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
-test("strokes hub and stroke pages are public, drills require sign-in", async ({ page }) => {
+test("strokes hub and stroke pages are public, drills require sign-in", async ({ page, testUser }) => {
   // Nav link is reachable from the home page while logged out
   await page.goto("/");
   await page.getByRole("link", { name: "Strokes" }).click();
@@ -24,11 +24,11 @@ test("strokes hub and stroke pages are public, drills require sign-in", async ({
   await gate.getByRole("link", { name: "Sign in" }).click();
   await expect(page).toHaveURL("/sign-in");
 
-  const email = `test_${Date.now()}_${Math.random().toString(36).slice(2)}@example.com`;
+  const { email, password } = testUser;
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill("TestPassword1!");
+  await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 

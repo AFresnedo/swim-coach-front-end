@@ -1,9 +1,7 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
-test("goals flow: create → edit → filter → deactivate", async ({ page }) => {
-  // Random suffix avoids colliding with other specs' Date.now()-based emails when run in parallel workers.
-  const email = `test_${Date.now()}_${Math.random().toString(36).slice(2)}@example.com`;
-  const password = "TestPassword1!";
+test("goals flow: create → edit → filter → deactivate", async ({ page, testUser }) => {
+  const { email, password } = testUser;
 
   // Sign up to get an authenticated session
   await page.goto("/sign-up");
