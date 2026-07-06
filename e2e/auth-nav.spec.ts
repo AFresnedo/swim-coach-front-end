@@ -25,6 +25,10 @@ test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page,
   await expect(page.getByRole("menuitem", { name: "Profile" })).toBeVisible();
   await expect(page.getByRole("menuitem", { name: "Log out" })).toBeVisible();
 
+  // 3b. Auth cookie carries a real expiry matching the token's lifetime, not a session-only cookie
+  const authCookie = (await page.context().cookies()).find((c) => c.name === "access_token");
+  expect(authCookie?.expires).toBeGreaterThan(Date.now() / 1000 + 60);
+
   // 4. Navigate to profile
   await page.getByRole("menuitem", { name: "Profile" }).click();
   await expect(page).toHaveURL("/profile");

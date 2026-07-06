@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/constants";
 
 type FastAPIValidationError = { loc: (string | number)[]; msg: string };
@@ -19,6 +20,20 @@ export function normalizeError(
   return { detail: fallback };
 }
 
+export function jwtMaxAge(token: string): number | undefined {
+  // TODO: log when this falls back (no payload segment / bad JSON / missing exp) once
+  // we have a real logging system — console logging isn't useful outside local dev.
+  const payload = token.split(".")[1];
+  if (!payload) return undefined;
+
+  try {
+    const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    return typeof exp === "number" ? Math.max(0, exp - Math.floor(Date.now() / 1000)) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function safeFetch(
   label: string,
   ...args: Parameters<typeof fetch>
@@ -31,25 +46,51 @@ export async function safeFetch(
   }
 }
 
-const API_URL = process.env.API_URL ?? "http://localhost:8000";
+export const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
-export async function backApiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+export class UnauthenticatedError extends Error {}
+
+export class BackendError extends Error {
+  constructor(
+    public status: number,
+    public detail: unknown,
+  ) {
+    super(`Backend error ${status}`);
+  }
+}
+
+export async function backApiFetch<T>(
+  path: string,
+  label: string,
+  options: RequestInit = {},
+): Promise<T> {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE)?.value;
+  if (!token) throw new UnauthenticatedError();
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await safeFetch(label, `${API_URL}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Authorization: `Bearer ${token}`,
       ...options.headers,
     },
   });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail ?? `Request failed: ${res.status}`);
+    throw new BackendError(res.status, body.detail);
   }
 
   return res.json();
+}
+
+export function backendErrorResponse(err: unknown, fallback: string): NextResponse {
+  if (err instanceof UnauthenticatedError) {
+    return NextResponse.json({ detail: "Not authenticated" }, { status: 401 });
+  }
+  if (err instanceof BackendError) {
+    return NextResponse.json(normalizeError(err.detail, fallback), { status: err.status });
+  }
+  return NextResponse.json({ detail: "Server unavailable" }, { status: 502 });
 }
