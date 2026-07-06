@@ -161,6 +161,7 @@ export default function ProfileForm() {
           <input
             id="height-cm"
             type="number"
+            step="any"
             required
             min={50}
             max={280}
@@ -208,6 +209,7 @@ export default function ProfileForm() {
           <input
             id="weight-kg"
             type="number"
+            step="any"
             required
             min={20}
             max={400}
@@ -220,6 +222,7 @@ export default function ProfileForm() {
           <input
             id="weight-lbs"
             type="number"
+            step="any"
             required
             min={44}
             max={880}
