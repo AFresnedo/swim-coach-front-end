@@ -10,4 +10,5 @@ export default defineConfig({
     reuseExistingServer: true,
   },
   globalSetup: "./e2e/global-setup",
+  globalTeardown: "./e2e/global-teardown",
 });

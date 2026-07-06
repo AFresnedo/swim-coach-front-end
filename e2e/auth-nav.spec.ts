@@ -1,8 +1,7 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
-test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page }) => {
-  const email = `test_${Date.now()}@example.com`;
-  const password = "TestPassword1!";
+test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page, testUser }) => {
+  const { email, password } = testUser;
 
   // 1. Home page while logged out
   await page.goto("/");
