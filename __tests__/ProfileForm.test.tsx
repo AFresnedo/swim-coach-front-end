@@ -152,11 +152,17 @@ describe("ProfileForm", () => {
 
   it("shows error message when submission fails", async () => {
     await renderAndAwaitLoad();
-    mockFetch.mockRejectedValueOnce(new ApiError("Server error"));
+    mockFetch.mockRejectedValueOnce(new ApiError("Server error", 500));
     fillMetricForm();
     // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
     expect(await screen.findByText("Server error")).toBeDefined();
+  });
+
+  it("shows an error when the profile fails to load", async () => {
+    mockFetch.mockRejectedValueOnce(new ApiError("Server error", 500));
+    render(<ProfileForm />);
+    expect(await screen.findByText("Failed to load your profile. Please try again.")).toBeDefined();
   });
 
   it("shows 'Saving…' and disables button during submission", async () => {

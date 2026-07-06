@@ -149,7 +149,7 @@ describe("GoalsList", () => {
   });
 
   it("shows an error message when loading goals fails", async () => {
-    mockFetch.mockRejectedValue(new ApiError("Server error"));
+    mockFetch.mockRejectedValue(new ApiError("Server error", 500));
     render(<GoalsList />);
     expect(await screen.findByText("Server error")).toBeDefined();
   });
