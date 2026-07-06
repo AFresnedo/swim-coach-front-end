@@ -12,18 +12,22 @@ export default async function Header() {
         SwimCoach
       </a>
       <nav className="flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
-        <a
-          href="/#features"
-          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
-        >
-          Features
-        </a>
-        <a
-          href="/#how-it-works"
-          className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
-        >
-          How it works
-        </a>
+        {!isLoggedIn && (
+          <>
+            <a
+              href="/#features"
+              className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="/#how-it-works"
+              className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            >
+              How it works
+            </a>
+          </>
+        )}
         <a
           href="/strokes"
           className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"

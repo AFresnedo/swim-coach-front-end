@@ -19,19 +19,23 @@ describe("Header", () => {
     expect(screen.getByRole("link", { name: "Strokes" }).getAttribute("href")).toBe("/strokes");
   });
 
-  it("shows sign-in links when logged out", async () => {
+  it("shows sign-in links, 'Features', and 'How it works' when logged out", async () => {
     cookies.mockResolvedValue({ has: () => false });
     render(await Header());
     expect(screen.getByRole("link", { name: "Sign in" })).toBeDefined();
     expect(screen.getByRole("link", { name: "Get started" })).toBeDefined();
+    expect(screen.getByRole("link", { name: "Features" })).toBeDefined();
+    expect(screen.getByRole("link", { name: "How it works" })).toBeDefined();
     expect(screen.queryByRole("link", { name: "Goals" })).toBeNull();
   });
 
-  it("shows Goals and the account menu when logged in", async () => {
+  it("shows Goals and the account menu, but hides 'Features' and 'How it works', when logged in", async () => {
     cookies.mockResolvedValue({ has: () => true });
     render(await Header());
     expect(screen.getByRole("link", { name: "Goals" }).getAttribute("href")).toBe("/goals");
     expect(screen.getByRole("button", { name: /account/i })).toBeDefined();
     expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Features" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "How it works" })).toBeNull();
   });
 });
