@@ -9,10 +9,12 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
+    "check:ci": "biome check --changed",
     "test": "vitest",
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.10",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
