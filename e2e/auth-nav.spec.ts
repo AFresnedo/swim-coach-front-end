@@ -17,22 +17,24 @@ test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page,
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
 
-  // 3. After sign-up: logged-in nav
+  // 3. After sign-up: logged-in nav, Profile/Log out live behind the Account menu
   await expect(page).toHaveURL("/");
-  await expect(page.getByRole("link", { name: "Profile" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Log out" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Sign in" })).not.toBeVisible();
+  await page.getByRole("button", { name: /account/i }).click();
+  await expect(page.getByRole("menuitem", { name: "Profile" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Log out" })).toBeVisible();
 
   // 4. Navigate to profile
-  await page.getByRole("link", { name: "Profile" }).click();
+  await page.getByRole("menuitem", { name: "Profile" }).click();
   await expect(page).toHaveURL("/profile");
 
   // 5. Log out
-  await page.getByRole("button", { name: "Log out" }).click();
+  await page.getByRole("button", { name: /account/i }).click();
+  await page.getByRole("menuitem", { name: "Log out" }).click();
   await expect(page).toHaveURL("/");
   await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Get started" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Profile" })).not.toBeVisible();
+  await expect(page.getByRole("button", { name: /account/i })).not.toBeVisible();
 
   // 6. Sign in
   await page.goto("/sign-in");
@@ -42,6 +44,7 @@ test("auth nav flow: sign-up → profile → logout → sign-in", async ({ page,
 
   // 7. After sign-in: logged-in nav again
   await expect(page).toHaveURL("/");
-  await expect(page.getByRole("link", { name: "Profile" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Log out" })).toBeVisible();
+  await page.getByRole("button", { name: /account/i }).click();
+  await expect(page.getByRole("menuitem", { name: "Profile" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Log out" })).toBeVisible();
 });
