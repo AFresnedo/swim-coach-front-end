@@ -7,7 +7,9 @@ import { expect, test } from "./fixtures";
 // wrong reason (e.g. a stale cache), and this closes that gap.
 async function reloadAndGetProfile(page: Page) {
   const [response] = await Promise.all([
-    page.waitForResponse((res) => res.url().includes("/api/profile") && res.request().method() === "GET"),
+    page.waitForResponse(
+      (res) => res.url().includes("/api/profile") && res.request().method() === "GET",
+    ),
     page.reload(),
   ]);
   return response.json();

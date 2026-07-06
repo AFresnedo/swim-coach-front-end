@@ -17,7 +17,9 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   // Create — assert on the actual POST response, not just the resulting DOM,
   // so this fails loudly if the backend ever stops persisting/echoing a field.
   const [createResponse] = await Promise.all([
-    page.waitForResponse((res) => res.url().includes("/api/goals") && res.request().method() === "POST"),
+    page.waitForResponse(
+      (res) => res.url().includes("/api/goals") && res.request().method() === "POST",
+    ),
     (async () => {
       await page.getByLabel("New goal").fill("Swim a sub-1:00 100m free");
       await page.getByRole("button", { name: "Add goal" }).click();
@@ -38,7 +40,10 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
       await page.getByRole("button", { name: "Save" }).click();
     })(),
   ]);
-  expect(await editResponse.json()).toMatchObject({ id: created.id, text: "Swim a sub-58 100m free" });
+  expect(await editResponse.json()).toMatchObject({
+    id: created.id,
+    text: "Swim a sub-58 100m free",
+  });
   await expect(page.getByText("Swim a sub-58 100m free")).toBeVisible();
 
   // Deactivate — confirm stays disabled until a reason is picked
@@ -50,7 +55,9 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
 
   const [deactivateResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes(`/api/goals/${created.id}/deactivate`) && res.request().method() === "PATCH",
+      (res) =>
+        res.url().includes(`/api/goals/${created.id}/deactivate`) &&
+        res.request().method() === "PATCH",
     ),
     confirmButton.click(),
   ]);
