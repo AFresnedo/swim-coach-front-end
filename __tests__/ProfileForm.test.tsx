@@ -11,7 +11,19 @@ import { ApiError, frontApiFetch } from "@/lib/api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
-const existingProfile = { age: 28, height_cm: 177.8, weight_kg: 69.9, sex: "female" };
+const existingProfile: {
+  age: number;
+  height_cm: number;
+  weight_kg: number;
+  sex: string;
+  unit_preference: "metric" | "imperial";
+} = {
+  age: 28,
+  height_cm: 177.8,
+  weight_kg: 69.9,
+  sex: "female",
+  unit_preference: "metric",
+};
 
 function fillMetricForm() {
   fireEvent.change(screen.getByLabelText("Age"), { target: { value: "25" } });
@@ -86,6 +98,12 @@ describe("ProfileForm", () => {
     expect((screen.getByPlaceholderText("lbs") as HTMLInputElement).value).toBe("154");
   });
 
+  it("toggles to imperial on load when the profile prefers imperial", async () => {
+    await renderAndAwaitLoad({ ...existingProfile, unit_preference: "imperial" });
+    expect(screen.getByPlaceholderText("ft")).toBeDefined();
+    expect(screen.queryByPlaceholderText("cm")).toBeNull();
+  });
+
   it("leaves fields blank when no profile exists yet", async () => {
     await renderAndAwaitLoad(null);
     expect((screen.getByLabelText("Age") as HTMLInputElement).value).toBe("");
@@ -102,7 +120,13 @@ describe("ProfileForm", () => {
     await settleAsyncEffects(2);
     expect(mockFetch).toHaveBeenLastCalledWith("/api/profile", {
       method: "PUT",
-      body: JSON.stringify({ age: 25, height_cm: 175, weight_kg: 70, sex: "male" }),
+      body: JSON.stringify({
+        age: 25,
+        height_cm: 175,
+        weight_kg: 70,
+        sex: "male",
+        unit_preference: "metric",
+      }),
     });
   });
 
@@ -126,6 +150,7 @@ describe("ProfileForm", () => {
     expect(body.weight_kg).toBe(69.9);
     expect(body.age).toBe(30);
     expect(body.sex).toBe("female");
+    expect(body.unit_preference).toBe("imperial");
   });
 
   it("submits 'prefer_not_to_say' when selected for sex", async () => {
