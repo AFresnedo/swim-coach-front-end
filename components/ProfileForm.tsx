@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ApiError, frontApiFetch } from "@/lib/api";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import { ApiError, frontApiFetch } from "@/lib/front-api";
 
 type UnitSystem = "metric" | "imperial";
 

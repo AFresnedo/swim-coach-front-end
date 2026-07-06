@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { BackendError, backApiFetch, backendErrorResponse } from "@/lib/server-api";
+import { BackendError, backApiFetch, backendErrorResponse } from "@/lib/back-api";
 
 export async function GET() {
   try {
