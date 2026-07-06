@@ -1,4 +1,17 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
+
+// Reloads and returns the actual GET /api/profile response body, so tests can
+// assert against what the backend returned rather than just the resulting
+// DOM — a full page reload could in principle render the right values for the
+// wrong reason (e.g. a stale cache), and this closes that gap.
+async function reloadAndGetProfile(page: Page) {
+  const [response] = await Promise.all([
+    page.waitForResponse((res) => res.url().includes("/api/profile") && res.request().method() === "GET"),
+    page.reload(),
+  ]);
+  return response.json();
+}
 
 test("profile flow: save → reload → prefilled from a fresh load", async ({ page, testUser }) => {
   const { email, password } = testUser;
@@ -21,7 +34,9 @@ test("profile flow: save → reload → prefilled from a fresh load", async ({ p
   await expect(page.getByText("Profile saved.")).toBeVisible();
 
   // Fresh mount — this is the actual load-on-navigation path, not the just-saved state.
-  await page.reload();
+  const profile = await reloadAndGetProfile(page);
+  expect(profile).toMatchObject({ age: 28, height_cm: 177.8, weight_kg: 69.9, sex: "female" });
+
   await expect(page.getByLabel("Age")).toHaveValue("28");
   await expect(page.getByPlaceholder("cm")).toHaveValue("177.8");
   await expect(page.getByPlaceholder("kg")).toHaveValue("69.9");
@@ -62,7 +77,9 @@ test("profile flow: saving while imperial is selected reloads with imperial pre-
 
   // Fresh mount — the saved unit_preference, not just the default, should drive
   // which toggle is pre-selected on load.
-  await page.reload();
+  const profile = await reloadAndGetProfile(page);
+  expect(profile.unit_preference).toBe("imperial");
+
   await expect(page.getByPlaceholder("ft")).toHaveValue("5");
   await expect(page.getByPlaceholder("in")).toHaveValue("10");
   await expect(page.getByPlaceholder("lbs")).toHaveValue("154");
