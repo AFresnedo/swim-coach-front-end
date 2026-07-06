@@ -58,7 +58,9 @@ export default function ProfileForm() {
         setWeightLbs(String(kgToLbs(profile.weight_kg)));
         setSex(profile.sex);
       })
-      .catch(() => {})
+      .catch(() => {
+        if (!cancelled) setError("Failed to load your profile. Please try again.");
+      })
       .finally(() => {
         if (!cancelled) setLoadingProfile(false);
       });
