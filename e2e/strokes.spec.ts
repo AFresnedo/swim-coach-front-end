@@ -39,3 +39,32 @@ test("strokes hub and stroke pages are public, drills require sign-in", async ({
   await expect(page.getByText("Catch-Up Drill")).toBeVisible();
   await expect(page.getByText(/sign in to see the full drill breakdown/i)).not.toBeVisible();
 });
+
+const otherStrokes = [
+  { slug: "backstroke", heading: /backstroke/i, firstDrill: "Single-Arm Backstroke" },
+  { slug: "breaststroke", heading: /breaststroke/i, firstDrill: "Pull Buoy Pull" },
+  { slug: "butterfly", heading: /butterfly/i, firstDrill: "Single-Arm Butterfly" },
+];
+
+for (const { slug, heading, firstDrill } of otherStrokes) {
+  test(`${slug} page is public and gates its drills`, async ({ page, testUser }) => {
+    // Logged out: description renders, drills are gated
+    await page.goto(`/strokes/${slug}`);
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+    await expect(page.getByText(/sign in to see the full drill breakdown/i)).toBeVisible();
+    await expect(page.getByText(firstDrill)).not.toBeVisible();
+
+    // Logged in: same page now shows its own drills
+    const { email, password } = testUser;
+    await page.goto("/sign-up");
+    await page.getByLabel("Name").fill("Test User");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill(password);
+    await page.getByRole("button", { name: /create account/i }).click();
+    await expect(page).toHaveURL("/");
+
+    await page.goto(`/strokes/${slug}`);
+    await expect(page.getByText(firstDrill)).toBeVisible();
+    await expect(page.getByText(/sign in to see the full drill breakdown/i)).not.toBeVisible();
+  });
+}
