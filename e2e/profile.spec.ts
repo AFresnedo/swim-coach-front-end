@@ -21,7 +21,8 @@ test("profile flow: save → reload → prefilled from a fresh load", async ({ p
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -60,7 +61,8 @@ test("profile flow: saving while imperial is selected reloads with imperial pre-
   await page.goto("/sign-up");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
