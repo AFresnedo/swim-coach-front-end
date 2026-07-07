@@ -1,8 +1,8 @@
 import AccountMenu from "@/components/AccountMenu";
-import { isLoggedIn } from "@/lib/auth";
+import { checkLoggedIn } from "@/lib/auth";
 
 export default async function Header() {
-  const loggedIn = await isLoggedIn();
+  const isLoggedIn = await checkLoggedIn();
 
   return (
     <header className="sticky top-0 z-[var(--z-header)] flex items-center justify-between px-8 py-5 border-b border-cyan-900/10 dark:border-cyan-400/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
@@ -10,7 +10,7 @@ export default async function Header() {
         SwimCoach
       </a>
       <nav className="flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
-        {!loggedIn && (
+        {!isLoggedIn && (
           <>
             <a
               href="/#features"
@@ -32,7 +32,7 @@ export default async function Header() {
         >
           Strokes
         </a>
-        {loggedIn ? (
+        {isLoggedIn ? (
           <>
             <a
               href="/goals"

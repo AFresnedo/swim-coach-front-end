@@ -1,5 +1,5 @@
 import DrillsSection from "@/components/DrillsSection";
-import { isLoggedIn } from "@/lib/auth";
+import { checkLoggedIn } from "@/lib/auth";
 
 const drills = [
   {
@@ -35,7 +35,7 @@ const drills = [
 ];
 
 export default async function BackstrokePage() {
-  const loggedIn = await isLoggedIn();
+  const isLoggedIn = await checkLoggedIn();
 
   return (
     <div className="min-h-full bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
@@ -58,7 +58,7 @@ export default async function BackstrokePage() {
           </p>
         </div>
 
-        <DrillsSection drills={drills} isLoggedIn={loggedIn} />
+        <DrillsSection drills={drills} isLoggedIn={isLoggedIn} />
       </div>
     </div>
   );
