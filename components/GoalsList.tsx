@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ApiError, frontApiFetch } from "@/lib/api";
 import { inputClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import { ApiError, frontApiFetch } from "@/lib/front-api";
 
 type DeactivationReason = "reached" | "abandoned" | "other";
 type Goal = {

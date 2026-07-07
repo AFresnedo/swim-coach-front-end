@@ -2,12 +2,12 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ProfileForm from "@/components/ProfileForm";
 
-vi.mock("@/lib/api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/api")>();
+vi.mock("@/lib/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/lib/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
 });
 
-import { ApiError, frontApiFetch } from "@/lib/api";
+import { ApiError, frontApiFetch } from "@/lib/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 

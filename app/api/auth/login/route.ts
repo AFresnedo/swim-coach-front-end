@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
 import { AUTH_COOKIE } from "@/lib/constants";
-import { normalizeError, safeFetch } from "@/lib/server-api";
+import { jwtMaxAge } from "@/lib/jwt";
 
-const API_URL = process.env.API_URL ?? "http://localhost:8000";
 const IS_PROD = process.env.NODE_ENV === "production";
 
 export async function POST(req: NextRequest) {
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
     secure: IS_PROD,
     sameSite: "strict",
     path: "/",
+    maxAge: jwtMaxAge(access_token),
   });
 
   return NextResponse.json({ ok: true });

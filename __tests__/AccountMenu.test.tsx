@@ -16,12 +16,12 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, refresh }),
 }));
 
-vi.mock("@/lib/api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/api")>();
+vi.mock("@/lib/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/lib/front-api")>();
   return { ...actual, frontApiFetch: vi.fn().mockResolvedValue({ ok: true }) };
 });
 
-import { frontApiFetch } from "@/lib/api";
+import { frontApiFetch } from "@/lib/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 

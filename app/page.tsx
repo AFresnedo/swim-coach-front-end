@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { safeFetch } from "@/lib/server-api";
+import { safeFetch } from "@/lib/back-api";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 

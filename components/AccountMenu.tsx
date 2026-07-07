@@ -2,7 +2,7 @@
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useRouter } from "next/navigation";
-import { frontApiFetch } from "@/lib/api";
+import { frontApiFetch } from "@/lib/front-api";
 
 export default function AccountMenu() {
   const router = useRouter();
