@@ -52,7 +52,6 @@ export function PasswordField({
           onClick={() => setVisible((v) => !v)}
           className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
           aria-label={visible ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
-          tabIndex={-1}
         >
           {visible ? (
             <svg
@@ -83,6 +82,9 @@ export function PasswordField({
           )}
         </button>
       </div>
+      <p aria-live="polite" className="sr-only">
+        {visible ? `${label} is now shown` : `${label} is now hidden`}
+      </p>
       {error && (
         <p id={errorId} className="text-xs text-red-600 dark:text-red-400">
           {error}
