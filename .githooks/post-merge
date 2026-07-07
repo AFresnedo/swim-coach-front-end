@@ -5,7 +5,14 @@
 # auto-clearing .next: a running dev server returns 500s until restarted if
 # .next is deleted out from under it while it's still up, so this has to
 # stay a manual, deliberate step rather than something the hook does for you.
-echo ""
-echo "WARNING: merge/pull completed — Turbopack's dev cache may now be stale."
-echo "Run: rm -rf .next   then restart your dev server (npm run dev)"
-echo ""
+if [ -t 1 ]; then
+  bold_yellow='\033[1;33m'
+  bold='\033[1m'
+  reset='\033[0m'
+else
+  bold_yellow=''
+  bold=''
+  reset=''
+fi
+printf "\n${bold_yellow}WARNING:${reset} merge/pull completed — Turbopack's dev cache may now be stale.\n"
+printf "Run: ${bold}rm -rf .next${reset}   then restart your dev server (npm run dev)\n\n"
