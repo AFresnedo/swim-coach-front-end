@@ -2,37 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/constants";
 
-type FastAPIValidationError = { loc: (string | number)[]; msg: string };
-
-export function normalizeError(
-  detail: unknown,
-  fallback: string,
-): { detail: string; errors?: Record<string, string> } {
-  if (typeof detail === "string") return { detail };
-  if (Array.isArray(detail)) {
-    const errors: Record<string, string> = {};
-    for (const e of detail as FastAPIValidationError[]) {
-      const field = String(e.loc?.at(-1) ?? "");
-      if (field) errors[field] = e.msg;
-    }
-    return { detail: "Validation failed", errors };
-  }
-  return { detail: fallback };
-}
-
-export function jwtMaxAge(token: string): number | undefined {
-  // TODO: log when this falls back (no payload segment / bad JSON / missing exp) once
-  // we have a real logging system — console logging isn't useful outside local dev.
-  const payload = token.split(".")[1];
-  if (!payload) return undefined;
-
-  try {
-    const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
-    return typeof exp === "number" ? Math.max(0, exp - Math.floor(Date.now() / 1000)) : undefined;
-  } catch {
-    return undefined;
-  }
-}
+export const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
 export async function safeFetch(
   label: string,
@@ -45,8 +15,6 @@ export async function safeFetch(
     throw new Error("Server unavailable");
   }
 }
-
-export const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
 export class UnauthenticatedError extends Error {}
 
@@ -83,6 +51,24 @@ export async function backApiFetch<T>(
   }
 
   return res.json();
+}
+
+type FastAPIValidationError = { loc: (string | number)[]; msg: string };
+
+export function normalizeError(
+  detail: unknown,
+  fallback: string,
+): { detail: string; errors?: Record<string, string> } {
+  if (typeof detail === "string") return { detail };
+  if (Array.isArray(detail)) {
+    const errors: Record<string, string> = {};
+    for (const e of detail as FastAPIValidationError[]) {
+      const field = String(e.loc?.at(-1) ?? "");
+      if (field) errors[field] = e.msg;
+    }
+    return { detail: "Validation failed", errors };
+  }
+  return { detail: fallback };
 }
 
 export function backendErrorResponse(err: unknown, fallback: string): NextResponse {

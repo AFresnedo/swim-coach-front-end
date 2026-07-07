@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
-import { API_URL, jwtMaxAge, normalizeError, safeFetch } from "@/lib/back-api";
+import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
 import { AUTH_COOKIE } from "@/lib/constants";
+import { jwtMaxAge } from "@/lib/jwt";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 
