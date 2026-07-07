@@ -136,8 +136,8 @@ export default function GoalsList() {
     setDeactivateError("");
   }
 
-  async function handleDeactivateConfirm(goalId: number) {
-    if (!deactivateReason) return;
+  async function handleDeactivateConfirm(e: React.SubmitEvent<HTMLFormElement>, goalId: number) {
+    e.preventDefault();
     setDeactivateSaving(true);
     setDeactivateError("");
 
@@ -252,7 +252,10 @@ export default function GoalsList() {
                 </div>
               </form>
             ) : deactivatingId === goal.id ? (
-              <div className="flex flex-col gap-3">
+              <form
+                onSubmit={(e) => handleDeactivateConfirm(e, goal.id)}
+                className="flex flex-col gap-3"
+              >
                 <p className="text-slate-900 dark:text-slate-50">{goal.text}</p>
                 <label htmlFor="deactivate-reason" className={labelClass}>
                   Reason
@@ -277,19 +280,14 @@ export default function GoalsList() {
                   </p>
                 )}
                 <div className="flex gap-2">
-                  <button
-                    type="button"
-                    disabled={!deactivateReason || deactivateSaving}
-                    onClick={() => handleDeactivateConfirm(goal.id)}
-                    className={primaryButtonClass}
-                  >
+                  <button type="submit" disabled={deactivateSaving} className={primaryButtonClass}>
                     {deactivateSaving ? "Deactivating…" : "Confirm"}
                   </button>
                   <button type="button" onClick={cancelDeactivate} className={secondaryButtonClass}>
                     Cancel
                   </button>
                 </div>
-              </div>
+              </form>
             ) : goal.is_active ? (
               <div className="flex items-start justify-between gap-4">
                 <p className="text-slate-900 dark:text-slate-50">{goal.text}</p>

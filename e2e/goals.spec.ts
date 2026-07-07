@@ -47,12 +47,16 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   });
   await expect(page.getByText("Swim a sub-58 100m free")).toBeVisible();
 
-  // Deactivate — confirm stays disabled until a reason is picked
+  // Deactivate — submitting without picking a reason is blocked by native required validation
   await page.getByRole("button", { name: "Deactivate" }).click();
   const confirmButton = page.getByRole("button", { name: "Confirm" });
-  await expect(confirmButton).toBeDisabled();
+  await confirmButton.click();
+  const validationMessage = await page
+    .getByLabel("Reason")
+    .evaluate((el: HTMLSelectElement) => el.validationMessage);
+  expect(validationMessage).not.toBe("");
+  await expect(page.getByText("Swim a sub-58 100m free")).toBeVisible();
   await page.getByLabel("Reason").selectOption("reached");
-  await expect(confirmButton).toBeEnabled();
 
   const [deactivateResponse] = await Promise.all([
     page.waitForResponse(
