@@ -1,7 +1,5 @@
 import { Suspense } from "react";
-import { safeFetch } from "@/lib/back-api";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8000";
+import { API_URL, safeFetch } from "@/lib/back-api";
 
 export async function getUserCount(): Promise<number | null> {
   try {

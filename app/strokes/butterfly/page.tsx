@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
 import DrillsSection from "@/components/DrillsSection";
-import { AUTH_COOKIE } from "@/lib/constants";
+import { isLoggedIn } from "@/lib/auth";
 
 const drills = [
   {
@@ -36,8 +35,7 @@ const drills = [
 ];
 
 export default async function ButterflyPage() {
-  const cookieStore = await cookies();
-  const isLoggedIn = cookieStore.has(AUTH_COOKIE);
+  const loggedIn = await isLoggedIn();
 
   return (
     <div className="min-h-full bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
@@ -60,7 +58,7 @@ export default async function ButterflyPage() {
           </p>
         </div>
 
-        <DrillsSection drills={drills} isLoggedIn={isLoggedIn} />
+        <DrillsSection drills={drills} isLoggedIn={loggedIn} />
       </div>
     </div>
   );

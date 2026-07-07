@@ -1,10 +1,8 @@
-import { cookies } from "next/headers";
 import AccountMenu from "@/components/AccountMenu";
-import { AUTH_COOKIE } from "@/lib/constants";
+import { isLoggedIn } from "@/lib/auth";
 
 export default async function Header() {
-  const cookieStore = await cookies();
-  const isLoggedIn = cookieStore.has(AUTH_COOKIE);
+  const loggedIn = await isLoggedIn();
 
   return (
     <header className="sticky top-0 z-[var(--z-header)] flex items-center justify-between px-8 py-5 border-b border-cyan-900/10 dark:border-cyan-400/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
@@ -12,7 +10,7 @@ export default async function Header() {
         SwimCoach
       </a>
       <nav className="flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
-        {!isLoggedIn && (
+        {!loggedIn && (
           <>
             <a
               href="/#features"
@@ -34,7 +32,7 @@ export default async function Header() {
         >
           Strokes
         </a>
-        {isLoggedIn ? (
+        {loggedIn ? (
           <>
             <a
               href="/goals"
