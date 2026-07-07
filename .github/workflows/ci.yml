@@ -53,3 +53,25 @@ jobs:
 
       - name: Security audit
         run: npm audit --audit-level=high
+
+  docker-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Validates the Dockerfile/build context actually produce an image —
+      # catches breaks (e.g. a COPY'd directory no longer existing) that
+      # `npm run build` alone wouldn't, before they reach main and CD's real
+      # build-and-push. Intentionally push: false — this is validation only.
+      - name: Build image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
