@@ -8,12 +8,22 @@ test("password field visibility can be toggled", async ({ page, testUser }) => {
   await passwordInput.fill(password);
   await expect(passwordInput).toHaveAttribute("type", "password");
 
-  await page.getByRole("button", { name: /show password/i }).click();
+  const showButton = page.getByRole("button", { name: /show password/i });
+
+  // The toggle must be reachable by keyboard, not just mouse/touch — it's the
+  // only way to invoke it on some devices, so it can't be tabIndex={-1}'d out of the tab order.
+  await passwordInput.press("Tab");
+  await expect(showButton).toBeFocused();
+
+  await showButton.click();
   await expect(passwordInput).toHaveAttribute("type", "text");
   await expect(passwordInput).toHaveValue(password);
+  // Status is announced via a live region, without speaking the password itself.
+  await expect(page.getByText("Password is now shown")).toBeAttached();
 
   await page.getByRole("button", { name: /hide password/i }).click();
   await expect(passwordInput).toHaveAttribute("type", "password");
+  await expect(page.getByText("Password is now hidden")).toBeAttached();
 });
 
 test("sign-up shows an error when password and confirm password don't match", async ({

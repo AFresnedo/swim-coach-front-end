@@ -1,8 +1,4 @@
-type Drill = {
-  name: string;
-  focus: string;
-  desc: string;
-};
+import type { Drill } from "@/lib/strokes-data";
 
 export default function DrillsSection({
   drills,

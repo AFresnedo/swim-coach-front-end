@@ -149,9 +149,12 @@ export default function ProfileForm() {
           onChange={(e) => setAge(e.target.value)}
           className={`${inputClass} ${fieldErrors.age ? inputErrorClass : inputNormalClass}`}
           placeholder="Years"
+          aria-describedby={fieldErrors.age ? "age-error" : undefined}
         />
         {fieldErrors.age && (
-          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.age}</p>
+          <p id="age-error" className="text-xs text-red-600 dark:text-red-400">
+            {fieldErrors.age}
+          </p>
         )}
       </div>
 
@@ -172,6 +175,7 @@ export default function ProfileForm() {
             onChange={(e) => setHeightCm(e.target.value)}
             className={`${inputClass} ${fieldErrors.height_cm ? inputErrorClass : inputNormalClass}`}
             placeholder="cm"
+            aria-describedby={fieldErrors.height_cm ? "height-error" : undefined}
           />
         ) : (
           <div className="flex gap-2">
@@ -185,8 +189,10 @@ export default function ProfileForm() {
               onChange={(e) => setHeightFt(e.target.value)}
               className={`${inputClass} ${fieldErrors.height_cm ? inputErrorClass : inputNormalClass}`}
               placeholder="ft"
+              aria-describedby={fieldErrors.height_cm ? "height-error" : undefined}
             />
             <input
+              id="height-in"
               type="number"
               required
               min={0}
@@ -195,11 +201,15 @@ export default function ProfileForm() {
               onChange={(e) => setHeightIn(e.target.value)}
               className={`${inputClass} ${fieldErrors.height_cm ? inputErrorClass : inputNormalClass}`}
               placeholder="in"
+              aria-label="Inches"
+              aria-describedby={fieldErrors.height_cm ? "height-error" : undefined}
             />
           </div>
         )}
         {fieldErrors.height_cm && (
-          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.height_cm}</p>
+          <p id="height-error" className="text-xs text-red-600 dark:text-red-400">
+            {fieldErrors.height_cm}
+          </p>
         )}
       </div>
 
@@ -220,6 +230,7 @@ export default function ProfileForm() {
             onChange={(e) => setWeightKg(e.target.value)}
             className={`${inputClass} ${fieldErrors.weight_kg ? inputErrorClass : inputNormalClass}`}
             placeholder="kg"
+            aria-describedby={fieldErrors.weight_kg ? "weight-error" : undefined}
           />
         ) : (
           <input
@@ -233,10 +244,13 @@ export default function ProfileForm() {
             onChange={(e) => setWeightLbs(e.target.value)}
             className={`${inputClass} ${fieldErrors.weight_kg ? inputErrorClass : inputNormalClass}`}
             placeholder="lbs"
+            aria-describedby={fieldErrors.weight_kg ? "weight-error" : undefined}
           />
         )}
         {fieldErrors.weight_kg && (
-          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.weight_kg}</p>
+          <p id="weight-error" className="text-xs text-red-600 dark:text-red-400">
+            {fieldErrors.weight_kg}
+          </p>
         )}
       </div>
 
@@ -250,7 +264,7 @@ export default function ProfileForm() {
           required
           value={sex}
           onChange={(e) => setSex(e.target.value)}
-          aria-describedby="sex-hint"
+          aria-describedby={fieldErrors.sex ? "sex-hint sex-error" : "sex-hint"}
           className={`${inputClass} ${fieldErrors.sex ? inputErrorClass : inputNormalClass}`}
         >
           <option value="" disabled>
@@ -264,7 +278,9 @@ export default function ProfileForm() {
           Used to calculate performance benchmarks.
         </p>
         {fieldErrors.sex && (
-          <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.sex}</p>
+          <p id="sex-error" className="text-xs text-red-600 dark:text-red-400">
+            {fieldErrors.sex}
+          </p>
         )}
       </div>
 

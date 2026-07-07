@@ -1,7 +1,5 @@
 import { Suspense } from "react";
-import { safeFetch } from "@/lib/back-api";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8000";
+import { API_URL, safeFetch } from "@/lib/back-api";
 
 export async function getUserCount(): Promise<number | null> {
   try {
@@ -20,7 +18,9 @@ export async function getUserCount(): Promise<number | null> {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p className="text-3xl font-bold">{value}</p>
+      <p data-testid={`stat-value-${label}`} className="text-3xl font-bold">
+        {value}
+      </p>
       <p className="mt-1 text-cyan-50 text-sm">{label}</p>
     </div>
   );
