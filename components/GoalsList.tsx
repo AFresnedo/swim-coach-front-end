@@ -176,7 +176,11 @@ export default function GoalsList() {
           className={`${inputClass} ${inputNormalClass}`}
           placeholder="e.g. Swim a sub-1:00 100m free"
         />
-        {createError && <p className="text-sm text-red-600 dark:text-red-400">{createError}</p>}
+        {createError && (
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            {createError}
+          </p>
+        )}
         <button type="submit" disabled={creating} className={`${primaryButtonClass} self-start`}>
           {creating ? "Adding…" : "Add goal"}
         </button>
@@ -199,7 +203,11 @@ export default function GoalsList() {
         ))}
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
 
       {loading && goals.length === 0 && !error && (
         <p className="text-sm text-slate-500 dark:text-slate-400">Loading goals…</p>
@@ -229,7 +237,11 @@ export default function GoalsList() {
                   onChange={(e) => setEditText(e.target.value)}
                   className={`${inputClass} ${inputNormalClass}`}
                 />
-                {editError && <p className="text-sm text-red-600 dark:text-red-400">{editError}</p>}
+                {editError && (
+                  <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                    {editError}
+                  </p>
+                )}
                 <div className="flex gap-2">
                   <button type="submit" disabled={editSaving} className={primaryButtonClass}>
                     {editSaving ? "Saving…" : "Save"}
@@ -260,7 +272,9 @@ export default function GoalsList() {
                   <option value="other">Other</option>
                 </select>
                 {deactivateError && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{deactivateError}</p>
+                  <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                    {deactivateError}
+                  </p>
                 )}
                 <div className="flex gap-2">
                   <button
