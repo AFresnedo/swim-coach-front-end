@@ -57,3 +57,30 @@ test("sign-up with an already-registered email shows an error and does not log i
   await expect(page).toHaveURL("/sign-up");
   await expect(page.getByRole("link", { name: "Sign in" }).first()).toBeVisible();
 });
+
+test("logout failure shows an error and keeps the user logged in", async ({ page, testUser }) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+  await page.getByRole("button", { name: /create account/i }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.route("**/api/auth/logout", (route) =>
+    route.fulfill({
+      status: 502,
+      contentType: "application/json",
+      body: JSON.stringify({ detail: "Server unavailable" }),
+    }),
+  );
+
+  await page.getByRole("button", { name: /account/i }).click();
+  await page.getByRole("menuitem", { name: "Log out" }).click();
+
+  await expect(page.getByText("Server unavailable")).toBeVisible();
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("button", { name: /account/i })).toBeVisible();
+});
