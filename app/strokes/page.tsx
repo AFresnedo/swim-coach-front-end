@@ -1,29 +1,4 @@
-const strokes = [
-  {
-    slug: "freestyle",
-    icon: "🏊",
-    name: "Freestyle",
-    desc: "The fastest stroke. Master high-elbow catch, body rotation, and efficient kick to cut seconds off every lap.",
-  },
-  {
-    slug: "backstroke",
-    icon: "🔄",
-    name: "Backstroke",
-    desc: "The only stroke swum on your back. Develop shoulder rotation, a steady kick, and a clean hand exit.",
-  },
-  {
-    slug: "breaststroke",
-    icon: "🐸",
-    name: "Breaststroke",
-    desc: "The most technical stroke. Nail the pull-breathe-kick-glide timing to find rhythm and reduce drag.",
-  },
-  {
-    slug: "butterfly",
-    icon: "🦋",
-    name: "Butterfly",
-    desc: "The most demanding stroke. Build a powerful dolphin kick, undulating body wave, and simultaneous arm pull.",
-  },
-];
+import { strokes } from "@/lib/strokes-data";
 
 export default function StrokesPage() {
   return (
