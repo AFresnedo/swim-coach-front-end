@@ -69,9 +69,12 @@ export default function SignInPage() {
               onChange={(e) => setEmail(e.target.value)}
               className={`${inputClass} ${fieldErrors.email ? inputErrorClass : inputNormalClass}`}
               placeholder="you@example.com"
+              aria-describedby={fieldErrors.email ? "email-error" : undefined}
             />
             {fieldErrors.email && (
-              <p className="text-xs text-red-600 dark:text-red-400">{fieldErrors.email}</p>
+              <p id="email-error" className="text-xs text-red-600 dark:text-red-400">
+                {fieldErrors.email}
+              </p>
             )}
           </div>
 

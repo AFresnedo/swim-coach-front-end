@@ -26,6 +26,7 @@ export function PasswordField({
 }: PasswordFieldProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
+  const errorId = `${inputId}-error`;
   const [visible, setVisible] = useState(false);
 
   return (
@@ -44,6 +45,7 @@ export function PasswordField({
           onChange={(e) => onChange(e.target.value)}
           className={`${inputClass} pr-11 ${error ? inputErrorClass : inputNormalClass}`}
           placeholder={placeholder}
+          aria-describedby={error ? errorId : undefined}
         />
         <button
           type="button"
@@ -81,7 +83,11 @@ export function PasswordField({
           )}
         </button>
       </div>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-xs text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
