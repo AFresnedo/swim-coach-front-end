@@ -18,7 +18,9 @@ export async function getUserCount(): Promise<number | null> {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p className="text-3xl font-bold">{value}</p>
+      <p data-testid={`stat-value-${label}`} className="text-3xl font-bold">
+        {value}
+      </p>
       <p className="mt-1 text-cyan-50 text-sm">{label}</p>
     </div>
   );
