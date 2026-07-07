@@ -1,5 +1,11 @@
 #!/bin/sh
 # Same reasoning as .githooks/post-checkout — `git pull`/`git merge` can also
 # bulk-change files outside Turbopack's normal one-file-at-a-time watcher
-# model, risking a stale dev filesystem cache.
-rm -rf .next
+# model, risking a stale dev filesystem cache. We warn instead of
+# auto-clearing .next: a running dev server returns 500s until restarted if
+# .next is deleted out from under it while it's still up, so this has to
+# stay a manual, deliberate step rather than something the hook does for you.
+echo ""
+echo "WARNING: merge/pull completed — Turbopack's dev cache may now be stale."
+echo "Run: rm -rf .next   then restart your dev server (npm run dev)"
+echo ""

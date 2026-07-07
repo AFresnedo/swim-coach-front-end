@@ -22,7 +22,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Git Hooks (optional)
 
-`next.config.ts` enables Turbopack's dev filesystem cache (`turbopackFileSystemCacheForDev`), which speeds up `next dev` but can serve stale output after a branch switch, pull, or merge bulk-changes files outside its normal one-file-at-a-time watcher model. This repo includes hooks in `.githooks/` that clear `.next` on those events to avoid that.
+`next.config.ts` enables Turbopack's dev filesystem cache (`turbopackFileSystemCacheForDev`), which speeds up `next dev` but can serve stale output after a branch switch, pull, or merge bulk-changes files outside its normal one-file-at-a-time watcher model. This repo includes hooks in `.githooks/` that print a warning on those events, telling you to run `rm -rf .next` and restart your dev server. They warn rather than clear `.next` automatically, since deleting it out from under a running dev server breaks it (500s) until restarted — that has to stay a step you do deliberately.
 
 They're **not active by default** — cloning the repo does not turn them on. To opt in, run once per clone:
 
