@@ -127,10 +127,14 @@ describe("GoalsList", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Deactivate" }));
     const confirmButton = screen.getByRole("button", { name: "Confirm" });
-    expect((confirmButton as HTMLButtonElement).disabled).toBe(true);
+
+    fireEvent.click(confirmButton);
+    expect(mockFetch).not.toHaveBeenCalledWith(
+      `/api/goals/${activeGoal.id}/deactivate`,
+      expect.anything(),
+    );
 
     fireEvent.change(screen.getByLabelText("Reason"), { target: { value: "reached" } });
-    expect((confirmButton as HTMLButtonElement).disabled).toBe(false);
 
     mockFetch.mockResolvedValueOnce({
       ...activeGoal,

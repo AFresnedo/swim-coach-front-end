@@ -268,8 +268,16 @@ export default function ProfileForm() {
         )}
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {saved && <p className="text-sm text-green-600 dark:text-green-400">Profile saved.</p>}
+      {error && (
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
+      {saved && (
+        <p role="status" className="text-sm text-green-600 dark:text-green-400">
+          Profile saved.
+        </p>
+      )}
 
       <button
         type="submit"
