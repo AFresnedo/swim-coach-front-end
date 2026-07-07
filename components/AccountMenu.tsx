@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { frontApiFetch } from "@/lib/front-api";
 
@@ -51,12 +52,12 @@ export default function AccountMenu() {
         className="z-[calc(var(--z-header)+10)] w-44 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 py-1.5 shadow-lg shadow-cyan-500/5 [--anchor-gap:0.5rem] origin-top transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         <MenuItem>
-          <a
+          <Link
             href="/profile"
             className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 data-[focus]:bg-slate-50 dark:data-[focus]:bg-slate-800 data-[focus]:text-slate-900 dark:data-[focus]:text-slate-100"
           >
             Profile
-          </a>
+          </Link>
         </MenuItem>
         <MenuItem>
           <button

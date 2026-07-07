@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Drill } from "@/lib/strokes-data";
 
 export default function DrillsSection({
@@ -32,12 +33,12 @@ export default function DrillsSection({
           <p className="text-slate-600 dark:text-slate-400 mb-4">
             Sign in to see the full drill breakdown for this stroke.
           </p>
-          <a
+          <Link
             href="/sign-in"
             className="inline-block rounded-full bg-gradient-aqua px-5 py-2 text-sm font-medium text-white shadow-aqua hover:brightness-110 transition-[filter]"
           >
             Sign in
-          </a>
+          </Link>
         </div>
       )}
     </>
