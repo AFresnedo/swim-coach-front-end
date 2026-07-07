@@ -20,6 +20,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Git Hooks (optional)
+
+`next.config.ts` enables Turbopack's dev filesystem cache (`turbopackFileSystemCacheForDev`), which speeds up `next dev` but can serve stale output after a branch switch, pull, or merge bulk-changes files outside its normal one-file-at-a-time watcher model. This repo includes hooks in `.githooks/` that clear `.next` on those events to avoid that.
+
+They're **not active by default** — cloning the repo does not turn them on. To opt in, run once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

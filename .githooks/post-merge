@@ -1,0 +1,5 @@
+#!/bin/sh
+# Same reasoning as .githooks/post-checkout — `git pull`/`git merge` can also
+# bulk-change files outside Turbopack's normal one-file-at-a-time watcher
+# model, risking a stale dev filesystem cache.
+rm -rf .next

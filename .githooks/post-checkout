@@ -1,0 +1,11 @@
+#!/bin/sh
+# Turbopack's dev filesystem cache (turbopackFileSystemCacheForDev in
+# next.config.ts) can serve stale output after a branch switch bulk-changes
+# files outside its normal one-file-at-a-time watcher model. Clear it so
+# `next dev` always starts from a clean cache after switching branches.
+#
+# $3 is 1 for a branch/ref checkout, 0 for a file-level checkout (e.g.
+# `git checkout -- some-file.ts`) — only the former needs a cache clear.
+if [ "$3" = "1" ]; then
+  rm -rf .next
+fi
