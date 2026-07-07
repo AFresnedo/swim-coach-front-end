@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { strokes } from "@/lib/strokes-data";
 
 export default function StrokesPage() {
@@ -14,7 +15,7 @@ export default function StrokesPage() {
 
         <div className="grid sm:grid-cols-2 gap-6">
           {strokes.map(({ slug, icon, name, desc }) => (
-            <a
+            <Link
               key={slug}
               href={`/strokes/${slug}`}
               className="group rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
@@ -31,7 +32,7 @@ export default function StrokesPage() {
               <span className="mt-4 inline-block text-sm font-medium text-cyan-600 dark:text-cyan-400">
                 View drills →
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
