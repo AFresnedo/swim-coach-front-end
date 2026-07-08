@@ -36,6 +36,12 @@ export default async function Header() {
         {isLoggedIn ? (
           <>
             <Link
+              href="/swim-log"
+              className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            >
+              Swim Log
+            </Link>
+            <Link
               href="/goals"
               className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
             >
