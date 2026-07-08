@@ -24,6 +24,7 @@ import {
   type SwimTime,
   type SwimTimeFilterParam,
 } from "@/lib/swim-times-data";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 type OfficialFilter = "" | "true" | "false";
 
@@ -96,13 +97,15 @@ export default function SwimLog() {
 
   const viewGenerationRef = useRef(0);
   const filterLengthError = validateFilterLength(filterLength);
+  const debouncedFilterLength = useDebouncedValue(filterLength, 300);
+  const debouncedFilterLengthError = validateFilterLength(debouncedFilterLength);
 
   useEffect(() => {
     viewGenerationRef.current += 1;
     let cancelled = false;
     setError("");
 
-    if (filterLengthError) {
+    if (debouncedFilterLengthError) {
       setLoading(false);
       setTimes([]);
       setNextCursor(null);
@@ -115,7 +118,7 @@ export default function SwimLog() {
       date: selectedDate,
       filterStroke,
       filterCourse,
-      filterLength,
+      filterLength: debouncedFilterLength,
       filterOfficial,
     });
 
@@ -138,7 +141,14 @@ export default function SwimLog() {
     return () => {
       cancelled = true;
     };
-  }, [selectedDate, filterStroke, filterCourse, filterLength, filterOfficial, filterLengthError]);
+  }, [
+    selectedDate,
+    filterStroke,
+    filterCourse,
+    debouncedFilterLength,
+    filterOfficial,
+    debouncedFilterLengthError,
+  ]);
 
   async function handleLoadMore() {
     if (!nextCursor) return;
@@ -151,7 +161,7 @@ export default function SwimLog() {
         date: selectedDate,
         filterStroke,
         filterCourse,
-        filterLength,
+        filterLength: debouncedFilterLength,
         filterOfficial,
         cursor: nextCursor,
       });
@@ -203,7 +213,7 @@ export default function SwimLog() {
         created.date === selectedDate &&
         (filterStroke === "" || created.stroke === filterStroke) &&
         (filterCourse === "" || created.course === filterCourse) &&
-        (filterLength.trim() === "" || created.length === Number(filterLength)) &&
+        (debouncedFilterLength.trim() === "" || created.length === Number(debouncedFilterLength)) &&
         (filterOfficial === "" || created.is_official === (filterOfficial === "true"));
       if (matchesCurrentView) {
         setTimes((prev) => [created, ...prev]);
