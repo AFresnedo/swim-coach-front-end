@@ -5,17 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ApiError } from "@/lib/front-api";
-import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
+import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 export default function AccountMenu() {
   const router = useRouter();
-  const protectedFetch = useProtectedFetch();
+  const protectedFrontFetch = useProtectedFrontFetch();
   const [error, setError] = useState("");
 
   async function handleLogout() {
     setError("");
     try {
-      await protectedFetch("/api/auth/logout", { method: "POST" });
+      await protectedFrontFetch("/api/auth/logout", { method: "POST" });
       router.push("/");
       router.refresh();
     } catch (err) {

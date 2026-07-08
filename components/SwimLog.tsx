@@ -25,7 +25,7 @@ import {
   type SwimTimeFilterParam,
 } from "@/lib/swim-times-data";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
-import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
+import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type OfficialFilter = "" | "true" | "false";
 
@@ -99,7 +99,7 @@ function buildSwimTimesQuery(params: {
 }
 
 export default function SwimLog() {
-  const protectedFetch = useProtectedFetch();
+  const protectedFrontFetch = useProtectedFrontFetch();
   const [selectedDate, setSelectedDate] = useState(todayLocalDate);
   const [times, setTimes] = useState<SwimTime[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -150,7 +150,7 @@ export default function SwimLog() {
       filterOfficial,
     });
 
-    protectedFetch<{ items: SwimTime[]; next_cursor: string | null }>(`/api/swim-times?${query}`)
+    protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(`/api/swim-times?${query}`)
       .then((data) => {
         if (cancelled) return;
         setTimes(data.items);
@@ -176,7 +176,7 @@ export default function SwimLog() {
     debouncedFilterLength,
     filterOfficial,
     debouncedFilterLengthError,
-    protectedFetch,
+    protectedFrontFetch,
   ]);
 
   async function handleLoadMore() {
@@ -194,7 +194,7 @@ export default function SwimLog() {
         filterOfficial,
         cursor: nextCursor,
       });
-      const data = await protectedFetch<{ items: SwimTime[]; next_cursor: string | null }>(
+      const data = await protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(
         `/api/swim-times?${query}`,
       );
       if (viewGenerationRef.current !== generation) return;
@@ -224,7 +224,7 @@ export default function SwimLog() {
     const generation = viewGenerationRef.current;
     setCreating(true);
     try {
-      const created = await protectedFetch<SwimTime>("/api/swim-times", {
+      const created = await protectedFrontFetch<SwimTime>("/api/swim-times", {
         method: "POST",
         body: JSON.stringify({
           date: selectedDate,

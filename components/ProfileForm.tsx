@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError } from "@/lib/front-api";
-import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
+import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
 
@@ -31,7 +31,7 @@ function kgToLbs(kg: number) {
 }
 
 export default function ProfileForm() {
-  const protectedFetch = useProtectedFetch();
+  const protectedFrontFetch = useProtectedFrontFetch();
   const [units, setUnits] = useState<UnitSystem>("metric");
   const [age, setAge] = useState("");
   const [heightCm, setHeightCm] = useState("");
@@ -49,7 +49,7 @@ export default function ProfileForm() {
   useEffect(() => {
     let cancelled = false;
 
-    protectedFetch<Profile | null>("/api/profile")
+    protectedFrontFetch<Profile | null>("/api/profile")
       .then((profile) => {
         if (cancelled || !profile) return;
         const { ft, inches } = cmToFtIn(profile.height_cm);
@@ -73,7 +73,7 @@ export default function ProfileForm() {
     return () => {
       cancelled = true;
     };
-  }, [protectedFetch]);
+  }, [protectedFrontFetch]);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -90,7 +90,7 @@ export default function ProfileForm() {
     const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * 0.453592;
 
     try {
-      await protectedFetch("/api/profile", {
+      await protectedFrontFetch("/api/profile", {
         method: "PUT",
         body: JSON.stringify({
           age: parseInt(age, 10),

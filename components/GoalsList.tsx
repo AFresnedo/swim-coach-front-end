@@ -10,7 +10,7 @@ import {
   secondaryButtonClass,
 } from "@/lib/form-styles";
 import { ApiError } from "@/lib/front-api";
-import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
+import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type DeactivationReason = "reached" | "abandoned" | "other";
 type Goal = {
@@ -30,7 +30,7 @@ const REASON_LABELS: Record<DeactivationReason, string> = {
 };
 
 export default function GoalsList() {
-  const protectedFetch = useProtectedFetch();
+  const protectedFrontFetch = useProtectedFrontFetch();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [filter, setFilter] = useState<GoalFilter>("active");
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,7 @@ export default function GoalsList() {
     setLoading(true);
     setError("");
 
-    protectedFetch<Goal[]>(`/api/goals?status=${filter}`)
+    protectedFrontFetch<Goal[]>(`/api/goals?status=${filter}`)
       .then((data) => {
         if (!cancelled) setGoals(data);
       })
@@ -70,7 +70,7 @@ export default function GoalsList() {
     return () => {
       cancelled = true;
     };
-  }, [filter, protectedFetch]);
+  }, [filter, protectedFrontFetch]);
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -78,7 +78,7 @@ export default function GoalsList() {
     setCreating(true);
 
     try {
-      const goal = await protectedFetch<Goal>("/api/goals", {
+      const goal = await protectedFrontFetch<Goal>("/api/goals", {
         method: "POST",
         body: JSON.stringify({ text: newText }),
       });
@@ -112,7 +112,7 @@ export default function GoalsList() {
     setEditError("");
 
     try {
-      const updated = await protectedFetch<Goal>(`/api/goals/${goalId}`, {
+      const updated = await protectedFrontFetch<Goal>(`/api/goals/${goalId}`, {
         method: "PATCH",
         body: JSON.stringify({ text: editText }),
       });
@@ -146,7 +146,7 @@ export default function GoalsList() {
     setDeactivateError("");
 
     try {
-      const updated = await protectedFetch<Goal>(`/api/goals/${goalId}/deactivate`, {
+      const updated = await protectedFrontFetch<Goal>(`/api/goals/${goalId}/deactivate`, {
         method: "PATCH",
         body: JSON.stringify({ reason: deactivateReason }),
       });

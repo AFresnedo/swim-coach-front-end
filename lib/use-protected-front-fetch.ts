@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 
-// Thrown after useProtectedFetch has already redirected to /sign-in, so
+// Thrown after useProtectedFrontFetch has already redirected to /sign-in, so
 // callers can bail out of their own catch block instead of also showing a
 // "failed to load" message right before the page navigates away.
 export class AuthRedirectError extends Error {
@@ -19,13 +19,13 @@ export class AuthRedirectError extends Error {
 // invalid, so it redirects to /sign-in instead of surfacing a generic
 // error. Login/sign-up call frontApiFetch directly, since a 401 there means
 // wrong credentials rather than an expired session.
-export function useProtectedFetch() {
+export function useProtectedFrontFetch() {
   const router = useRouter();
 
   return useCallback(
     // Rest-spread so a call with no options object reaches frontApiFetch as
     // a one-argument call, matching direct frontApiFetch call sites exactly.
-    async function protectedFetch<T>(path: string, ...args: [RequestInit] | []): Promise<T> {
+    async function protectedFrontFetch<T>(path: string, ...args: [RequestInit] | []): Promise<T> {
       try {
         return await frontApiFetch<T>(path, ...args);
       } catch (err) {
