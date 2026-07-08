@@ -3,15 +3,22 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { frontApiFetch } from "@/lib/front-api";
+import { useState } from "react";
+import { ApiError, frontApiFetch } from "@/lib/front-api";
 
 export default function AccountMenu() {
   const router = useRouter();
+  const [error, setError] = useState("");
 
   async function handleLogout() {
-    await frontApiFetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-    router.refresh();
+    setError("");
+    try {
+      await frontApiFetch("/api/auth/logout", { method: "POST" });
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Log out failed. Please try again.");
+    }
   }
 
   return (
@@ -69,6 +76,14 @@ export default function AccountMenu() {
           </button>
         </MenuItem>
       </MenuItems>
+      {error && (
+        <p
+          role="alert"
+          className="absolute right-0 mt-2 w-56 rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs text-red-600 dark:text-red-400 shadow-lg"
+        >
+          {error}
+        </p>
+      )}
     </Menu>
   );
 }
