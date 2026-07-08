@@ -10,9 +10,10 @@ global.ResizeObserver = class {
 };
 
 const push = vi.fn();
+const replace = vi.fn();
 const refresh = vi.fn();
 // A stable object, matching real next/navigation's useRouter.
-const router = { push, refresh };
+const router = { push, replace, refresh };
 
 vi.mock("next/navigation", () => ({
   useRouter: () => router,
@@ -75,7 +76,7 @@ describe("AccountMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
 
-    await waitFor(() => expect(push).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
     expect(screen.queryByText("Could not validate credentials")).toBeNull();
   });
 });

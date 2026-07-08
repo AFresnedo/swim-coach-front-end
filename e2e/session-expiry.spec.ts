@@ -28,6 +28,13 @@ test("401 from a protected API call redirects to sign-in with a session-expired 
 
   await expect(page).toHaveURL(/\/sign-in/);
   await expect(page.getByText("Your session expired — please sign in again.")).toBeVisible();
+
+  // The redirect replaces the /goals history entry rather than pushing a new
+  // one, so back should return to the page visited before /goals (here, "/")
+  // instead of re-entering /goals and immediately bouncing back to /sign-in
+  // again.
+  await page.goBack();
+  await expect(page).toHaveURL("/");
 });
 
 // e2e/auth-errors.spec.ts already covers that a 401 from /api/auth/login

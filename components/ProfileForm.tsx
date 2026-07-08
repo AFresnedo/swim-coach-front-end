@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError } from "@/lib/front-api";
-import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
 
@@ -63,7 +63,7 @@ export default function ProfileForm() {
         setUnits(profile.unit_preference);
       })
       .catch((err) => {
-        if (cancelled || err instanceof AuthRedirectError) return;
+        if (cancelled || isAuthRedirect(err)) return;
         setError("Failed to load your profile. Please try again.");
       })
       .finally(() => {
@@ -102,7 +102,7 @@ export default function ProfileForm() {
       });
       setSaved(true);
     } catch (err) {
-      if (err instanceof AuthRedirectError) return;
+      if (isAuthRedirect(err)) return;
       if (err instanceof ApiError) {
         setError(err.message);
         if (err.errors) setFieldErrors(err.errors);

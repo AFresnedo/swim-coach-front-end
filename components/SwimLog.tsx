@@ -25,7 +25,11 @@ import {
   type SwimTimeFilterParam,
 } from "@/lib/swim-times-data";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
-import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import {
+  isAuthRedirect,
+  protectedErrorMessage,
+  useProtectedFrontFetch,
+} from "@/lib/use-protected-front-fetch";
 
 type OfficialFilter = "" | "true" | "false";
 
@@ -150,17 +154,18 @@ export default function SwimLog() {
       filterOfficial,
     });
 
-    protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(`/api/swim-times?${query}`)
+    protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(
+      `/api/swim-times?${query}`,
+    )
       .then((data) => {
         if (cancelled) return;
         setTimes(data.items);
         setNextCursor(data.next_cursor);
       })
       .catch((err) => {
-        if (cancelled || err instanceof AuthRedirectError) return;
-        setError(
-          err instanceof ApiError ? err.message : "Failed to load swim times. Please try again.",
-        );
+        if (cancelled) return;
+        const message = protectedErrorMessage(err, "Failed to load swim times. Please try again.");
+        if (message) setError(message);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -201,10 +206,12 @@ export default function SwimLog() {
       setTimes((prev) => [...prev, ...data.items]);
       setNextCursor(data.next_cursor);
     } catch (err) {
-      if (viewGenerationRef.current !== generation || err instanceof AuthRedirectError) return;
-      setError(
-        err instanceof ApiError ? err.message : "Failed to load more swim times. Please try again.",
+      if (viewGenerationRef.current !== generation) return;
+      const message = protectedErrorMessage(
+        err,
+        "Failed to load more swim times. Please try again.",
       );
+      if (message) setError(message);
     } finally {
       if (viewGenerationRef.current === generation) setLoadingMore(false);
     }
@@ -253,7 +260,7 @@ export default function SwimLog() {
       setNotes("");
       setIsOfficial(false);
     } catch (err) {
-      if (err instanceof AuthRedirectError) return;
+      if (isAuthRedirect(err)) return;
       if (err instanceof ApiError) {
         setCreateError(err.message);
         if (err.errors) setCreateFieldErrors(err.errors);

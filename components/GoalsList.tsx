@@ -9,8 +9,7 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/lib/form-styles";
-import { ApiError } from "@/lib/front-api";
-import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type DeactivationReason = "reached" | "abandoned" | "other";
 type Goal = {
@@ -60,8 +59,9 @@ export default function GoalsList() {
         if (!cancelled) setGoals(data);
       })
       .catch((err) => {
-        if (cancelled || err instanceof AuthRedirectError) return;
-        setError(err instanceof ApiError ? err.message : "Failed to load goals. Please try again.");
+        if (cancelled) return;
+        const message = protectedErrorMessage(err, "Failed to load goals. Please try again.");
+        if (message) setError(message);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -85,10 +85,8 @@ export default function GoalsList() {
       setGoals((prev) => [goal, ...prev]);
       setNewText("");
     } catch (err) {
-      if (err instanceof AuthRedirectError) return;
-      setCreateError(
-        err instanceof ApiError ? err.message : "Failed to create goal. Please try again.",
-      );
+      const message = protectedErrorMessage(err, "Failed to create goal. Please try again.");
+      if (message) setCreateError(message);
     } finally {
       setCreating(false);
     }
@@ -119,10 +117,8 @@ export default function GoalsList() {
       setGoals((prev) => prev.map((g) => (g.id === goalId ? updated : g)));
       setEditingId(null);
     } catch (err) {
-      if (err instanceof AuthRedirectError) return;
-      setEditError(
-        err instanceof ApiError ? err.message : "Failed to save goal. Please try again.",
-      );
+      const message = protectedErrorMessage(err, "Failed to save goal. Please try again.");
+      if (message) setEditError(message);
     } finally {
       setEditSaving(false);
     }
@@ -157,10 +153,8 @@ export default function GoalsList() {
       );
       setDeactivatingId(null);
     } catch (err) {
-      if (err instanceof AuthRedirectError) return;
-      setDeactivateError(
-        err instanceof ApiError ? err.message : "Failed to deactivate goal. Please try again.",
-      );
+      const message = protectedErrorMessage(err, "Failed to deactivate goal. Please try again.");
+      if (message) setDeactivateError(message);
     } finally {
       setDeactivateSaving(false);
     }

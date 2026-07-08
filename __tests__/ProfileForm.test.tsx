@@ -3,11 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ProfileForm from "@/components/ProfileForm";
 
 const push = vi.fn();
+const replace = vi.fn();
 const refresh = vi.fn();
 // A stable object, matching real next/navigation's useRouter, since
 // ProfileForm depends on the protected-fetch function's identity in a
 // useEffect dependency array — a fresh object per call would refire it.
-const router = { push, refresh };
+const router = { push, replace, refresh };
 
 vi.mock("next/navigation", () => ({
   useRouter: () => router,
@@ -204,7 +205,7 @@ describe("ProfileForm", () => {
   it("redirects to sign-in instead of showing an error when the session has expired", async () => {
     mockFetch.mockRejectedValueOnce(new ApiError("Could not validate credentials", 401));
     render(<ProfileForm />);
-    await waitFor(() => expect(push).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
     expect(screen.queryByText("Failed to load your profile. Please try again.")).toBeNull();
   });
 

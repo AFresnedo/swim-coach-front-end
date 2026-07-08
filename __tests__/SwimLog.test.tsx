@@ -3,11 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SwimLog from "@/components/SwimLog";
 
 const push = vi.fn();
+const replace = vi.fn();
 const refresh = vi.fn();
 // A stable object, matching real next/navigation's useRouter, since
 // SwimLog depends on the protected-fetch function's identity in a
 // useEffect dependency array — a fresh object per call would refire it.
-const router = { push, refresh };
+const router = { push, replace, refresh };
 
 vi.mock("next/navigation", () => ({
   useRouter: () => router,
@@ -146,7 +147,7 @@ describe("SwimLog", () => {
   it("redirects to sign-in instead of showing an error when the session has expired", async () => {
     mockFetch.mockRejectedValue(new ApiError("Could not validate credentials", 401));
     render(<SwimLog />);
-    await waitFor(() => expect(push).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
     expect(screen.queryByText("Could not validate credentials")).toBeNull();
   });
 

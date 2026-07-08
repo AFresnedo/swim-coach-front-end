@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ApiError } from "@/lib/front-api";
-import { AuthRedirectError, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 export default function AccountMenu() {
   const router = useRouter();
@@ -19,8 +19,8 @@ export default function AccountMenu() {
       router.push("/");
       router.refresh();
     } catch (err) {
-      if (err instanceof AuthRedirectError) return;
-      setError(err instanceof ApiError ? err.message : "Log out failed. Please try again.");
+      const message = protectedErrorMessage(err, "Log out failed. Please try again.");
+      if (message) setError(message);
     }
   }
 
