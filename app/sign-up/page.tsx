@@ -16,6 +16,7 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -131,9 +132,35 @@ export default function SignUpPage() {
             </p>
           )}
 
+          <div className="flex items-start gap-2 pt-1">
+            <input
+              id="acknowledge-disclaimer"
+              type="checkbox"
+              required
+              checked={acknowledged}
+              onChange={(e) => setAcknowledged(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-600"
+            />
+            <label
+              htmlFor="acknowledge-disclaimer"
+              className="text-xs text-slate-500 dark:text-slate-400"
+            >
+              I understand this site&apos;s advice has not been reviewed by a professional and I use
+              it at my own risk. Read our{" "}
+              <Link
+                href="/disclaimer"
+                target="_blank"
+                className="font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
+              >
+                disclaimer
+              </Link>
+              .
+            </label>
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !acknowledged}
             className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
           >
             {loading ? "Creating account…" : "Create account"}

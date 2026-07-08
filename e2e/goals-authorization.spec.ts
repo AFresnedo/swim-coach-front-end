@@ -11,6 +11,7 @@ async function signUp(
   await page.getByLabel("Email").fill(user.email);
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(user.password);
   await page.getByRole("textbox", { name: "Confirm password" }).fill(user.password);
+  await page.getByRole("checkbox", { name: /disclaimer/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 }
