@@ -161,6 +161,7 @@ export default function SwimLog() {
       return;
     }
 
+    const generation = viewGenerationRef.current;
     setCreating(true);
     try {
       const created = await frontApiFetch<SwimTime>("/api/swim-times", {
@@ -177,6 +178,7 @@ export default function SwimLog() {
         }),
       });
       const matchesCurrentView =
+        viewGenerationRef.current === generation &&
         created.date === selectedDate &&
         (filterStroke === "" || created.stroke === filterStroke) &&
         (filterCourse === "" || created.course === filterCourse) &&
