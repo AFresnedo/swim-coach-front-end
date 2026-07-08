@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { API_URL, safeFetch } from "@/lib/back-api";
 
@@ -67,19 +68,19 @@ export default function Home() {
             insights — so every session in the water counts.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <a
+            <Link
               id="get-started"
               href="/sign-up"
               className="rounded-full bg-gradient-aqua px-8 py-3.5 text-base font-semibold text-white shadow-aqua hover:brightness-110 transition-[filter]"
             >
               Start training free
-            </a>
-            <a
+            </Link>
+            <Link
               href="#how-it-works"
               className="rounded-full border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 backdrop-blur px-8 py-3.5 text-base font-semibold text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors"
             >
               See how it works
-            </a>
+            </Link>
           </div>
         </div>
         <svg
@@ -222,12 +223,12 @@ export default function Home() {
           <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
             Join thousands of swimmers already hitting new personal bests with SwimCoach.
           </p>
-          <a
+          <Link
             href="/sign-up"
             className="rounded-full bg-gradient-aqua px-10 py-4 text-base font-semibold text-white shadow-aqua hover:brightness-110 transition-[filter]"
           >
             Create your free account
-          </a>
+          </Link>
         </div>
       </section>
 

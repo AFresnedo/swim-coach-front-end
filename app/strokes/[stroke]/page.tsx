@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import DrillsSection from "@/components/DrillsSection";
 import { checkLoggedIn } from "@/lib/auth";
@@ -17,12 +18,12 @@ export default async function StrokePage({ params }: PageProps<"/strokes/[stroke
   return (
     <div className="min-h-full bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
       <div className="max-w-5xl mx-auto">
-        <a
+        <Link
           href="/strokes"
           className="text-sm font-medium text-cyan-600 dark:text-cyan-400 hover:underline mb-8 inline-block"
         >
           ← All strokes
-        </a>
+        </Link>
 
         <div className="mb-12">
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 mb-3">

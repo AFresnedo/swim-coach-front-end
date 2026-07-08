@@ -21,12 +21,15 @@ vi.mock("@/lib/front-api", async (importActual) => {
   return { ...actual, frontApiFetch: vi.fn().mockResolvedValue({ ok: true }) };
 });
 
-import { frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/lib/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
 describe("AccountMenu", () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
 
   it("hides the menu items until the trigger is clicked", () => {
     render(<AccountMenu />);
@@ -51,5 +54,16 @@ describe("AccountMenu", () => {
     );
     expect(push).toHaveBeenCalledWith("/");
     expect(refresh).toHaveBeenCalled();
+  });
+
+  it("shows an error and does not navigate when logout fails", async () => {
+    mockFetch.mockRejectedValueOnce(new ApiError("Server unavailable", 502));
+    render(<AccountMenu />);
+    fireEvent.click(screen.getByRole("button", { name: /account/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
+
+    expect(await screen.findByText("Server unavailable")).toBeDefined();
+    expect(push).not.toHaveBeenCalled();
+    expect(refresh).not.toHaveBeenCalled();
   });
 });
