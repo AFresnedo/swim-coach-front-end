@@ -252,7 +252,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-auto border-t border-slate-100 dark:border-slate-800 py-8 px-8 flex items-center justify-between text-sm text-slate-400">
         <span>© {new Date().getFullYear()} SwimCoach</span>
-        <span>Built for the water</span>
+        <span>Better, one lap at a time</span>
       </footer>
     </div>
   );
