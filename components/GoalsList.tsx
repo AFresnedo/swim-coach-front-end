@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { inputClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import {
+  cardClass,
+  inputClass,
+  inputNormalClass,
+  labelClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+} from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 
 type DeactivationReason = "reached" | "abandoned" | "other";
@@ -20,13 +27,6 @@ const REASON_LABELS: Record<DeactivationReason, string> = {
   abandoned: "Abandoned",
   other: "Other",
 };
-
-const cardClass =
-  "rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6";
-const primaryButtonClass =
-  "rounded-full bg-gradient-aqua px-4 py-2 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]";
-const secondaryButtonClass =
-  "rounded-full border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 backdrop-blur px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors";
 
 export default function GoalsList() {
   const [goals, setGoals] = useState<Goal[]>([]);

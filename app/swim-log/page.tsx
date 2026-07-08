@@ -1,16 +1,16 @@
-import GoalsList from "@/components/GoalsList";
+import SwimLog from "@/components/SwimLog";
 
-export default function GoalsPage() {
+export default function SwimLogPage() {
   return (
     <div className="min-h-full bg-page-gradient px-6 py-16">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 mb-3">
-          Your goals
+          Swim Log
         </h1>
         <p className="text-lg text-slate-600 dark:text-slate-400 mb-12 max-w-2xl">
-          Set training goals, track progress, and retire them once they're reached.
+          Log every swim and browse your times by date.
         </p>
-        <GoalsList />
+        <SwimLog />
       </div>
     </div>
   );
