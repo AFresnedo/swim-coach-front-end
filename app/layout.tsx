@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SwimCoach — Improve Your Lap Times & Fitness",
   description:
-    "SwimCoach helps swimmers of all levels track workouts, analyze performance, and improve lap times with personalized training plans.",
+    "SwimCoach helps swimmers of all levels log their training, track goals, and learn stroke technique.",
 };
 
 export default function RootLayout({

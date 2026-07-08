@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { API_URL, safeFetch } from "@/lib/back-api";
+import { strokes } from "@/lib/strokes-data";
+
+const drillCount = strokes.reduce((total, stroke) => total + stroke.drills.length, 0);
 
 export async function getUserCount(): Promise<number | null> {
   try {
@@ -64,8 +67,7 @@ export default function Home() {
             <span className="text-gradient-aqua">Build the fitness to go further.</span>
           </h1>
           <p className="max-w-2xl text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10">
-            SwimCoach gives you personalized training plans, lap-time tracking, and performance
-            insights — so every session in the water counts.
+            Log every swim, chase your goals, and dial in your technique.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
@@ -104,8 +106,8 @@ export default function Home() {
             <SwimmerCountStat />
           </Suspense>
           {[
-            { value: "2.4s", label: "Avg. lap-time improvement" },
-            { value: "500+", label: "Workouts in the library" },
+            { value: "0", label: "Swims logged" },
+            { value: String(drillCount), label: "Drills & resources" },
           ].map(({ value, label }) => (
             <Stat key={label} value={value} label={label} />
           ))}
@@ -118,25 +120,26 @@ export default function Home() {
           Everything you need to swim faster
         </h2>
         <p className="text-center text-slate-600 dark:text-slate-400 mb-16 max-w-xl mx-auto">
-          SwimCoach combines smart analytics with proven training science to help you reach peak
-          performance.
+          Track your training today, with AI-powered coaching features on the way.
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             {
               icon: "⏱",
               title: "Swim Log",
-              desc: "Log every set and split. Visualize your progress over days, weeks, and months.",
+              desc: "Log every set and split, and browse your history by date and stroke.",
             },
             {
               icon: "📋",
               title: "Personalized plans",
-              desc: "Training plans tailored to your stroke, distance, and current fitness level.",
+              desc: "AI-generated training plans tailored to your stroke, distance, and fitness level.",
+              comingSoon: true,
             },
             {
               icon: "📈",
               title: "Performance analytics",
-              desc: "Understand pace trends, stroke efficiency, and where you're leaving time on the table.",
+              desc: "ML-powered insights into pace trends, stroke efficiency, and where you're leaving time on the table.",
+              comingSoon: true,
             },
             {
               icon: "🏊",
@@ -146,21 +149,29 @@ export default function Home() {
             {
               icon: "🔔",
               title: "Rest & recovery guidance",
-              desc: "Know when to push and when to rest with load-management recommendations.",
+              desc: "AI recommendations for when to push and when to rest, based on your training load.",
+              comingSoon: true,
             },
             {
               icon: "🏅",
               title: "Goal setting",
-              desc: "Set a target time, pick your race date, and let SwimCoach build the roadmap.",
+              desc: "Set a goal, track it over time, and mark it reached once you get there.",
             },
-          ].map(({ icon, title, desc }) => (
+          ].map(({ icon, title, desc, comingSoon }) => (
             <div
               key={title}
               className="group rounded-2xl border border-slate-100 dark:border-slate-800 p-6 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-aqua text-2xl shadow-aqua">
-                {icon}
-              </span>
+              <div className="flex items-start justify-between gap-2">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-aqua text-2xl shadow-aqua">
+                  {icon}
+                </span>
+                {comingSoon && (
+                  <span className="mt-1 rounded-full bg-indigo-100 dark:bg-indigo-400/10 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
+                    Coming soon
+                  </span>
+                )}
+              </div>
               <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-slate-50">
                 {title}
               </h3>
@@ -183,25 +194,31 @@ export default function Home() {
               {
                 step: "1",
                 title: "Tell us about yourself",
-                desc: "Share your current fitness level, preferred strokes, and performance goals.",
+                desc: "Set up your profile and tell us what you're working toward.",
               },
               {
                 step: "2",
                 title: "Get your plan",
-                desc: "Receive a week-by-week training schedule designed to hit your target time.",
+                desc: "Soon, we'll turn your profile into a week-by-week training schedule built around your goals.",
+                comingSoon: true,
               },
               {
                 step: "3",
                 title: "Track & improve",
-                desc: "Log each session, review your analytics, and watch your lap times drop.",
+                desc: "Log each session to build your history. Pace-trend analytics are coming soon.",
               },
-            ].map(({ step, title, desc }) => (
+            ].map(({ step, title, desc, comingSoon }) => (
               <li key={step} className="flex flex-col items-center text-center">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-aqua text-white text-xl font-bold mb-4 shadow-aqua">
                   {step}
                 </span>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-2 flex items-center gap-2">
                   {title}
+                  {comingSoon && (
+                    <span className="rounded-full bg-indigo-100 dark:bg-indigo-400/10 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
+                      Coming soon
+                    </span>
+                  )}
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{desc}</p>
               </li>
@@ -221,7 +238,7 @@ export default function Home() {
             Ready to dive in?
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
-            Join thousands of swimmers already hitting new personal bests with SwimCoach.
+            Log your swims, chase your goals, and get faster in the water.
           </p>
           <Link
             href="/sign-up"
