@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { inputClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import {
+  cardClass,
+  inputClass,
+  inputErrorClass,
+  inputNormalClass,
+  labelClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+} from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 import {
   COURSE_LABELS,
@@ -17,14 +25,16 @@ import {
   type SwimTimeFilterParam,
 } from "@/lib/swim-times-data";
 
-const cardClass =
-  "rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6";
-const primaryButtonClass =
-  "rounded-full bg-gradient-aqua px-4 py-2 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]";
-const secondaryButtonClass =
-  "rounded-full border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 backdrop-blur px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors";
-
 type OfficialFilter = "" | "true" | "false";
+
+function validateFilterLength(value: string): string | null {
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+  if (!/^\d+$/.test(trimmed) || Number(trimmed) <= 0) {
+    return "Length must be a positive whole number.";
+  }
+  return null;
+}
 
 function todayLocalDate(): string {
   const now = new Date();
@@ -82,14 +92,24 @@ export default function SwimLog() {
   const [isOfficial, setIsOfficial] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [createFieldErrors, setCreateFieldErrors] = useState<Record<string, string>>({});
 
   const viewGenerationRef = useRef(0);
+  const filterLengthError = validateFilterLength(filterLength);
 
   useEffect(() => {
     viewGenerationRef.current += 1;
     let cancelled = false;
-    setLoading(true);
     setError("");
+
+    if (filterLengthError) {
+      setLoading(false);
+      setTimes([]);
+      setNextCursor(null);
+      return;
+    }
+
+    setLoading(true);
 
     const query = buildSwimTimesQuery({
       date: selectedDate,
@@ -118,7 +138,7 @@ export default function SwimLog() {
     return () => {
       cancelled = true;
     };
-  }, [selectedDate, filterStroke, filterCourse, filterLength, filterOfficial]);
+  }, [selectedDate, filterStroke, filterCourse, filterLength, filterOfficial, filterLengthError]);
 
   async function handleLoadMore() {
     if (!nextCursor) return;
@@ -154,6 +174,7 @@ export default function SwimLog() {
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setCreateError("");
+    setCreateFieldErrors({});
 
     const timeSeconds = parseMmSs(timeText);
     if (timeSeconds === null) {
@@ -193,9 +214,12 @@ export default function SwimLog() {
       setNotes("");
       setIsOfficial(false);
     } catch (err) {
-      setCreateError(
-        err instanceof ApiError ? err.message : "Failed to log time. Please try again.",
-      );
+      if (err instanceof ApiError) {
+        setCreateError(err.message);
+        if (err.errors) setCreateFieldErrors(err.errors);
+      } else {
+        setCreateError("Failed to log time. Please try again.");
+      }
     } finally {
       setCreating(false);
     }
@@ -271,8 +295,14 @@ export default function SwimLog() {
               value={filterLength}
               onChange={(e) => setFilterLength(e.target.value)}
               placeholder="Any"
-              className={`${inputClass} ${inputNormalClass}`}
+              className={`${inputClass} ${filterLengthError ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={filterLengthError ? "filter-length-error" : undefined}
             />
+            {filterLengthError && (
+              <p id="filter-length-error" className="text-xs text-red-600 dark:text-red-400">
+                {filterLengthError}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -318,7 +348,8 @@ export default function SwimLog() {
               id="log-stroke"
               value={stroke}
               onChange={(e) => setStroke(e.target.value as Stroke)}
-              className={`${inputClass} ${inputNormalClass}`}
+              className={`${inputClass} ${createFieldErrors.stroke ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={createFieldErrors.stroke ? "log-stroke-error" : undefined}
             >
               {STROKE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -326,6 +357,11 @@ export default function SwimLog() {
                 </option>
               ))}
             </select>
+            {createFieldErrors.stroke && (
+              <p id="log-stroke-error" className="text-xs text-red-600 dark:text-red-400">
+                {createFieldErrors.stroke}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -336,7 +372,8 @@ export default function SwimLog() {
               id="log-course"
               value={course}
               onChange={(e) => setCourse(e.target.value as Course)}
-              className={`${inputClass} ${inputNormalClass}`}
+              className={`${inputClass} ${createFieldErrors.course ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={createFieldErrors.course ? "log-course-error" : undefined}
             >
               {COURSE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -344,6 +381,11 @@ export default function SwimLog() {
                 </option>
               ))}
             </select>
+            {createFieldErrors.course && (
+              <p id="log-course-error" className="text-xs text-red-600 dark:text-red-400">
+                {createFieldErrors.course}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -358,8 +400,14 @@ export default function SwimLog() {
               value={length}
               onChange={(e) => setLength(e.target.value)}
               placeholder="50"
-              className={`${inputClass} ${inputNormalClass}`}
+              className={`${inputClass} ${createFieldErrors.length ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={createFieldErrors.length ? "log-length-error" : undefined}
             />
+            {createFieldErrors.length && (
+              <p id="log-length-error" className="text-xs text-red-600 dark:text-red-400">
+                {createFieldErrors.length}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -373,8 +421,14 @@ export default function SwimLog() {
               value={timeText}
               onChange={(e) => setTimeText(e.target.value)}
               placeholder="1:02.35"
-              className={`${inputClass} ${inputNormalClass}`}
+              className={`${inputClass} ${createFieldErrors.time_seconds ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={createFieldErrors.time_seconds ? "log-time-error" : undefined}
             />
+            {createFieldErrors.time_seconds && (
+              <p id="log-time-error" className="text-xs text-red-600 dark:text-red-400">
+                {createFieldErrors.time_seconds}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -387,8 +441,14 @@ export default function SwimLog() {
               min={1}
               value={attemptNumber}
               onChange={(e) => setAttemptNumber(e.target.value)}
-              className={`${inputClass} ${inputNormalClass}`}
+              className={`${inputClass} ${createFieldErrors.attempt_number ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={createFieldErrors.attempt_number ? "log-attempt-error" : undefined}
             />
+            {createFieldErrors.attempt_number && (
+              <p id="log-attempt-error" className="text-xs text-red-600 dark:text-red-400">
+                {createFieldErrors.attempt_number}
+              </p>
+            )}
           </div>
 
           <div className="flex items-end gap-2 pb-2.5">
@@ -414,9 +474,15 @@ export default function SwimLog() {
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className={`${inputClass} ${inputNormalClass}`}
+            className={`${inputClass} ${createFieldErrors.notes ? inputErrorClass : inputNormalClass}`}
             placeholder="Optional"
+            aria-describedby={createFieldErrors.notes ? "log-notes-error" : undefined}
           />
+          {createFieldErrors.notes && (
+            <p id="log-notes-error" className="text-xs text-red-600 dark:text-red-400">
+              {createFieldErrors.notes}
+            </p>
+          )}
         </div>
 
         {createError && (
