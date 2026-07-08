@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { inputClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 import {
@@ -83,7 +83,10 @@ export default function SwimLog() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
+  const viewGenerationRef = useRef(0);
+
   useEffect(() => {
+    viewGenerationRef.current += 1;
     let cancelled = false;
     setLoading(true);
     setError("");
@@ -119,6 +122,7 @@ export default function SwimLog() {
 
   async function handleLoadMore() {
     if (!nextCursor) return;
+    const generation = viewGenerationRef.current;
     setLoadingMore(true);
     setError("");
 
@@ -134,14 +138,16 @@ export default function SwimLog() {
       const data = await frontApiFetch<{ items: SwimTime[]; next_cursor: string | null }>(
         `/api/swim-times?${query}`,
       );
+      if (viewGenerationRef.current !== generation) return;
       setTimes((prev) => [...prev, ...data.items]);
       setNextCursor(data.next_cursor);
     } catch (err) {
+      if (viewGenerationRef.current !== generation) return;
       setError(
         err instanceof ApiError ? err.message : "Failed to load more swim times. Please try again.",
       );
     } finally {
-      setLoadingMore(false);
+      if (viewGenerationRef.current === generation) setLoadingMore(false);
     }
   }
 
