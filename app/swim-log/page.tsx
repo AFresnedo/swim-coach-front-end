@@ -2,7 +2,7 @@ import SwimLog from "@/components/SwimLog";
 
 export default function SwimLogPage() {
   return (
-    <div className="min-h-full bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
+    <div className="min-h-full bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 mb-3">
           Swim Log

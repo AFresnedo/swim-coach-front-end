@@ -44,7 +44,7 @@ export default function Home() {
       <section className="relative overflow-hidden">
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"
+          className="absolute inset-0 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"
         />
         <div
           aria-hidden
