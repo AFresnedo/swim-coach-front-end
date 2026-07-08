@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "SwimCoach — Improve Your Lap Times & Fitness",
   description:
     "SwimCoach helps swimmers of all levels log their training, track goals, and learn stroke technique.",
+  // Soft-launch stage: keep crawlers out via meta tag too (robots.txt alone
+  // is honor-system and some crawlers index pages before checking it).
+  // Remove both this and app/robots.ts's disallow when publicly launching.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({
