@@ -16,7 +16,7 @@ export default async function StrokePage({ params }: PageProps<"/strokes/[stroke
   const isLoggedIn = await checkLoggedIn();
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-16">
+    <div className="min-h-full bg-page-gradient px-6 py-16">
       <div className="max-w-5xl mx-auto">
         <Link
           href="/strokes"
