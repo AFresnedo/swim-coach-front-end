@@ -1,11 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
+
+// useSearchParams suspends the tree up to the nearest Suspense boundary
+// during static builds, so it's isolated here rather than called directly
+// in the page body.
+function SessionExpiredBanner() {
+  const searchParams = useSearchParams();
+  if (searchParams.get("sessionExpired") !== "1") return null;
+  return (
+    <p
+      role="status"
+      className="mb-6 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-400"
+    >
+      Your session expired — please sign in again.
+    </p>
+  );
+}
 
 export default function SignInPage() {
   const router = useRouter();
@@ -47,6 +63,10 @@ export default function SignInPage() {
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
           Sign in to continue your training.
         </p>
+
+        <Suspense fallback={null}>
+          <SessionExpiredBanner />
+        </Suspense>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
