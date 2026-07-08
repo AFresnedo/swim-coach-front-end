@@ -160,7 +160,7 @@ export default function Home() {
           ].map(({ icon, title, desc, comingSoon }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-slate-100 dark:border-slate-800 p-6 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
+              className="group rounded-2xl border border-slate-300 dark:border-slate-800 p-6 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
             >
               <div className="flex items-start justify-between gap-2">
                 <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-aqua text-2xl shadow-aqua">

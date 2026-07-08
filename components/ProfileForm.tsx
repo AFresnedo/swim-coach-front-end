@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError } from "@/lib/front-api";
+import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
 
@@ -30,6 +31,7 @@ function kgToLbs(kg: number) {
 }
 
 export default function ProfileForm() {
+  const protectedFrontFetch = useProtectedFrontFetch();
   const [units, setUnits] = useState<UnitSystem>("metric");
   const [age, setAge] = useState("");
   const [heightCm, setHeightCm] = useState("");
@@ -47,7 +49,7 @@ export default function ProfileForm() {
   useEffect(() => {
     let cancelled = false;
 
-    frontApiFetch<Profile | null>("/api/profile")
+    protectedFrontFetch<Profile | null>("/api/profile")
       .then((profile) => {
         if (cancelled || !profile) return;
         const { ft, inches } = cmToFtIn(profile.height_cm);
@@ -60,8 +62,9 @@ export default function ProfileForm() {
         setSex(profile.sex);
         setUnits(profile.unit_preference);
       })
-      .catch(() => {
-        if (!cancelled) setError("Failed to load your profile. Please try again.");
+      .catch((err) => {
+        if (cancelled || isAuthRedirect(err)) return;
+        setError("Failed to load your profile. Please try again.");
       })
       .finally(() => {
         if (!cancelled) setLoadingProfile(false);
@@ -70,7 +73,7 @@ export default function ProfileForm() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [protectedFrontFetch]);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -87,7 +90,7 @@ export default function ProfileForm() {
     const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * 0.453592;
 
     try {
-      await frontApiFetch("/api/profile", {
+      await protectedFrontFetch("/api/profile", {
         method: "PUT",
         body: JSON.stringify({
           age: parseInt(age, 10),
@@ -99,6 +102,7 @@ export default function ProfileForm() {
       });
       setSaved(true);
     } catch (err) {
+      if (isAuthRedirect(err)) return;
       if (err instanceof ApiError) {
         setError(err.message);
         if (err.errors) setFieldErrors(err.errors);

@@ -10,10 +10,13 @@ global.ResizeObserver = class {
 };
 
 const push = vi.fn();
+const replace = vi.fn();
 const refresh = vi.fn();
+// A stable object, matching real next/navigation's useRouter.
+const router = { push, replace, refresh };
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push, refresh }),
+  useRouter: () => router,
 }));
 
 vi.mock("@/lib/front-api", async (importActual) => {
@@ -65,5 +68,15 @@ describe("AccountMenu", () => {
     expect(await screen.findByText("Server unavailable")).toBeDefined();
     expect(push).not.toHaveBeenCalled();
     expect(refresh).not.toHaveBeenCalled();
+  });
+
+  it("redirects to sign-in instead of showing an error when the session has already expired", async () => {
+    mockFetch.mockRejectedValueOnce(new ApiError("Could not validate credentials", 401));
+    render(<AccountMenu />);
+    fireEvent.click(screen.getByRole("button", { name: /account/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
+    expect(screen.queryByText("Could not validate credentials")).toBeNull();
   });
 });

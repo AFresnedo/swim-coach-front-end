@@ -9,7 +9,7 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type DeactivationReason = "reached" | "abandoned" | "other";
 type Goal = {
@@ -29,6 +29,7 @@ const REASON_LABELS: Record<DeactivationReason, string> = {
 };
 
 export default function GoalsList() {
+  const protectedFrontFetch = useProtectedFrontFetch();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [filter, setFilter] = useState<GoalFilter>("active");
   const [loading, setLoading] = useState(true);
@@ -53,13 +54,14 @@ export default function GoalsList() {
     setLoading(true);
     setError("");
 
-    frontApiFetch<Goal[]>(`/api/goals?status=${filter}`)
+    protectedFrontFetch<Goal[]>(`/api/goals?status=${filter}`)
       .then((data) => {
         if (!cancelled) setGoals(data);
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err instanceof ApiError ? err.message : "Failed to load goals. Please try again.");
+        const message = protectedErrorMessage(err, "Failed to load goals. Please try again.");
+        if (message) setError(message);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -68,7 +70,7 @@ export default function GoalsList() {
     return () => {
       cancelled = true;
     };
-  }, [filter]);
+  }, [filter, protectedFrontFetch]);
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -76,16 +78,15 @@ export default function GoalsList() {
     setCreating(true);
 
     try {
-      const goal = await frontApiFetch<Goal>("/api/goals", {
+      const goal = await protectedFrontFetch<Goal>("/api/goals", {
         method: "POST",
         body: JSON.stringify({ text: newText }),
       });
       setGoals((prev) => [goal, ...prev]);
       setNewText("");
     } catch (err) {
-      setCreateError(
-        err instanceof ApiError ? err.message : "Failed to create goal. Please try again.",
-      );
+      const message = protectedErrorMessage(err, "Failed to create goal. Please try again.");
+      if (message) setCreateError(message);
     } finally {
       setCreating(false);
     }
@@ -109,16 +110,15 @@ export default function GoalsList() {
     setEditError("");
 
     try {
-      const updated = await frontApiFetch<Goal>(`/api/goals/${goalId}`, {
+      const updated = await protectedFrontFetch<Goal>(`/api/goals/${goalId}`, {
         method: "PATCH",
         body: JSON.stringify({ text: editText }),
       });
       setGoals((prev) => prev.map((g) => (g.id === goalId ? updated : g)));
       setEditingId(null);
     } catch (err) {
-      setEditError(
-        err instanceof ApiError ? err.message : "Failed to save goal. Please try again.",
-      );
+      const message = protectedErrorMessage(err, "Failed to save goal. Please try again.");
+      if (message) setEditError(message);
     } finally {
       setEditSaving(false);
     }
@@ -142,7 +142,7 @@ export default function GoalsList() {
     setDeactivateError("");
 
     try {
-      const updated = await frontApiFetch<Goal>(`/api/goals/${goalId}/deactivate`, {
+      const updated = await protectedFrontFetch<Goal>(`/api/goals/${goalId}/deactivate`, {
         method: "PATCH",
         body: JSON.stringify({ reason: deactivateReason }),
       });
@@ -153,9 +153,8 @@ export default function GoalsList() {
       );
       setDeactivatingId(null);
     } catch (err) {
-      setDeactivateError(
-        err instanceof ApiError ? err.message : "Failed to deactivate goal. Please try again.",
-      );
+      const message = protectedErrorMessage(err, "Failed to deactivate goal. Please try again.");
+      if (message) setDeactivateError(message);
     } finally {
       setDeactivateSaving(false);
     }
