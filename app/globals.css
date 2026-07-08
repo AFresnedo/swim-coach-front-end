@@ -53,7 +53,12 @@ body {
 }
 
 .bg-page-gradient {
-  background-image: linear-gradient(135deg, var(--color-sky-200), var(--color-cyan-200), var(--color-teal-200));
+  background-image: linear-gradient(
+    135deg,
+    var(--color-sky-200),
+    var(--color-cyan-200),
+    var(--color-teal-200)
+  );
 }
 
 @media (prefers-color-scheme: dark) {
