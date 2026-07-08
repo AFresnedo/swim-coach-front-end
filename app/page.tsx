@@ -125,7 +125,7 @@ export default function Home() {
           {[
             {
               icon: "⏱",
-              title: "Lap-time tracking",
+              title: "Swim Log",
               desc: "Log every set and split. Visualize your progress over days, weeks, and months.",
             },
             {
