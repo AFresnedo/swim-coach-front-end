@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import Header from "@/components/Header";
+import { SITE_INDEXABLE } from "@/lib/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +19,10 @@ export const metadata: Metadata = {
   title: "SwimCoach — Improve Your Lap Times & Fitness",
   description:
     "SwimCoach helps swimmers of all levels log their training, track goals, and learn stroke technique.",
-  // Soft-launch stage: keep crawlers out via meta tag too (robots.txt alone
-  // is honor-system and some crawlers index pages before checking it).
-  // Remove both this and app/robots.ts's disallow when publicly launching.
-  robots: { index: false, follow: false },
+  // Belt-and-suspenders with app/robots.ts: robots.txt is honor-system and
+  // some crawlers index pages before checking it, so this meta tag backs it
+  // up. Both are driven by SITE_INDEXABLE (see lib/constants.ts).
+  robots: SITE_INDEXABLE ? undefined : { index: false, follow: false },
 };
 
 export default function RootLayout({
