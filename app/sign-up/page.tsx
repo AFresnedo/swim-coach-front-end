@@ -17,6 +17,7 @@ export default function SignUpPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledgedDataWipe, setAcknowledgedDataWipe] = useState(false);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -158,9 +159,28 @@ export default function SignUpPage() {
             </label>
           </div>
 
+          <div className="flex items-start gap-2">
+            <input
+              id="acknowledge-data-wipe"
+              type="checkbox"
+              required
+              checked={acknowledgedDataWipe}
+              onChange={(e) => setAcknowledgedDataWipe(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-600"
+            />
+            <label
+              htmlFor="acknowledge-data-wipe"
+              className="text-xs text-slate-500 dark:text-slate-400"
+            >
+              I understand this site is still under active development and my account data
+              (including swim times, goals, and profile info) may be wiped or reset at any time
+              without notice.
+            </label>
+          </div>
+
           <button
             type="submit"
-            disabled={loading || !acknowledged}
+            disabled={loading || !acknowledged || !acknowledgedDataWipe}
             className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
           >
             {loading ? "Creating account…" : "Create account"}

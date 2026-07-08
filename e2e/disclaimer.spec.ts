@@ -15,6 +15,7 @@ test("disclaimer banner is visible for logged-out and logged-in users", async ({
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -47,7 +48,7 @@ test("disclaimer page is reachable from the banner and the sign-up checkbox", as
   await expect(disclaimerPage).toHaveURL("/disclaimer");
 });
 
-test("sign-up submit is blocked until the disclaimer acknowledgment is checked", async ({
+test("sign-up submit is blocked until both acknowledgments are checked", async ({
   page,
   testUser,
 }) => {
@@ -60,6 +61,29 @@ test("sign-up submit is blocked until the disclaimer acknowledgment is checked",
   await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
 
   const submit = page.getByRole("button", { name: /create account/i });
+  await expect(submit).toBeDisabled();
+
+  await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await expect(submit).toBeDisabled();
+
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
+  await expect(submit).toBeEnabled();
+});
+
+test("sign-up submit is blocked until the data-wipe acknowledgment is checked", async ({
+  page,
+  testUser,
+}) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+
+  const submit = page.getByRole("button", { name: /create account/i });
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await expect(submit).toBeDisabled();
 
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();

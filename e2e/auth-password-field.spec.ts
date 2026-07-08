@@ -38,6 +38,7 @@ test("sign-up shows an error when password and confirm password don't match", as
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("textbox", { name: "Confirm password" }).fill(`${password}x`);
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
 
   await expect(page.getByText("Passwords do not match")).toBeVisible();

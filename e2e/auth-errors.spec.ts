@@ -12,6 +12,7 @@ test("sign-in with wrong password shows an error and does not log in", async ({
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -41,6 +42,7 @@ test("sign-up with an already-registered email shows an error and does not log i
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
@@ -54,6 +56,7 @@ test("sign-up with an already-registered email shows an error and does not log i
   await page.getByRole("textbox", { name: "Password", exact: true }).fill("AnotherPassword1!");
   await page.getByRole("textbox", { name: "Confirm password" }).fill("AnotherPassword1!");
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
 
   await expect(page.getByText("Email already registered")).toBeVisible();
@@ -70,6 +73,7 @@ test("logout failure shows an error and keeps the user logged in", async ({ page
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
   await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
