@@ -130,6 +130,16 @@ export default function Home() {
               desc: "Log every set and split, and browse your history by date and stroke.",
             },
             {
+              icon: "🏅",
+              title: "Goal setting",
+              desc: "Set a goal, track it over time, and mark it reached once you get there.",
+            },
+            {
+              icon: "🏊",
+              title: "Stroke-specific drills",
+              desc: "A full library of drills for freestyle, backstroke, breaststroke, and butterfly.",
+            },
+            {
               icon: "📋",
               title: "Personalized plans",
               desc: "AI-generated training plans tailored to your stroke, distance, and fitness level.",
@@ -142,20 +152,10 @@ export default function Home() {
               comingSoon: true,
             },
             {
-              icon: "🏊",
-              title: "Stroke-specific drills",
-              desc: "A full library of drills for freestyle, backstroke, breaststroke, and butterfly.",
-            },
-            {
               icon: "🔔",
               title: "Rest & recovery guidance",
               desc: "AI recommendations for when to push and when to rest, based on your training load.",
               comingSoon: true,
-            },
-            {
-              icon: "🏅",
-              title: "Goal setting",
-              desc: "Set a goal, track it over time, and mark it reached once you get there.",
             },
           ].map(({ icon, title, desc, comingSoon }) => (
             <div
