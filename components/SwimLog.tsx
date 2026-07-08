@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   cardClass,
   inputClass,
@@ -27,6 +27,32 @@ import {
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 type OfficialFilter = "" | "true" | "false";
+
+function Field({
+  htmlFor,
+  label,
+  error,
+  children,
+}: {
+  htmlFor: string;
+  label: string;
+  error?: string | null;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={htmlFor} className={labelClass}>
+        {label}
+      </label>
+      {children}
+      {error && (
+        <p id={`${htmlFor}-error`} className="text-xs text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function validateFilterLength(value: string): string | null {
   const trimmed = value.trim();
@@ -238,10 +264,7 @@ export default function SwimLog() {
   return (
     <div className="flex flex-col gap-8">
       <div className={`${cardClass} flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4`}>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="log-date" className={labelClass}>
-            Date
-          </label>
+        <Field htmlFor="log-date" label="Date">
           <input
             id="log-date"
             type="date"
@@ -250,16 +273,13 @@ export default function SwimLog() {
             onChange={(e) => setSelectedDate(e.target.value)}
             className={`${inputClass} ${inputNormalClass} sm:w-auto`}
           />
-        </div>
+        </Field>
       </div>
 
       <div className={`${cardClass} flex flex-col gap-4`}>
         <h2 className={labelClass}>Filter results</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="filter-stroke" className={labelClass}>
-              Filter by stroke
-            </label>
+          <Field htmlFor="filter-stroke" label="Filter by stroke">
             <select
               id="filter-stroke"
               value={filterStroke}
@@ -273,12 +293,9 @@ export default function SwimLog() {
                 </option>
               ))}
             </select>
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="filter-course" className={labelClass}>
-              Filter by course
-            </label>
+          <Field htmlFor="filter-course" label="Filter by course">
             <select
               id="filter-course"
               value={filterCourse}
@@ -292,12 +309,9 @@ export default function SwimLog() {
                 </option>
               ))}
             </select>
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="filter-length" className={labelClass}>
-              Filter by length
-            </label>
+          <Field htmlFor="filter-length" label="Filter by length" error={filterLengthError}>
             <input
               id="filter-length"
               type="number"
@@ -308,17 +322,9 @@ export default function SwimLog() {
               className={`${inputClass} ${filterLengthError ? inputErrorClass : inputNormalClass}`}
               aria-describedby={filterLengthError ? "filter-length-error" : undefined}
             />
-            {filterLengthError && (
-              <p id="filter-length-error" className="text-xs text-red-600 dark:text-red-400">
-                {filterLengthError}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="filter-official" className={labelClass}>
-              Filter by official status
-            </label>
+          <Field htmlFor="filter-official" label="Filter by official status">
             <select
               id="filter-official"
               value={filterOfficial}
@@ -329,7 +335,7 @@ export default function SwimLog() {
               <option value="true">Official only</option>
               <option value="false">Practice only</option>
             </select>
-          </div>
+          </Field>
         </div>
 
         {(filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial) && (
@@ -350,10 +356,7 @@ export default function SwimLog() {
 
       <form onSubmit={handleCreate} className={`${cardClass} flex flex-col gap-4`}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="log-stroke" className={labelClass}>
-              Stroke
-            </label>
+          <Field htmlFor="log-stroke" label="Stroke" error={createFieldErrors.stroke}>
             <select
               id="log-stroke"
               value={stroke}
@@ -367,17 +370,9 @@ export default function SwimLog() {
                 </option>
               ))}
             </select>
-            {createFieldErrors.stroke && (
-              <p id="log-stroke-error" className="text-xs text-red-600 dark:text-red-400">
-                {createFieldErrors.stroke}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="log-course" className={labelClass}>
-              Course
-            </label>
+          <Field htmlFor="log-course" label="Course" error={createFieldErrors.course}>
             <select
               id="log-course"
               value={course}
@@ -391,17 +386,9 @@ export default function SwimLog() {
                 </option>
               ))}
             </select>
-            {createFieldErrors.course && (
-              <p id="log-course-error" className="text-xs text-red-600 dark:text-red-400">
-                {createFieldErrors.course}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="log-length" className={labelClass}>
-              Length
-            </label>
+          <Field htmlFor="log-length" label="Length" error={createFieldErrors.length}>
             <input
               id="log-length"
               type="number"
@@ -413,17 +400,9 @@ export default function SwimLog() {
               className={`${inputClass} ${createFieldErrors.length ? inputErrorClass : inputNormalClass}`}
               aria-describedby={createFieldErrors.length ? "log-length-error" : undefined}
             />
-            {createFieldErrors.length && (
-              <p id="log-length-error" className="text-xs text-red-600 dark:text-red-400">
-                {createFieldErrors.length}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="log-time" className={labelClass}>
-              Time
-            </label>
+          <Field htmlFor="log-time" label="Time" error={createFieldErrors.time_seconds}>
             <input
               id="log-time"
               type="text"
@@ -434,17 +413,9 @@ export default function SwimLog() {
               className={`${inputClass} ${createFieldErrors.time_seconds ? inputErrorClass : inputNormalClass}`}
               aria-describedby={createFieldErrors.time_seconds ? "log-time-error" : undefined}
             />
-            {createFieldErrors.time_seconds && (
-              <p id="log-time-error" className="text-xs text-red-600 dark:text-red-400">
-                {createFieldErrors.time_seconds}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="log-attempt" className={labelClass}>
-              Attempt #
-            </label>
+          <Field htmlFor="log-attempt" label="Attempt #" error={createFieldErrors.attempt_number}>
             <input
               id="log-attempt"
               type="number"
@@ -454,12 +425,7 @@ export default function SwimLog() {
               className={`${inputClass} ${createFieldErrors.attempt_number ? inputErrorClass : inputNormalClass}`}
               aria-describedby={createFieldErrors.attempt_number ? "log-attempt-error" : undefined}
             />
-            {createFieldErrors.attempt_number && (
-              <p id="log-attempt-error" className="text-xs text-red-600 dark:text-red-400">
-                {createFieldErrors.attempt_number}
-              </p>
-            )}
-          </div>
+          </Field>
 
           <div className="flex items-end gap-2 pb-2.5">
             <input
@@ -475,10 +441,7 @@ export default function SwimLog() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="log-notes" className={labelClass}>
-            Notes
-          </label>
+        <Field htmlFor="log-notes" label="Notes" error={createFieldErrors.notes}>
           <textarea
             id="log-notes"
             rows={2}
@@ -488,12 +451,7 @@ export default function SwimLog() {
             placeholder="Optional"
             aria-describedby={createFieldErrors.notes ? "log-notes-error" : undefined}
           />
-          {createFieldErrors.notes && (
-            <p id="log-notes-error" className="text-xs text-red-600 dark:text-red-400">
-              {createFieldErrors.notes}
-            </p>
-          )}
-        </div>
+        </Field>
 
         {createError && (
           <p role="alert" className="text-sm text-red-600 dark:text-red-400">
