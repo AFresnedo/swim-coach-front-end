@@ -55,8 +55,13 @@ export function useProtectedFrontFetch() {
           // already navigated elsewhere would yank them back to /sign-in.
           // Use replace (not push) so bouncing back with the browser's
           // back button can't re-enter the protected page and re-trigger
-          // this same redirect.
-          if (isMountedRef.current) router.replace("/sign-in?sessionExpired=1");
+          // this same redirect. Follow with refresh() so the root layout's
+          // Header (a Server Component) re-checks auth state instead of
+          // continuing to show the logged-in nav.
+          if (isMountedRef.current) {
+            router.replace("/sign-in?sessionExpired=1");
+            router.refresh();
+          }
           throw new AuthRedirectError();
         }
         throw err;
