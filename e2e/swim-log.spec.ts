@@ -82,3 +82,116 @@ test("swim log flow: log entry → view for date → date-scoped fetch", async (
   expect(clearedResponse.ok()).toBeTruthy();
   await expect(page.getByText("0:32.10")).toBeVisible();
 });
+
+test("create error surfaces the backend's field-level validation message", async ({
+  page,
+  testUser,
+}) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+  await page.getByRole("button", { name: /create account/i }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.goto("/swim-log");
+  await expect(page.getByText(/no times logged for this date yet/i)).toBeVisible();
+
+  await page.getByRole("spinbutton", { name: "Length", exact: true }).fill("50");
+  await page.getByRole("textbox", { name: "Time", exact: true }).fill("0:32.10");
+  await page.getByLabel("Notes").fill("x".repeat(2001));
+  await page.getByRole("button", { name: "Log time" }).click();
+
+  await expect(page.getByText("Validation failed")).toBeVisible();
+  await expect(page.getByText(/at most 2000 characters/i)).toBeVisible();
+  await expect(page.getByText("0:32.10")).not.toBeVisible();
+});
+
+test("load error shows a message when the initial fetch fails", async ({ page, testUser }) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+  await page.getByRole("button", { name: /create account/i }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.route("**/api/swim-times?*", (route) =>
+    route.fulfill({
+      status: 502,
+      contentType: "application/json",
+      body: JSON.stringify({ detail: "Server unavailable" }),
+    }),
+  );
+
+  await page.goto("/swim-log");
+  await expect(page.getByText("Server unavailable")).toBeVisible();
+  await expect(page.getByText(/no times logged for this date yet/i)).not.toBeVisible();
+});
+
+test("Load more appends further results and hides the button once exhausted", async ({
+  page,
+  testUser,
+}) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+  await page.getByRole("button", { name: /create account/i }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.goto("/swim-log");
+  const todayValue = await page.getByLabel("Date").inputValue();
+
+  // Seed one page's worth plus one extra directly via the BFF route (reusing
+  // the page's authenticated session) rather than filling the form 51 times.
+  const totalRecords = 51;
+  await Promise.all(
+    Array.from({ length: totalRecords }, (_, i) =>
+      page.request.post("/api/swim-times", {
+        data: {
+          date: todayValue,
+          stroke: "freestyle",
+          course: "scy",
+          length: 50,
+          attempt_number: i + 1,
+          time_seconds: 30,
+          is_official: false,
+          notes: null,
+        },
+      }),
+    ),
+  );
+
+  const [initialResponse] = await Promise.all([
+    page.waitForResponse(
+      (res) => res.url().includes("/api/swim-times?") && res.request().method() === "GET",
+    ),
+    page.reload(),
+  ]);
+  expect(initialResponse.ok()).toBeTruthy();
+
+  const rows = page.locator("table tbody tr");
+  await expect(rows).toHaveCount(50);
+  const loadMoreButton = page.getByRole("button", { name: "Load more" });
+  await expect(loadMoreButton).toBeVisible();
+
+  const [loadMoreResponse] = await Promise.all([
+    page.waitForResponse(
+      (res) => res.url().includes("/api/swim-times?") && res.url().includes("cursor="),
+    ),
+    loadMoreButton.click(),
+  ]);
+  expect(loadMoreResponse.ok()).toBeTruthy();
+
+  await expect(rows).toHaveCount(totalRecords);
+  await expect(loadMoreButton).not.toBeVisible();
+});
