@@ -58,8 +58,9 @@ export const COURSE_LABELS = Object.fromEntries(
 ) as Record<Course, string>;
 
 export function formatMmSs(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds - minutes * 60;
+  const rounded = Math.round(totalSeconds * 100) / 100;
+  const minutes = Math.floor(rounded / 60);
+  const seconds = rounded - minutes * 60;
   return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
 }
 
