@@ -4,19 +4,22 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError } from "@/lib/front-api";
+import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
 
 export default function AccountMenu() {
   const router = useRouter();
+  const protectedFetch = useProtectedFetch();
   const [error, setError] = useState("");
 
   async function handleLogout() {
     setError("");
     try {
-      await frontApiFetch("/api/auth/logout", { method: "POST" });
+      await protectedFetch("/api/auth/logout", { method: "POST" });
       router.push("/");
       router.refresh();
     } catch (err) {
+      if (err instanceof AuthRedirectError) return;
       setError(err instanceof ApiError ? err.message : "Log out failed. Please try again.");
     }
   }

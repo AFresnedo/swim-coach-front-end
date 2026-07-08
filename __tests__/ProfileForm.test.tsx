@@ -2,6 +2,17 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ProfileForm from "@/components/ProfileForm";
 
+const push = vi.fn();
+const refresh = vi.fn();
+// A stable object, matching real next/navigation's useRouter, since
+// ProfileForm depends on the protected-fetch function's identity in a
+// useEffect dependency array — a fresh object per call would refire it.
+const router = { push, refresh };
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => router,
+}));
+
 vi.mock("@/lib/front-api", async (importActual) => {
   const actual = await importActual<typeof import("@/lib/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
@@ -188,6 +199,13 @@ describe("ProfileForm", () => {
     mockFetch.mockRejectedValueOnce(new ApiError("Server error", 500));
     render(<ProfileForm />);
     expect(await screen.findByText("Failed to load your profile. Please try again.")).toBeDefined();
+  });
+
+  it("redirects to sign-in instead of showing an error when the session has expired", async () => {
+    mockFetch.mockRejectedValueOnce(new ApiError("Could not validate credentials", 401));
+    render(<ProfileForm />);
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
+    expect(screen.queryByText("Failed to load your profile. Please try again.")).toBeNull();
   });
 
   it("shows 'Saving…' and disables button during submission", async () => {

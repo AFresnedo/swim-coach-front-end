@@ -10,7 +10,7 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError } from "@/lib/front-api";
 import {
   COURSE_LABELS,
   COURSE_OPTIONS,
@@ -25,6 +25,7 @@ import {
   type SwimTimeFilterParam,
 } from "@/lib/swim-times-data";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
+import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
 
 type OfficialFilter = "" | "true" | "false";
 
@@ -98,6 +99,7 @@ function buildSwimTimesQuery(params: {
 }
 
 export default function SwimLog() {
+  const protectedFetch = useProtectedFetch();
   const [selectedDate, setSelectedDate] = useState(todayLocalDate);
   const [times, setTimes] = useState<SwimTime[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -148,14 +150,14 @@ export default function SwimLog() {
       filterOfficial,
     });
 
-    frontApiFetch<{ items: SwimTime[]; next_cursor: string | null }>(`/api/swim-times?${query}`)
+    protectedFetch<{ items: SwimTime[]; next_cursor: string | null }>(`/api/swim-times?${query}`)
       .then((data) => {
         if (cancelled) return;
         setTimes(data.items);
         setNextCursor(data.next_cursor);
       })
       .catch((err) => {
-        if (cancelled) return;
+        if (cancelled || err instanceof AuthRedirectError) return;
         setError(
           err instanceof ApiError ? err.message : "Failed to load swim times. Please try again.",
         );
@@ -174,6 +176,7 @@ export default function SwimLog() {
     debouncedFilterLength,
     filterOfficial,
     debouncedFilterLengthError,
+    protectedFetch,
   ]);
 
   async function handleLoadMore() {
@@ -191,14 +194,14 @@ export default function SwimLog() {
         filterOfficial,
         cursor: nextCursor,
       });
-      const data = await frontApiFetch<{ items: SwimTime[]; next_cursor: string | null }>(
+      const data = await protectedFetch<{ items: SwimTime[]; next_cursor: string | null }>(
         `/api/swim-times?${query}`,
       );
       if (viewGenerationRef.current !== generation) return;
       setTimes((prev) => [...prev, ...data.items]);
       setNextCursor(data.next_cursor);
     } catch (err) {
-      if (viewGenerationRef.current !== generation) return;
+      if (viewGenerationRef.current !== generation || err instanceof AuthRedirectError) return;
       setError(
         err instanceof ApiError ? err.message : "Failed to load more swim times. Please try again.",
       );
@@ -221,7 +224,7 @@ export default function SwimLog() {
     const generation = viewGenerationRef.current;
     setCreating(true);
     try {
-      const created = await frontApiFetch<SwimTime>("/api/swim-times", {
+      const created = await protectedFetch<SwimTime>("/api/swim-times", {
         method: "POST",
         body: JSON.stringify({
           date: selectedDate,
@@ -250,6 +253,7 @@ export default function SwimLog() {
       setNotes("");
       setIsOfficial(false);
     } catch (err) {
+      if (err instanceof AuthRedirectError) return;
       if (err instanceof ApiError) {
         setCreateError(err.message);
         if (err.errors) setCreateFieldErrors(err.errors);

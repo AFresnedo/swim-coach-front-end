@@ -2,6 +2,17 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import GoalsList from "@/components/GoalsList";
 
+const push = vi.fn();
+const refresh = vi.fn();
+// A stable object, matching real next/navigation's useRouter, since
+// GoalsList depends on the protected-fetch function's identity in a
+// useEffect dependency array — a fresh object per call would refire it.
+const router = { push, refresh };
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => router,
+}));
+
 vi.mock("@/lib/front-api", async (importActual) => {
   const actual = await importActual<typeof import("@/lib/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
@@ -156,5 +167,12 @@ describe("GoalsList", () => {
     mockFetch.mockRejectedValue(new ApiError("Server error", 500));
     render(<GoalsList />);
     expect(await screen.findByText("Server error")).toBeDefined();
+  });
+
+  it("redirects to sign-in instead of showing an error when the session has expired", async () => {
+    mockFetch.mockRejectedValue(new ApiError("Could not validate credentials", 401));
+    render(<GoalsList />);
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
+    expect(screen.queryByText("Could not validate credentials")).toBeNull();
   });
 });

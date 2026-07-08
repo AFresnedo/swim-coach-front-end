@@ -9,7 +9,8 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError } from "@/lib/front-api";
+import { AuthRedirectError, useProtectedFetch } from "@/lib/use-protected-fetch";
 
 type DeactivationReason = "reached" | "abandoned" | "other";
 type Goal = {
@@ -29,6 +30,7 @@ const REASON_LABELS: Record<DeactivationReason, string> = {
 };
 
 export default function GoalsList() {
+  const protectedFetch = useProtectedFetch();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [filter, setFilter] = useState<GoalFilter>("active");
   const [loading, setLoading] = useState(true);
@@ -53,12 +55,12 @@ export default function GoalsList() {
     setLoading(true);
     setError("");
 
-    frontApiFetch<Goal[]>(`/api/goals?status=${filter}`)
+    protectedFetch<Goal[]>(`/api/goals?status=${filter}`)
       .then((data) => {
         if (!cancelled) setGoals(data);
       })
       .catch((err) => {
-        if (cancelled) return;
+        if (cancelled || err instanceof AuthRedirectError) return;
         setError(err instanceof ApiError ? err.message : "Failed to load goals. Please try again.");
       })
       .finally(() => {
@@ -68,7 +70,7 @@ export default function GoalsList() {
     return () => {
       cancelled = true;
     };
-  }, [filter]);
+  }, [filter, protectedFetch]);
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -76,13 +78,14 @@ export default function GoalsList() {
     setCreating(true);
 
     try {
-      const goal = await frontApiFetch<Goal>("/api/goals", {
+      const goal = await protectedFetch<Goal>("/api/goals", {
         method: "POST",
         body: JSON.stringify({ text: newText }),
       });
       setGoals((prev) => [goal, ...prev]);
       setNewText("");
     } catch (err) {
+      if (err instanceof AuthRedirectError) return;
       setCreateError(
         err instanceof ApiError ? err.message : "Failed to create goal. Please try again.",
       );
@@ -109,13 +112,14 @@ export default function GoalsList() {
     setEditError("");
 
     try {
-      const updated = await frontApiFetch<Goal>(`/api/goals/${goalId}`, {
+      const updated = await protectedFetch<Goal>(`/api/goals/${goalId}`, {
         method: "PATCH",
         body: JSON.stringify({ text: editText }),
       });
       setGoals((prev) => prev.map((g) => (g.id === goalId ? updated : g)));
       setEditingId(null);
     } catch (err) {
+      if (err instanceof AuthRedirectError) return;
       setEditError(
         err instanceof ApiError ? err.message : "Failed to save goal. Please try again.",
       );
@@ -142,7 +146,7 @@ export default function GoalsList() {
     setDeactivateError("");
 
     try {
-      const updated = await frontApiFetch<Goal>(`/api/goals/${goalId}/deactivate`, {
+      const updated = await protectedFetch<Goal>(`/api/goals/${goalId}/deactivate`, {
         method: "PATCH",
         body: JSON.stringify({ reason: deactivateReason }),
       });
@@ -153,6 +157,7 @@ export default function GoalsList() {
       );
       setDeactivatingId(null);
     } catch (err) {
+      if (err instanceof AuthRedirectError) return;
       setDeactivateError(
         err instanceof ApiError ? err.message : "Failed to deactivate goal. Please try again.",
       );
