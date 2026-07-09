@@ -15,10 +15,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const title = "SwimCoach — Improve Your Lap Times & Fitness";
+const description =
+  "SwimCoach helps swimmers of all levels log their training, track goals, and learn stroke technique.";
+
 export const metadata: Metadata = {
-  title: "SwimCoach — Improve Your Lap Times & Fitness",
-  description:
-    "SwimCoach helps swimmers of all levels log their training, track goals, and learn stroke technique.",
+  metadataBase: new URL("https://swim-coach-ai.com"),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    siteName: "SwimCoach",
+    type: "website",
+  },
   // Belt-and-suspenders with app/robots.ts: robots.txt is honor-system and
   // some crawlers index pages before checking it, so this meta tag backs it
   // up. Both are driven by SITE_INDEXABLE (see lib/constants.ts).
