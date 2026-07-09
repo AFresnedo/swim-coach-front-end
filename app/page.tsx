@@ -1,44 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { API_URL, safeFetch } from "@/lib/back-api";
+import { Stat, SwimCountStat, SwimmerCountStat } from "@/lib/stats";
 import { strokes } from "@/lib/strokes-data";
 
 const drillCount = strokes.reduce((total, stroke) => total + stroke.drills.length, 0);
-
-export async function getUserCount(): Promise<number | null> {
-  try {
-    const res = await safeFetch("users-count", `${API_URL}/users/count`, {
-      next: { revalidate: 300 },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.user_count;
-  } catch {
-    return null;
-  }
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <p data-testid={`stat-value-${label}`} className="text-3xl font-bold">
-        {value}
-      </p>
-      <p className="mt-1 text-cyan-50 text-sm">{label}</p>
-    </div>
-  );
-}
-
-async function SwimmerCountStat() {
-  const count = await getUserCount();
-  return (
-    <Stat
-      value={count !== null ? count.toLocaleString() : "Fetching..."}
-      label="Swimmers training"
-    />
-  );
-}
 
 export default function Home() {
   return (
@@ -105,12 +70,10 @@ export default function Home() {
           <Suspense fallback={<Stat value="Fetching..." label="Swimmers training" />}>
             <SwimmerCountStat />
           </Suspense>
-          {[
-            { value: "0", label: "Swims logged" },
-            { value: String(drillCount), label: "Drills & resources" },
-          ].map(({ value, label }) => (
-            <Stat key={label} value={value} label={label} />
-          ))}
+          <Suspense fallback={<Stat value="Fetching..." label="Swims logged" />}>
+            <SwimCountStat />
+          </Suspense>
+          <Stat value={String(drillCount)} label="Drills & resources" />
         </div>
       </section>
 
