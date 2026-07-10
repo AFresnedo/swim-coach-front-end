@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
-import { Turnstile } from "@/components/Turnstile";
+import { Turnstile, type TurnstileHandle } from "@/components/Turnstile";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 
@@ -20,6 +20,7 @@ export default function SignUpPage() {
   const [acknowledged, setAcknowledged] = useState(false);
   const [acknowledgedDataWipe, setAcknowledgedDataWipe] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -47,6 +48,11 @@ export default function SignUpPage() {
       } else {
         setError("Sign up failed. Please try again.");
       }
+      // The submitted token is consumed by Cloudflare on the first verify
+      // attempt regardless of why registration failed, so any retry needs a
+      // fresh one.
+      setTurnstileToken("");
+      turnstileRef.current?.reset();
     } finally {
       setLoading(false);
     }
@@ -180,7 +186,11 @@ export default function SignUpPage() {
             </label>
           </div>
 
-          <Turnstile onVerify={setTurnstileToken} onExpire={() => setTurnstileToken("")} />
+          <Turnstile
+            ref={turnstileRef}
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken("")}
+          />
 
           <button
             type="submit"

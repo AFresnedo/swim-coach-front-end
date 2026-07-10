@@ -9,7 +9,10 @@ const IS_PROD = process.env.NODE_ENV === "production";
 // Bypasses the siteverify call entirely (no network) when true. Only ever set
 // in .env.local for local dev/e2e — never in ../infra's staging/prod env
 // config, or sign-up would ship with no CAPTCHA enforcement.
-const TURNSTILE_TEST_MODE = process.env.TURNSTILE_TEST_MODE === "true";
+// Shares the NEXT_PUBLIC_ name with components/Turnstile.tsx's client-side
+// flag (NEXT_PUBLIC_ vars are also readable server-side) so there's one flag
+// to set instead of two that can drift out of sync.
+const TURNSTILE_TEST_MODE = process.env.NEXT_PUBLIC_TURNSTILE_TEST_MODE === "true";
 
 async function verifyTurnstile(token: unknown): Promise<boolean> {
   if (TURNSTILE_TEST_MODE) return true;
@@ -34,7 +37,11 @@ async function verifyTurnstile(token: unknown): Promise<boolean> {
 }
 
 export async function POST(req: NextRequest) {
-  const { turnstileToken, ...body } = await req.json();
+  const parsed = await req.json();
+  if (typeof parsed !== "object" || parsed === null) {
+    return NextResponse.json({ detail: "Invalid request body" }, { status: 400 });
+  }
+  const { turnstileToken, ...body } = parsed;
 
   if (!(await verifyTurnstile(turnstileToken))) {
     return NextResponse.json({ detail: "CAPTCHA verification failed" }, { status: 400 });

@@ -1,5 +1,7 @@
 import { cleanup, render } from "@testing-library/react";
+import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { TurnstileHandle } from "@/components/Turnstile";
 
 vi.mock("next/script", () => ({
   default: ({ onLoad }: { onLoad?: () => void }) => {
@@ -60,5 +62,42 @@ describe("Turnstile", () => {
 
     options["error-callback"]?.();
     expect(resetWidget).toHaveBeenCalledTimes(2);
+  });
+
+  it("re-arms the widget for a fresh token when the parent calls reset() after a failed submit", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
+    vi.resetModules();
+    const { Turnstile } = await import("@/components/Turnstile");
+
+    const resetWidget = vi.fn();
+    window.turnstile = {
+      render: vi.fn().mockReturnValue("widget-id"),
+      remove: vi.fn(),
+      reset: resetWidget,
+    };
+
+    const ref = createRef<TurnstileHandle>();
+    render(<Turnstile ref={ref} onVerify={vi.fn()} onExpire={vi.fn()} />);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    ref.current?.reset();
+
+    expect(resetWidget).toHaveBeenCalledWith("widget-id");
+  });
+
+  it("reset() re-issues the test-mode token in test mode", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
+    vi.resetModules();
+    const { Turnstile } = await import("@/components/Turnstile");
+
+    const onVerify = vi.fn();
+    const ref = createRef<TurnstileHandle>();
+    render(<Turnstile ref={ref} onVerify={onVerify} onExpire={vi.fn()} />);
+
+    expect(onVerify).toHaveBeenCalledTimes(1);
+    ref.current?.reset();
+    expect(onVerify).toHaveBeenCalledTimes(2);
+    expect(onVerify).toHaveBeenLastCalledWith("test-mode-token");
   });
 });

@@ -19,8 +19,22 @@ describe("POST /api/auth/register", () => {
     setCookie.mockReset();
   });
 
+  it("rejects a non-object JSON body instead of crashing", async () => {
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST({ json: async () => null } as unknown as NextRequest);
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ detail: "Invalid request body" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("rejects when unverified and no secret is configured (fails closed)", async () => {
-    vi.stubEnv("TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");
     vi.resetModules();
     const { POST } = await import("@/app/api/auth/register/route");
@@ -38,7 +52,7 @@ describe("POST /api/auth/register", () => {
   });
 
   it("rejects when Cloudflare siteverify reports failure", async () => {
-    vi.stubEnv("TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
     const { POST } = await import("@/app/api/auth/register/route");
@@ -65,7 +79,7 @@ describe("POST /api/auth/register", () => {
   });
 
   it("forwards to the backend without the turnstileToken once siteverify passes", async () => {
-    vi.stubEnv("TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
     const { POST } = await import("@/app/api/auth/register/route");
@@ -94,7 +108,7 @@ describe("POST /api/auth/register", () => {
   });
 
   it("skips siteverify entirely in test mode", async () => {
-    vi.stubEnv("TURNSTILE_TEST_MODE", "true");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
     vi.resetModules();
     const { POST } = await import("@/app/api/auth/register/route");
 
