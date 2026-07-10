@@ -1,0 +1,115 @@
+import type { NextRequest } from "next/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const { setCookie } = vi.hoisted(() => ({ setCookie: vi.fn() }));
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn().mockResolvedValue({ set: setCookie }),
+}));
+
+function makeRequest(body: Record<string, unknown>): NextRequest {
+  return { json: async () => body } as unknown as NextRequest;
+}
+
+describe("POST /api/auth/register", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.resetModules();
+    setCookie.mockReset();
+  });
+
+  it("rejects when unverified and no secret is configured (fails closed)", async () => {
+    vi.stubEnv("TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "tok" }),
+    );
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ detail: "CAPTCHA verification failed" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects when Cloudflare siteverify reports failure", async () => {
+    vi.stubEnv("TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ success: false }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({
+        name: "A",
+        email: "a@example.com",
+        password: "pw",
+        turnstileToken: "bad-token",
+      }),
+    );
+
+    expect(res.status).toBe(400);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    );
+  });
+
+  it("forwards to the backend without the turnstileToken once siteverify passes", async () => {
+    vi.stubEnv("TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true }), { status: 200 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access_token: "test-access-token" }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({
+        name: "A",
+        email: "a@example.com",
+        password: "pw",
+        turnstileToken: "good-token",
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    const backendCallBody = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(backendCallBody).toEqual({ name: "A", email: "a@example.com", password: "pw" });
+    expect(setCookie).toHaveBeenCalledWith("access_token", "test-access-token", expect.anything());
+  });
+
+  it("skips siteverify entirely in test mode", async () => {
+    vi.stubEnv("TURNSTILE_TEST_MODE", "true");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ access_token: "test-access-token" }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "" }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(1); // only the backend call, no siteverify
+  });
+});

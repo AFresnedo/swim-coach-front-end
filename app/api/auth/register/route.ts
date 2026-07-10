@@ -6,8 +6,39 @@ import { jwtMaxAge } from "@/lib/jwt";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 
+// Bypasses the siteverify call entirely (no network) when true. Only ever set
+// in .env.local for local dev/e2e — never in ../infra's staging/prod env
+// config, or sign-up would ship with no CAPTCHA enforcement.
+const TURNSTILE_TEST_MODE = process.env.TURNSTILE_TEST_MODE === "true";
+
+async function verifyTurnstile(token: unknown): Promise<boolean> {
+  if (TURNSTILE_TEST_MODE) return true;
+  if (typeof token !== "string" || !token) return false;
+
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return false; // fail closed: reject rather than skip verification
+
+  const res = await safeFetch(
+    "turnstile/siteverify",
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret, response: token }),
+    },
+  ).catch(() => null);
+  if (!res) return false;
+
+  const data = await res.json().catch(() => ({ success: false }));
+  return data.success === true;
+}
+
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const { turnstileToken, ...body } = await req.json();
+
+  if (!(await verifyTurnstile(turnstileToken))) {
+    return NextResponse.json({ detail: "CAPTCHA verification failed" }, { status: 400 });
+  }
 
   let backRes: Response;
   try {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
+import { Turnstile } from "@/components/Turnstile";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 
@@ -18,6 +19,7 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const [acknowledgedDataWipe, setAcknowledgedDataWipe] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,7 +36,7 @@ export default function SignUpPage() {
     try {
       await frontApiFetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, turnstileToken }),
       });
       router.push("/");
       router.refresh();
@@ -178,9 +180,11 @@ export default function SignUpPage() {
             </label>
           </div>
 
+          <Turnstile onVerify={setTurnstileToken} onExpire={() => setTurnstileToken("")} />
+
           <button
             type="submit"
-            disabled={loading || !acknowledged || !acknowledgedDataWipe}
+            disabled={loading || !acknowledged || !acknowledgedDataWipe || !turnstileToken}
             className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
           >
             {loading ? "Creating account…" : "Create account"}
