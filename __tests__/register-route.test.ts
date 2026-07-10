@@ -51,6 +51,28 @@ describe("POST /api/auth/register", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("bounds the siteverify call with a timeout instead of hanging indefinitely", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi.fn().mockImplementation(
+      async () =>
+        new Response(JSON.stringify({ success: true, access_token: "test-access-token" }), {
+          status: 200,
+        }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await POST(
+      makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "tok" }),
+    );
+
+    const options = fetchMock.mock.calls[0][1] as { signal?: AbortSignal };
+    expect(options.signal).toBeInstanceOf(AbortSignal);
+  });
+
   it("rejects when Cloudflare siteverify reports failure", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");

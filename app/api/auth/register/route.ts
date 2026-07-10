@@ -28,6 +28,9 @@ async function verifyTurnstile(token: unknown): Promise<boolean> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ secret, response: token }),
+      // Fail fast rather than holding the registration request open for
+      // undici's ~5min default if Cloudflare is slow or unresponsive.
+      signal: AbortSignal.timeout(5000),
     },
   ).catch(() => null);
   if (!res) return false;
