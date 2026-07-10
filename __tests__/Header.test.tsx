@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Header from "@/components/Header";
+import { fakeJwt } from "./helpers/fake-jwt";
 
 const { cookies } = vi.hoisted(() => ({ cookies: vi.fn() }));
 
@@ -14,13 +15,13 @@ describe("Header", () => {
   afterEach(cleanup);
 
   it("links to the strokes page", async () => {
-    cookies.mockResolvedValue({ has: () => false });
+    cookies.mockResolvedValue({ get: () => undefined });
     render(await Header());
     expect(screen.getByRole("link", { name: "Strokes" }).getAttribute("href")).toBe("/strokes");
   });
 
   it("shows sign-in links, 'Features', and 'How it works' when logged out", async () => {
-    cookies.mockResolvedValue({ has: () => false });
+    cookies.mockResolvedValue({ get: () => undefined });
     render(await Header());
     expect(screen.getByRole("link", { name: "Sign in" })).toBeDefined();
     expect(screen.getByRole("link", { name: "Get started" })).toBeDefined();
@@ -30,7 +31,7 @@ describe("Header", () => {
   });
 
   it("shows Goals and the account menu, but hides 'Features' and 'How it works', when logged in", async () => {
-    cookies.mockResolvedValue({ has: () => true });
+    cookies.mockResolvedValue({ get: () => ({ value: fakeJwt(3600) }) });
     render(await Header());
     expect(screen.getByRole("link", { name: "Goals" }).getAttribute("href")).toBe("/goals");
     expect(screen.getByRole("button", { name: /account/i })).toBeDefined();
