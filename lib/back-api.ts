@@ -27,11 +27,11 @@ export class BackendError extends Error {
   }
 }
 
-export async function backApiFetch<T>(
+async function backApiFetchRaw(
   path: string,
   label: string,
   options: RequestInit = {},
-): Promise<T> {
+): Promise<Response> {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE)?.value;
   if (!token) throw new UnauthenticatedError();
@@ -50,7 +50,26 @@ export async function backApiFetch<T>(
     throw new BackendError(res.status, body.detail);
   }
 
+  return res;
+}
+
+export async function backApiFetch<T>(
+  path: string,
+  label: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const res = await backApiFetchRaw(path, label, options);
   return res.json();
+}
+
+// For endpoints with no response body (e.g. a 204), where there's nothing to
+// parse and no JSON shape to lie about with a cast.
+export async function backApiFetchNoBody(
+  path: string,
+  label: string,
+  options: RequestInit = {},
+): Promise<void> {
+  await backApiFetchRaw(path, label, options);
 }
 
 type FastAPIValidationError = { loc: (string | number)[]; msg: string };

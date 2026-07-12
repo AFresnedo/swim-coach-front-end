@@ -1,10 +1,11 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { fakeJwt } from "./helpers/fake-jwt";
 
-const { hasCookie } = vi.hoisted(() => ({ hasCookie: vi.fn() }));
+const { getCookie } = vi.hoisted(() => ({ getCookie: vi.fn() }));
 
 vi.mock("next/headers", () => ({
-  cookies: vi.fn().mockResolvedValue({ has: hasCookie }),
+  cookies: vi.fn().mockResolvedValue({ get: getCookie }),
 }));
 
 import StrokePage from "@/app/strokes/[stroke]/page";
@@ -13,7 +14,7 @@ describe("StrokePage", () => {
   afterEach(cleanup);
 
   it("shows drills when the user is logged in", async () => {
-    hasCookie.mockReturnValue(true);
+    getCookie.mockReturnValue({ value: fakeJwt(3600) });
     render(
       await StrokePage({
         params: Promise.resolve({ stroke: "freestyle" }),
@@ -24,7 +25,7 @@ describe("StrokePage", () => {
   });
 
   it("hides drills behind a sign-in prompt when logged out", async () => {
-    hasCookie.mockReturnValue(false);
+    getCookie.mockReturnValue(undefined);
     render(
       await StrokePage({
         params: Promise.resolve({ stroke: "freestyle" }),
@@ -36,7 +37,7 @@ describe("StrokePage", () => {
   });
 
   it("renders notFound for an unknown stroke slug", async () => {
-    hasCookie.mockReturnValue(true);
+    getCookie.mockReturnValue({ value: fakeJwt(3600) });
     await expect(
       StrokePage({
         params: Promise.resolve({ stroke: "sidestroke" }),
