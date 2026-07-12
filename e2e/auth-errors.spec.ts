@@ -19,6 +19,13 @@ test("sign-in with wrong password shows an error and does not log in", async ({
   await page.getByRole("button", { name: /account/i }).click();
   await page.getByRole("menuitem", { name: "Log out" }).click();
   await expect(page).toHaveURL("/");
+  // Logout now round-trips to the backend before clearing the cookie, so wait
+  // for the cookie to actually be gone from the browser's jar - otherwise the
+  // next navigation can race the deletion and load /sign-in with the old
+  // (backend-revoked but not yet locally cleared) cookie still attached.
+  await expect
+    .poll(async () => (await page.context().cookies()).some((c) => c.name === "access_token"))
+    .toBe(false);
 
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(email);
