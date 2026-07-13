@@ -2,14 +2,8 @@
 
 import Script from "next/script";
 import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
+import { TURNSTILE_TEST_MODE } from "@/lib/constants";
 
-// Bypasses the widget entirely (no script load, no network call to Cloudflare)
-// when true. Only ever set in .env.local for local dev/e2e — never in
-// ../infra's staging/prod env config, or sign-up would ship with no CAPTCHA.
-// Read via the NEXT_PUBLIC_ name everywhere (including server-side in
-// app/api/auth/register/route.ts) so there's a single flag to set, not two
-// independently-named ones that can drift out of sync.
-const TEST_MODE = process.env.NEXT_PUBLIC_TURNSTILE_TEST_MODE === "true";
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 declare global {
@@ -47,7 +41,7 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
 
   useImperativeHandle(ref, () => ({
     reset: () => {
-      if (TEST_MODE) {
+      if (TURNSTILE_TEST_MODE) {
         onVerify("test-mode-token");
         return;
       }
@@ -56,7 +50,7 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
   }));
 
   useEffect(() => {
-    if (TEST_MODE) onVerify("test-mode-token");
+    if (TURNSTILE_TEST_MODE) onVerify("test-mode-token");
   }, [onVerify]);
 
   useEffect(() => {
@@ -65,7 +59,7 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
     };
   }, []);
 
-  if (TEST_MODE) return null;
+  if (TURNSTILE_TEST_MODE) return null;
 
   function handleInvalidated() {
     onExpire();

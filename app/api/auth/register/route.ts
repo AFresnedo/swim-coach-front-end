@@ -1,18 +1,10 @@
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
-import { AUTH_COOKIE } from "@/lib/constants";
+import { AUTH_COOKIE, TURNSTILE_TEST_MODE } from "@/lib/constants";
 import { jwtMaxAge } from "@/lib/jwt";
 
 const IS_PROD = process.env.NODE_ENV === "production";
-
-// Bypasses the siteverify call entirely (no network) when true. Only ever set
-// in .env.local for local dev/e2e — never in ../infra's staging/prod env
-// config, or sign-up would ship with no CAPTCHA enforcement.
-// Shares the NEXT_PUBLIC_ name with components/Turnstile.tsx's client-side
-// flag (NEXT_PUBLIC_ vars are also readable server-side) so there's one flag
-// to set instead of two that can drift out of sync.
-const TURNSTILE_TEST_MODE = process.env.NEXT_PUBLIC_TURNSTILE_TEST_MODE === "true";
 
 // Throws for anything that isn't Cloudflare actually looking at the token and
 // saying yes/no (missing config, network failure, timeout, a non-2xx from
