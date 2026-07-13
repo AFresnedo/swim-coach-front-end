@@ -88,9 +88,7 @@ describe("POST /api/auth/register", () => {
     vi.resetModules();
     const { POST } = await import("@/app/api/auth/register/route");
 
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
     vi.stubGlobal("fetch", fetchMock);
 
     const res = await POST(

@@ -51,7 +51,6 @@ export default function SignUpPage() {
       // The submitted token is consumed by Cloudflare on the first verify
       // attempt regardless of why registration failed, so any retry needs a
       // fresh one.
-      setTurnstileToken("");
       turnstileRef.current?.reset();
     } finally {
       setLoading(false);
@@ -191,9 +190,7 @@ export default function SignUpPage() {
             onVerify={setTurnstileToken}
             onExpire={() => setTurnstileToken("")}
             onError={() =>
-              setError(
-                "CAPTCHA failed to load. Disable any ad or script blockers and try again.",
-              )
+              setError("CAPTCHA failed to load. Disable any ad or script blockers and try again.")
             }
           />
 

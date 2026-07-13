@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
+import { type Ref, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { TURNSTILE_TEST_MODE } from "@/lib/constants";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -39,18 +39,29 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
+  // Memoized (not a plain function) so it can be listed in
+  // useImperativeHandle's deps below without forcing that factory to
+  // reallocate every render — [] is correct since widgetId is a ref.
+  const reArmWidget = useCallback(() => {
+    if (widgetId.current) window.turnstile?.reset(widgetId.current);
+  }, []);
+
   useImperativeHandle(
     ref,
     () => ({
+      // Clears the caller's token before re-arming, same as the widget's own
+      // expired/error handling below — so the caller only has to call
+      // reset() and can't forget to also clear its copy of the token.
       reset: () => {
+        onExpire();
         if (TURNSTILE_TEST_MODE) {
           onVerify("test-mode-token");
           return;
         }
-        if (widgetId.current) window.turnstile?.reset(widgetId.current);
+        reArmWidget();
       },
     }),
-    [onVerify],
+    [onVerify, onExpire, reArmWidget],
   );
 
   useEffect(() => {
@@ -67,7 +78,7 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
 
   function handleInvalidated() {
     onExpire();
-    if (widgetId.current) window.turnstile?.reset(widgetId.current);
+    reArmWidget();
   }
 
   return (
