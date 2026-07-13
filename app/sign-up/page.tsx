@@ -190,7 +190,9 @@ export default function SignUpPage() {
             onVerify={setTurnstileToken}
             onExpire={() => setTurnstileToken("")}
             onError={() =>
-              setError("CAPTCHA failed to load. Disable any ad or script blockers and try again.")
+              setError(
+                "CAPTCHA failed to load. Disable any ad or script blockers and reload the page.",
+              )
             }
           />
 
