@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
+import { Turnstile, type TurnstileHandle } from "@/components/Turnstile";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
 import { ApiError, frontApiFetch } from "@/lib/front-api";
 
@@ -18,6 +19,8 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const [acknowledgedDataWipe, setAcknowledgedDataWipe] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,7 +37,7 @@ export default function SignUpPage() {
     try {
       await frontApiFetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, turnstileToken }),
       });
       router.push("/");
       router.refresh();
@@ -45,6 +48,10 @@ export default function SignUpPage() {
       } else {
         setError("Sign up failed. Please try again.");
       }
+      // The submitted token is consumed by Cloudflare on the first verify
+      // attempt regardless of why registration failed, so any retry needs a
+      // fresh one.
+      turnstileRef.current?.reset();
     } finally {
       setLoading(false);
     }
@@ -178,9 +185,20 @@ export default function SignUpPage() {
             </label>
           </div>
 
+          <Turnstile
+            ref={turnstileRef}
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken("")}
+            onError={() =>
+              setError(
+                "CAPTCHA failed to load. Disable any ad or script blockers and reload the page.",
+              )
+            }
+          />
+
           <button
             type="submit"
-            disabled={loading || !acknowledged || !acknowledgedDataWipe}
+            disabled={loading || !acknowledged || !acknowledgedDataWipe || !turnstileToken}
             className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
           >
             {loading ? "Creating account…" : "Create account"}

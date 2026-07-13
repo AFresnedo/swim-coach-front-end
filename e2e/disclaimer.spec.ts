@@ -10,6 +10,11 @@ test("disclaimer banner is visible for logged-out and logged-in users", async ({
   await expect(page.getByText(/has not been reviewed by a/i)).toBeVisible();
 
   await page.goto("/sign-up");
+  // Confirms NEXT_PUBLIC_TURNSTILE_TEST_MODE is actually being read by this
+  // running server, not just by vi.stubEnv in the Turnstile unit test — if
+  // this ever renders, the widget requires a real Cloudflare site key and
+  // every sign-up-dependent e2e spec starts failing for the wrong reason.
+  await expect(page.getByTestId("turnstile-widget")).not.toBeAttached();
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);

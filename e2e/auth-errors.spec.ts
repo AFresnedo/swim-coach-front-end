@@ -71,6 +71,61 @@ test("sign-up with an already-registered email shows an error and does not log i
   await expect(page.getByRole("link", { name: "Sign in" }).first()).toBeVisible();
 });
 
+test("sign-up rejected by CAPTCHA shows an error and lets the user retry", async ({ page }) => {
+  // Intercepted before it ever reaches our route handler or the real
+  // backend, so this never creates an account and never touches the
+  // /auth/register rate limit — no testUser fixture needed.
+  await page.route("**/api/auth/register", (route) =>
+    route.fulfill({
+      status: 400,
+      contentType: "application/json",
+      body: JSON.stringify({ detail: "CAPTCHA verification failed" }),
+    }),
+  );
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill("captcha-fail@example.com");
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill("TestPassword1!");
+  await page.getByRole("textbox", { name: "Confirm password" }).fill("TestPassword1!");
+  await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
+  await page.getByRole("button", { name: /create account/i }).click();
+
+  await expect(page.getByText("CAPTCHA verification failed")).toBeVisible();
+  await expect(page).toHaveURL("/sign-up");
+  // The (test-mode) widget re-issues a token as part of the reset-after-
+  // failure flow, so the button re-enables instead of leaving the user stuck.
+  await expect(page.getByRole("button", { name: /create account/i })).toBeEnabled();
+});
+
+test("CAPTCHA verification being unavailable shows an error and lets the user retry", async ({
+  page,
+}) => {
+  // Same rationale as the CAPTCHA-rejected test above: intercepted before it
+  // reaches our route handler, so no testUser fixture or rate limit concern.
+  await page.route("**/api/auth/register", (route) =>
+    route.fulfill({
+      status: 502,
+      contentType: "application/json",
+      body: JSON.stringify({ detail: "CAPTCHA verification unavailable" }),
+    }),
+  );
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill("captcha-unavailable@example.com");
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill("TestPassword1!");
+  await page.getByRole("textbox", { name: "Confirm password" }).fill("TestPassword1!");
+  await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
+  await page.getByRole("button", { name: /create account/i }).click();
+
+  await expect(page.getByText("CAPTCHA verification unavailable")).toBeVisible();
+  await expect(page).toHaveURL("/sign-up");
+  await expect(page.getByRole("button", { name: /create account/i })).toBeEnabled();
+});
+
 test("logout failure shows an error and keeps the user logged in", async ({ page, testUser }) => {
   const { email, password } = testUser;
 
