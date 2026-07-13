@@ -40,29 +40,25 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
-  // Memoized (not a plain function) so it can be listed in
-  // useImperativeHandle's deps below without forcing that factory to
-  // reallocate every render — [] is correct since widgetId is a ref.
-  const reArmWidget = useCallback(() => {
+  // Clears the caller's token and re-arms the widget (a no-op in test mode,
+  // since no real widget is ever rendered) — shared by the widget's own
+  // expired-callback below and the caller-facing reset() right after.
+  const invalidate = useCallback(() => {
+    onExpire();
     if (widgetId.current) window.turnstile?.reset(widgetId.current);
-  }, []);
+  }, [onExpire]);
 
   useImperativeHandle(
     ref,
     () => ({
-      // Clears the caller's token before re-arming, same as the widget's own
-      // expired/error handling below — so the caller only has to call
-      // reset() and can't forget to also clear its copy of the token.
+      // So the caller only has to call reset() and can't forget to also
+      // clear its copy of the token.
       reset: () => {
-        onExpire();
-        if (TURNSTILE_TEST_MODE) {
-          onVerify("test-mode-token");
-          return;
-        }
-        reArmWidget();
+        invalidate();
+        if (TURNSTILE_TEST_MODE) onVerify("test-mode-token");
       },
     }),
-    [onVerify, onExpire, reArmWidget],
+    [onVerify, invalidate],
   );
 
   useEffect(() => {
@@ -77,16 +73,10 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
 
   if (TURNSTILE_TEST_MODE) return null;
 
-  function handleExpired() {
-    onExpire();
-    reArmWidget();
-  }
-
   // Unlike expiry, a widget-reported error (e.g. a bad/mismatched site key)
   // isn't benign — surface it via onError rather than silently re-arming.
   function handleWidgetError() {
-    onExpire();
-    reArmWidget();
+    invalidate();
     onError();
   }
 
@@ -100,7 +90,7 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
           widgetId.current = window.turnstile.render(containerRef.current, {
             sitekey: SITE_KEY,
             callback: onVerify,
-            "expired-callback": handleExpired,
+            "expired-callback": invalidate,
             "error-callback": handleWidgetError,
           });
         }}
