@@ -33,7 +33,7 @@ describe("POST /api/auth/register", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("rejects when unverified and no secret is configured (fails closed)", async () => {
+  it("fails closed with 502 (not 400) when no secret is configured", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");
     vi.resetModules();
@@ -46,9 +46,45 @@ describe("POST /api/auth/register", () => {
       makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "tok" }),
     );
 
-    expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ detail: "CAPTCHA verification failed" });
+    expect(res.status).toBe(502);
+    expect(await res.json()).toEqual({ detail: "CAPTCHA verification unavailable" });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("responds 502 (not 400) when siteverify is unreachable, instead of blaming the token", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi.fn().mockRejectedValue(new Error("network down"));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "tok" }),
+    );
+
+    expect(res.status).toBe(502);
+    expect(await res.json()).toEqual({ detail: "CAPTCHA verification unavailable" });
+  });
+
+  it("responds 502 (not 400) when Cloudflare itself errors, instead of blaming the token", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "tok" }),
+    );
+
+    expect(res.status).toBe(502);
+    expect(await res.json()).toEqual({ detail: "CAPTCHA verification unavailable" });
   });
 
   it("bounds the siteverify call with a timeout instead of hanging indefinitely", async () => {
