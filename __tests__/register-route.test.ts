@@ -165,6 +165,26 @@ describe("POST /api/auth/register", () => {
     expect(setCookie).toHaveBeenCalledWith("access_token", "test-access-token", expect.anything());
   });
 
+  it("ignores test mode when NODE_ENV is production, even if the flag is set", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST(
+      makeRequest({ name: "A", email: "a@example.com", password: "pw", turnstileToken: "tok" }),
+    );
+
+    // Falls through to the real (here, unconfigured) verification path
+    // instead of silently bypassing the CAPTCHA check.
+    expect(res.status).toBe(502);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("skips siteverify entirely in test mode", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
     vi.resetModules();
