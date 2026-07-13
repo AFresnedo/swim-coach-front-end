@@ -71,7 +71,7 @@ export function Turnstile({ ref, onVerify, onExpire }: TurnstileProps) {
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
-        onLoad={() => {
+        onReady={() => {
           if (!containerRef.current || !window.turnstile) return;
           widgetId.current = window.turnstile.render(containerRef.current, {
             sitekey: SITE_KEY,

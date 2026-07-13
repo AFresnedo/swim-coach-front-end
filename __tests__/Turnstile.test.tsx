@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { TurnstileHandle } from "@/components/Turnstile";
 
 vi.mock("next/script", () => ({
-  default: ({ onLoad }: { onLoad?: () => void }) => {
+  default: ({ onReady }: { onReady?: () => void }) => {
     // Defer past the commit phase so the widget's container ref is attached
-    // by the time onLoad fires, matching real script-load timing.
-    setTimeout(() => onLoad?.(), 0);
+    // by the time onReady fires, matching real script-load timing.
+    setTimeout(() => onReady?.(), 0);
     return null;
   },
 }));
