@@ -36,7 +36,10 @@ describe("POST /api/auth/logout", () => {
     expect(await res.json()).toEqual({ ok: true });
   });
 
-  it("still clears the cookie when the backend call fails", async () => {
+  it("does NOT clear the cookie when the backend revoke call fails", async () => {
+    // A failed revoke must not look like a successful logout: the old token
+    // is still valid server-side, so clearing the cookie here would leave
+    // the user thinking they're logged out while it keeps working elsewhere.
     getCookie.mockReturnValue({ value: "token" });
     vi.stubGlobal(
       "fetch",
@@ -45,12 +48,12 @@ describe("POST /api/auth/logout", () => {
 
     const res = await POST();
 
-    expect(deleteCookie).toHaveBeenCalledWith("access_token");
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: true });
+    expect(deleteCookie).not.toHaveBeenCalled();
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ detail: "Boom" });
   });
 
-  it("still clears the cookie when there's no auth cookie to forward", async () => {
+  it("returns 401 without calling the backend when there's no auth cookie to forward", async () => {
     getCookie.mockReturnValue(undefined);
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
@@ -58,8 +61,7 @@ describe("POST /api/auth/logout", () => {
     const res = await POST();
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(deleteCookie).toHaveBeenCalledWith("access_token");
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: true });
+    expect(deleteCookie).not.toHaveBeenCalled();
+    expect(res.status).toBe(401);
   });
 });
