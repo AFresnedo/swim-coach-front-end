@@ -33,6 +33,20 @@ describe("POST /api/auth/register", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("rejects a JSON array body instead of forwarding it downstream (arrays are typeof 'object' too)", async () => {
+    vi.resetModules();
+    const { POST } = await import("@/app/api/auth/register/route");
+
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await POST({ json: async () => ["a", "b"] } as unknown as NextRequest);
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ detail: "Invalid request body" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("fails closed with 502 (not 400) when no secret is configured", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");

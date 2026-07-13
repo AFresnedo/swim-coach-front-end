@@ -39,15 +39,19 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
-  useImperativeHandle(ref, () => ({
-    reset: () => {
-      if (TURNSTILE_TEST_MODE) {
-        onVerify("test-mode-token");
-        return;
-      }
-      if (widgetId.current) window.turnstile?.reset(widgetId.current);
-    },
-  }));
+  useImperativeHandle(
+    ref,
+    () => ({
+      reset: () => {
+        if (TURNSTILE_TEST_MODE) {
+          onVerify("test-mode-token");
+          return;
+        }
+        if (widgetId.current) window.turnstile?.reset(widgetId.current);
+      },
+    }),
+    [onVerify],
+  );
 
   useEffect(() => {
     if (TURNSTILE_TEST_MODE) onVerify("test-mode-token");

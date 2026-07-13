@@ -38,7 +38,7 @@ async function verifyTurnstile(token: unknown): Promise<boolean> {
 
 export async function POST(req: NextRequest) {
   const parsed = await req.json();
-  if (typeof parsed !== "object" || parsed === null) {
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
     return NextResponse.json({ detail: "Invalid request body" }, { status: 400 });
   }
   const { turnstileToken, ...body } = parsed;
