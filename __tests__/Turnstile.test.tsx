@@ -51,7 +51,8 @@ describe("Turnstile", () => {
 
     const onVerify = vi.fn();
     const onExpire = vi.fn();
-    render(<Turnstile onVerify={onVerify} onExpire={onExpire} onError={vi.fn()} />);
+    const onError = vi.fn();
+    render(<Turnstile onVerify={onVerify} onExpire={onExpire} onError={onError} />);
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(renderWidget).toHaveBeenCalledWith(
@@ -64,11 +65,14 @@ describe("Turnstile", () => {
     expect(onVerify).toHaveBeenCalledWith("real-token");
 
     options["expired-callback"]?.();
-    expect(onExpire).toHaveBeenCalled();
+    expect(onExpire).toHaveBeenCalledTimes(1);
     expect(resetWidget).toHaveBeenCalledWith("widget-id");
+    expect(onError).not.toHaveBeenCalled();
 
     options["error-callback"]?.();
+    expect(onExpire).toHaveBeenCalledTimes(2);
     expect(resetWidget).toHaveBeenCalledTimes(2);
+    expect(onError).toHaveBeenCalledTimes(1);
   });
 
   it("calls onError when the Cloudflare script itself fails to load", async () => {

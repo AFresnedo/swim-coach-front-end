@@ -27,11 +27,12 @@ type TurnstileProps = {
   ref?: Ref<TurnstileHandle>;
   onVerify: (token: string) => void;
   onExpire: () => void;
-  // Called when Cloudflare's script itself fails to load (ad blocker, CSP
-  // blocking challenges.cloudflare.com, network issue) — distinct from
-  // onExpire, since here the widget never rendered at all and there's
-  // nothing to reset. Without this, sign-up silently stays blocked with no
-  // explanation.
+  // Called both when Cloudflare's script itself fails to load (ad blocker,
+  // CSP blocking challenges.cloudflare.com, network issue) and when a
+  // rendered widget reports its own error-callback (e.g. a bad/mismatched
+  // site key) — distinct from onExpire, which covers the benign case of a
+  // token simply timing out. Without this, sign-up silently stays blocked
+  // with no explanation.
   onError: () => void;
 };
 
@@ -76,9 +77,17 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
 
   if (TURNSTILE_TEST_MODE) return null;
 
-  function handleInvalidated() {
+  function handleExpired() {
     onExpire();
     reArmWidget();
+  }
+
+  // Unlike expiry, a widget-reported error (e.g. a bad/mismatched site key)
+  // isn't benign — surface it via onError rather than silently re-arming.
+  function handleWidgetError() {
+    onExpire();
+    reArmWidget();
+    onError();
   }
 
   return (
@@ -91,8 +100,8 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
           widgetId.current = window.turnstile.render(containerRef.current, {
             sitekey: SITE_KEY,
             callback: onVerify,
-            "expired-callback": handleInvalidated,
-            "error-callback": handleInvalidated,
+            "expired-callback": handleExpired,
+            "error-callback": handleWidgetError,
           });
         }}
         onError={onError}
