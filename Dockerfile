@@ -10,6 +10,13 @@ COPY app/ app/
 COPY components/ components/
 COPY lib/ lib/
 COPY public/ public/
+
+# NEXT_PUBLIC_* vars are inlined into the build output, not read at container
+# runtime — this has to be a build-time ARG, not a docker-compose env var.
+# Placed right before the build step (rather than near the other COPYs) so
+# changing it only invalidates this layer, not the npm ci cache above.
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 RUN npm run build
 
 FROM node:24-alpine AS runtime
