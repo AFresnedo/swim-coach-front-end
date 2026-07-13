@@ -33,9 +33,15 @@ type TurnstileProps = {
   ref?: Ref<TurnstileHandle>;
   onVerify: (token: string) => void;
   onExpire: () => void;
+  // Called when Cloudflare's script itself fails to load (ad blocker, CSP
+  // blocking challenges.cloudflare.com, network issue) — distinct from
+  // onExpire, since here the widget never rendered at all and there's
+  // nothing to reset. Without this, sign-up silently stays blocked with no
+  // explanation.
+  onError: () => void;
 };
 
-export function Turnstile({ ref, onVerify, onExpire }: TurnstileProps) {
+export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
@@ -80,6 +86,7 @@ export function Turnstile({ ref, onVerify, onExpire }: TurnstileProps) {
             "error-callback": handleInvalidated,
           });
         }}
+        onError={onError}
       />
       <div ref={containerRef} data-testid="turnstile-widget" />
     </>

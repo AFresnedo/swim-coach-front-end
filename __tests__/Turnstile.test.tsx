@@ -3,11 +3,16 @@ import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { TurnstileHandle } from "@/components/Turnstile";
 
+const { scriptProps } = vi.hoisted(() => ({
+  scriptProps: { current: null as null | { onReady?: () => void; onError?: () => void } },
+}));
+
 vi.mock("next/script", () => ({
-  default: ({ onReady }: { onReady?: () => void }) => {
+  default: (props: { onReady?: () => void; onError?: () => void }) => {
+    scriptProps.current = props;
     // Defer past the commit phase so the widget's container ref is attached
     // by the time onReady fires, matching real script-load timing.
-    setTimeout(() => onReady?.(), 0);
+    setTimeout(() => props.onReady?.(), 0);
     return null;
   },
 }));
@@ -26,7 +31,9 @@ describe("Turnstile", () => {
     const { Turnstile } = await import("@/components/Turnstile");
     const onVerify = vi.fn();
 
-    const { container } = render(<Turnstile onVerify={onVerify} onExpire={vi.fn()} />);
+    const { container } = render(
+      <Turnstile onVerify={onVerify} onExpire={vi.fn()} onError={vi.fn()} />,
+    );
 
     expect(onVerify).toHaveBeenCalledWith("test-mode-token");
     expect(container.innerHTML).toBe("");
@@ -44,7 +51,7 @@ describe("Turnstile", () => {
 
     const onVerify = vi.fn();
     const onExpire = vi.fn();
-    render(<Turnstile onVerify={onVerify} onExpire={onExpire} />);
+    render(<Turnstile onVerify={onVerify} onExpire={onExpire} onError={vi.fn()} />);
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(renderWidget).toHaveBeenCalledWith(
@@ -64,6 +71,21 @@ describe("Turnstile", () => {
     expect(resetWidget).toHaveBeenCalledTimes(2);
   });
 
+  it("calls onError when the Cloudflare script itself fails to load", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
+    vi.resetModules();
+    const { Turnstile } = await import("@/components/Turnstile");
+
+    const onError = vi.fn();
+    render(<Turnstile onVerify={vi.fn()} onExpire={vi.fn()} onError={onError} />);
+
+    expect(scriptProps.current?.onError).toBeDefined();
+    scriptProps.current?.onError?.();
+
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
   it("re-arms the widget for a fresh token when the parent calls reset() after a failed submit", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
@@ -78,7 +100,7 @@ describe("Turnstile", () => {
     };
 
     const ref = createRef<TurnstileHandle>();
-    render(<Turnstile ref={ref} onVerify={vi.fn()} onExpire={vi.fn()} />);
+    render(<Turnstile ref={ref} onVerify={vi.fn()} onExpire={vi.fn()} onError={vi.fn()} />);
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     ref.current?.reset();
@@ -93,7 +115,7 @@ describe("Turnstile", () => {
 
     const onVerify = vi.fn();
     const ref = createRef<TurnstileHandle>();
-    render(<Turnstile ref={ref} onVerify={onVerify} onExpire={vi.fn()} />);
+    render(<Turnstile ref={ref} onVerify={onVerify} onExpire={vi.fn()} onError={vi.fn()} />);
 
     expect(onVerify).toHaveBeenCalledTimes(1);
     ref.current?.reset();

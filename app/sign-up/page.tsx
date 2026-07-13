@@ -190,6 +190,11 @@ export default function SignUpPage() {
             ref={turnstileRef}
             onVerify={setTurnstileToken}
             onExpire={() => setTurnstileToken("")}
+            onError={() =>
+              setError(
+                "CAPTCHA failed to load. Disable any ad or script blockers and try again.",
+              )
+            }
           />
 
           <button
