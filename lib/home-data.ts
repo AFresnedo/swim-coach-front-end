@@ -2,7 +2,7 @@ export type Feature = {
   icon: string;
   title: string;
   desc: string;
-  comingSoon?: boolean;
+  comingSoon: boolean;
 };
 
 export const FEATURES: Feature[] = [
@@ -10,16 +10,19 @@ export const FEATURES: Feature[] = [
     icon: "⏱",
     title: "Swim Log",
     desc: "Log every set and split, and browse your history by date and stroke.",
+    comingSoon: false,
   },
   {
     icon: "🏅",
     title: "Goal setting",
     desc: "Set a goal, track it over time, and mark it reached once you get there.",
+    comingSoon: false,
   },
   {
     icon: "🏊",
     title: "Stroke-specific drills",
     desc: "A full library of drills for freestyle, backstroke, breaststroke, and butterfly.",
+    comingSoon: false,
   },
   {
     icon: "📋",
@@ -45,7 +48,7 @@ export type Step = {
   step: string;
   title: string;
   desc: string;
-  comingSoon?: boolean;
+  comingSoon: boolean;
 };
 
 export const HOW_IT_WORKS_STEPS: Step[] = [
@@ -53,6 +56,7 @@ export const HOW_IT_WORKS_STEPS: Step[] = [
     step: "1",
     title: "Tell us about yourself",
     desc: "Set up your profile and tell us what you're working toward.",
+    comingSoon: false,
   },
   {
     step: "2",
@@ -64,5 +68,6 @@ export const HOW_IT_WORKS_STEPS: Step[] = [
     step: "3",
     title: "Track & improve",
     desc: "Log each session to build your history. Pace-trend analytics are coming soon.",
+    comingSoon: false,
   },
 ];
