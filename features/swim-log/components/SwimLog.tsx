@@ -4,7 +4,6 @@ import { useState } from "react";
 import CreateSwimTimeForm from "@/features/swim-log/components/CreateSwimTimeForm";
 import DateAndFilterControls from "@/features/swim-log/components/DateAndFilterControls";
 import SwimTimesTable from "@/features/swim-log/components/SwimTimesTable";
-import { useCreateSwimTimeForm } from "@/features/swim-log/hooks/use-create-swim-time-form";
 import { useSwimTimesQuery } from "@/features/swim-log/hooks/use-swim-times-query";
 
 function todayLocalDate(): string {
@@ -38,8 +37,6 @@ export default function SwimLog() {
     addIfVisible,
   } = useSwimTimesQuery(selectedDate);
 
-  const createForm = useCreateSwimTimeForm({ selectedDate, getViewGeneration, addIfVisible });
-
   return (
     <div className="flex flex-col gap-8">
       <DateAndFilterControls
@@ -56,7 +53,11 @@ export default function SwimLog() {
         setFilterOfficial={setFilterOfficial}
       />
 
-      <CreateSwimTimeForm form={createForm} />
+      <CreateSwimTimeForm
+        selectedDate={selectedDate}
+        getViewGeneration={getViewGeneration}
+        addIfVisible={addIfVisible}
+      />
 
       <SwimTimesTable
         times={times}

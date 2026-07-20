@@ -1,5 +1,10 @@
+"use client";
+
 import Field from "@/components/Field";
-import type { useCreateSwimTimeForm } from "@/features/swim-log/hooks/use-create-swim-time-form";
+import {
+  type CreateSwimTimeFormParams,
+  useCreateSwimTimeForm,
+} from "@/features/swim-log/hooks/use-create-swim-time-form";
 import {
   cardClass,
   inputClass,
@@ -10,11 +15,7 @@ import {
 } from "@/lib/form-styles";
 import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/lib/swim-times-data";
 
-export default function CreateSwimTimeForm({
-  form,
-}: {
-  form: ReturnType<typeof useCreateSwimTimeForm>;
-}) {
+export default function CreateSwimTimeForm(props: CreateSwimTimeFormParams) {
   const {
     stroke,
     setStroke,
@@ -34,7 +35,7 @@ export default function CreateSwimTimeForm({
     createError,
     createFieldErrors,
     handleCreate,
-  } = form;
+  } = useCreateSwimTimeForm(props);
 
   return (
     <form onSubmit={handleCreate} className={`${cardClass} flex flex-col gap-4`}>

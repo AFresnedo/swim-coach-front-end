@@ -5,15 +5,17 @@ import { apiErrorDetails } from "@/lib/front-api";
 import { type Course, parseMmSs, type Stroke, type SwimTime } from "@/lib/swim-times-data";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
+export type CreateSwimTimeFormParams = {
+  selectedDate: string;
+  getViewGeneration: () => number;
+  addIfVisible: (created: SwimTime, generation: number) => void;
+};
+
 export function useCreateSwimTimeForm({
   selectedDate,
   getViewGeneration,
   addIfVisible,
-}: {
-  selectedDate: string;
-  getViewGeneration: () => number;
-  addIfVisible: (created: SwimTime, generation: number) => void;
-}) {
+}: CreateSwimTimeFormParams) {
   const protectedFrontFetch = useProtectedFrontFetch();
   const [stroke, setStroke] = useState<Stroke>("freestyle");
   const [course, setCourse] = useState<Course>("scy");
