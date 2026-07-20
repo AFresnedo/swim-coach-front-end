@@ -159,14 +159,19 @@ export function useSwimTimesQuery(selectedDate: string) {
   }
 
   function addIfVisible(created: SwimTime, generation: number) {
-    const matchesCurrentView =
-      viewGenerationRef.current === generation &&
+    // The create request may resolve after the user has already changed the
+    // date or filters — reject it here so a stale response can't insert a
+    // swim time into a view the user has since navigated away from.
+    const requestIsStillCurrent = viewGenerationRef.current === generation;
+
+    const matchesCurrentFilters =
       created.date === selectedDate &&
       (filterStroke === "" || created.stroke === filterStroke) &&
       (filterCourse === "" || created.course === filterCourse) &&
       (debouncedFilterLength.trim() === "" || created.length === Number(debouncedFilterLength)) &&
       (filterOfficial === "" || created.is_official === (filterOfficial === "true"));
-    if (matchesCurrentView) {
+
+    if (requestIsStillCurrent && matchesCurrentFilters) {
       setTimes((prev) => [created, ...prev]);
     }
   }
