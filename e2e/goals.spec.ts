@@ -81,3 +81,61 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   await expect(page.getByText(/deactivated.*reached/i)).toBeVisible();
   await expect(page.getByRole("button", { name: "Edit" })).not.toBeVisible();
 });
+
+test("editing two goals at once keeps their edit sessions independent", async ({
+  page,
+  testUser,
+}) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+  await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
+  await page.getByRole("button", { name: /create account/i }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.goto("/goals");
+
+  async function createGoal(text: string): Promise<number> {
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (res) => res.url().includes("/api/goals") && res.request().method() === "POST",
+      ),
+      (async () => {
+        await page.getByLabel("New goal").fill(text);
+        await page.getByRole("button", { name: "Add goal" }).click();
+      })(),
+    ]);
+    return (await response.json()).id;
+  }
+
+  const idA = await createGoal("Goal A");
+  const idB = await createGoal("Goal B");
+
+  const cardA = page.getByTestId(`goal-card-${idA}`);
+  const cardB = page.getByTestId(`goal-card-${idB}`);
+
+  await cardA.getByRole("button", { name: "Edit" }).click();
+  await cardB.getByRole("button", { name: "Edit" }).click();
+
+  // Both cards are independently in edit mode, each showing its own text.
+  await expect(cardA.getByLabel("Edit goal")).toHaveValue("Goal A");
+  await expect(cardB.getByLabel("Edit goal")).toHaveValue("Goal B");
+
+  await cardA.getByLabel("Edit goal").fill("Goal A updated");
+  const [editResponse] = await Promise.all([
+    page.waitForResponse(
+      (res) => res.url().includes(`/api/goals/${idA}`) && res.request().method() === "PATCH",
+    ),
+    cardA.getByRole("button", { name: "Save" }).click(),
+  ]);
+  expect(await editResponse.json()).toMatchObject({ id: idA, text: "Goal A updated" });
+
+  // Card A saved and returned to view mode; card B's edit session was untouched.
+  await expect(cardA.getByText("Goal A updated")).toBeVisible();
+  await expect(cardB.getByLabel("Edit goal")).toHaveValue("Goal B");
+});
