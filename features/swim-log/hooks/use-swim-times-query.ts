@@ -16,7 +16,10 @@ export type OfficialFilter = "" | "true" | "false";
 function validateFilterLength(value: string): string | null {
   const trimmed = value.trim();
   if (trimmed === "") return null;
-  if (!/^\d+$/.test(trimmed) || Number(trimmed) <= 0) {
+
+  const isDigitsOnly = /^\d+$/.test(trimmed);
+  const isPositive = Number(trimmed) > 0;
+  if (!isDigitsOnly || !isPositive) {
     return "Length must be a positive whole number.";
   }
   return null;
