@@ -36,9 +36,9 @@ describe("AccountMenu", () => {
 
   it("hides the menu items until the trigger is clicked", () => {
     render(<AccountMenu />);
-    expect(screen.queryByRole("menuitem", { name: "Profile" })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: "Profile" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
-    expect(screen.getByRole("menuitem", { name: "Profile" })).toBeDefined();
+    expect(screen.getByRole("menuitem", { name: "Profile" })).toBeInTheDocument();
   });
 
   it("links Profile to the profile page", () => {
@@ -65,7 +65,7 @@ describe("AccountMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
 
-    expect(await screen.findByText("Server unavailable")).toBeDefined();
+    expect(await screen.findByText("Server unavailable")).toBeInTheDocument();
     expect(push).not.toHaveBeenCalled();
     expect(refresh).not.toHaveBeenCalled();
   });
@@ -77,6 +77,6 @@ describe("AccountMenu", () => {
     fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
 
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
-    expect(screen.queryByText("Could not validate credentials")).toBeNull();
+    expect(screen.queryByText("Could not validate credentials")).not.toBeInTheDocument();
   });
 });

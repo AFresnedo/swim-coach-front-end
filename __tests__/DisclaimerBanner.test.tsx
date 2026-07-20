@@ -10,7 +10,7 @@ describe("DisclaimerBanner", () => {
 
   it("shows the disclaimer text by default", async () => {
     render(<DisclaimerBanner />);
-    expect(await screen.findByText(/has not been reviewed by a/i)).toBeDefined();
+    expect(await screen.findByText(/has not been reviewed by a/i)).toBeInTheDocument();
   });
 
   it("hides itself and records the dismissal when closed", async () => {
@@ -19,7 +19,7 @@ describe("DisclaimerBanner", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Dismiss disclaimer" }));
 
-    expect(screen.queryByText(/has not been reviewed by a/i)).toBeNull();
+    expect(screen.queryByText(/has not been reviewed by a/i)).not.toBeInTheDocument();
     expect(sessionStorage.getItem("disclaimerBannerDismissed")).toBe("true");
   });
 
@@ -28,6 +28,6 @@ describe("DisclaimerBanner", () => {
     render(<DisclaimerBanner />);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(screen.queryByText(/has not been reviewed by a/i)).toBeNull();
+    expect(screen.queryByText(/has not been reviewed by a/i)).not.toBeInTheDocument();
   });
 });
