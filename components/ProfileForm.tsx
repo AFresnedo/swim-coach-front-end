@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import {
+  inputClass,
+  inputErrorClass,
+  inputNormalClass,
+  labelClass,
+  primaryButtonLargeClass,
+} from "@/lib/form-styles";
 import { apiErrorDetails } from "@/lib/front-api";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
@@ -299,11 +305,7 @@ export default function ProfileForm() {
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
-      >
+      <button type="submit" disabled={loading} className={`${primaryButtonLargeClass} mt-2`}>
         {loading ? "Saving…" : "Save profile"}
       </button>
     </form>

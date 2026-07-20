@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
-import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import {
+  inputClass,
+  inputErrorClass,
+  inputNormalClass,
+  labelClass,
+  primaryButtonLargeClass,
+} from "@/lib/form-styles";
 import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
 
 // useSearchParams suspends the tree up to the nearest Suspense boundary
@@ -104,11 +110,7 @@ export default function SignInPage() {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
-          >
+          <button type="submit" disabled={loading} className={`${primaryButtonLargeClass} mt-2`}>
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>

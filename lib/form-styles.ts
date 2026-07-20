@@ -6,7 +6,11 @@ export const labelClass = "text-sm font-medium text-slate-700 dark:text-slate-30
 
 export const cardClass =
   "rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6";
-export const primaryButtonClass =
-  "rounded-full bg-gradient-aqua px-4 py-2 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]";
+
+const primaryButtonBase =
+  "rounded-full bg-gradient-aqua text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]";
+export const primaryButtonClass = `${primaryButtonBase} px-4 py-2`;
+export const primaryButtonLargeClass = `${primaryButtonBase} px-4 py-3`;
+
 export const secondaryButtonClass =
   "rounded-full border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 backdrop-blur px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors";
