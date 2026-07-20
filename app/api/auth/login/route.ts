@@ -1,10 +1,6 @@
-import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { setAuthCookie } from "@/lib/auth";
 import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
-import { AUTH_COOKIE } from "@/lib/constants";
-import { jwtMaxAge } from "@/lib/jwt";
-
-const IS_PROD = process.env.NODE_ENV === "production";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -28,14 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { access_token } = await backRes.json();
-  const cookieStore = await cookies();
-  cookieStore.set(AUTH_COOKIE, access_token, {
-    httpOnly: true,
-    secure: IS_PROD,
-    sameSite: "strict",
-    path: "/",
-    maxAge: jwtMaxAge(access_token),
-  });
+  await setAuthCookie(access_token);
 
   return NextResponse.json({ ok: true });
 }

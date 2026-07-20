@@ -1,10 +1,7 @@
-import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { setAuthCookie } from "@/lib/auth";
 import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
-import { AUTH_COOKIE, TURNSTILE_TEST_MODE } from "@/lib/constants";
-import { jwtMaxAge } from "@/lib/jwt";
-
-const IS_PROD = process.env.NODE_ENV === "production";
+import { TURNSTILE_TEST_MODE } from "@/lib/constants";
 
 // Throws for anything that isn't Cloudflare actually looking at the token and
 // saying yes/no (missing config, network failure, timeout, a non-2xx from
@@ -72,14 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { access_token } = await backRes.json();
-  const cookieStore = await cookies();
-  cookieStore.set(AUTH_COOKIE, access_token, {
-    httpOnly: true,
-    secure: IS_PROD,
-    sameSite: "strict",
-    path: "/",
-    maxAge: jwtMaxAge(access_token),
-  });
+  await setAuthCookie(access_token);
 
   return NextResponse.json({ ok: true });
 }
