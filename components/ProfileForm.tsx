@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
-import { ApiError } from "@/lib/front-api";
+import { apiErrorDetails } from "@/lib/front-api";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
@@ -103,12 +103,12 @@ export default function ProfileForm() {
       setSaved(true);
     } catch (err) {
       if (isAuthRedirect(err)) return;
-      if (err instanceof ApiError) {
-        setError(err.message);
-        if (err.errors) setFieldErrors(err.errors);
-      } else {
-        setError("Failed to save profile. Please try again.");
-      }
+      const { message, fieldErrors } = apiErrorDetails(
+        err,
+        "Failed to save profile. Please try again.",
+      );
+      setError(message);
+      if (fieldErrors) setFieldErrors(fieldErrors);
     } finally {
       setLoading(false);
     }

@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
 import { Turnstile, type TurnstileHandle } from "@/components/Turnstile";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -42,12 +42,9 @@ export default function SignUpPage() {
       router.push("/");
       router.refresh();
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-        if (err.errors) setFieldErrors(err.errors);
-      } else {
-        setError("Sign up failed. Please try again.");
-      }
+      const { message, fieldErrors } = apiErrorDetails(err, "Sign up failed. Please try again.");
+      setError(message);
+      if (fieldErrors) setFieldErrors(fieldErrors);
       // The submitted token is consumed by Cloudflare on the first verify
       // attempt regardless of why registration failed, so any retry needs a
       // fresh one.

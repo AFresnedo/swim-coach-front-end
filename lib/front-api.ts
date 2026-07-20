@@ -9,6 +9,15 @@ export class ApiError extends Error {
   }
 }
 
+export function apiErrorDetails(
+  err: unknown,
+  fallback: string,
+): { message: string; fieldErrors?: Record<string, string> } {
+  return err instanceof ApiError
+    ? { message: err.message, fieldErrors: err.errors }
+    : { message: fallback };
+}
+
 export async function frontApiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(path, {
     ...options,

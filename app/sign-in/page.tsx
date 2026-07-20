@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
 import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
 
 // useSearchParams suspends the tree up to the nearest Suspense boundary
 // during static builds, so it's isolated here rather than called directly
@@ -45,12 +45,9 @@ export default function SignInPage() {
       router.push("/");
       router.refresh();
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-        if (err.errors) setFieldErrors(err.errors);
-      } else {
-        setError("Sign in failed. Please try again.");
-      }
+      const { message, fieldErrors } = apiErrorDetails(err, "Sign in failed. Please try again.");
+      setError(message);
+      if (fieldErrors) setFieldErrors(fieldErrors);
     } finally {
       setLoading(false);
     }
