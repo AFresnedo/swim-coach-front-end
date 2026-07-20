@@ -70,56 +70,56 @@ describe("ProfileForm", () => {
 
   it("renders metric inputs by default", async () => {
     await renderAndAwaitLoad();
-    expect(screen.getByPlaceholderText("cm")).toBeDefined();
-    expect(screen.getByPlaceholderText("kg")).toBeDefined();
-    expect(screen.queryByPlaceholderText("ft")).toBeNull();
-    expect(screen.queryByPlaceholderText("lbs")).toBeNull();
+    expect(screen.getByPlaceholderText("cm")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("kg")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("ft")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("lbs")).not.toBeInTheDocument();
   });
 
   it("switching to imperial shows ft/in/lbs and hides cm/kg", async () => {
     await renderAndAwaitLoad();
     fireEvent.click(screen.getByRole("button", { name: /imperial/i }));
-    expect(screen.getByPlaceholderText("ft")).toBeDefined();
-    expect(screen.getByPlaceholderText("in")).toBeDefined();
-    expect(screen.getByPlaceholderText("lbs")).toBeDefined();
-    expect(screen.queryByPlaceholderText("cm")).toBeNull();
-    expect(screen.queryByPlaceholderText("kg")).toBeNull();
+    expect(screen.getByPlaceholderText("ft")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("in")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("lbs")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("cm")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("kg")).not.toBeInTheDocument();
   });
 
   it("switching back to metric restores cm/kg inputs", async () => {
     await renderAndAwaitLoad();
     fireEvent.click(screen.getByRole("button", { name: /imperial/i }));
     fireEvent.click(screen.getByRole("button", { name: /metric/i }));
-    expect(screen.getByPlaceholderText("cm")).toBeDefined();
-    expect(screen.getByPlaceholderText("kg")).toBeDefined();
+    expect(screen.getByPlaceholderText("cm")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("kg")).toBeInTheDocument();
   });
 
   it("prefills metric fields from an existing profile", async () => {
     await renderAndAwaitLoad(existingProfile);
-    expect((screen.getByLabelText("Age") as HTMLInputElement).value).toBe("28");
-    expect((screen.getByPlaceholderText("cm") as HTMLInputElement).value).toBe("177.8");
-    expect((screen.getByPlaceholderText("kg") as HTMLInputElement).value).toBe("69.9");
-    expect((screen.getByLabelText("Sex") as HTMLSelectElement).value).toBe("female");
+    expect(screen.getByLabelText("Age")).toHaveValue(28);
+    expect(screen.getByPlaceholderText("cm")).toHaveValue(177.8);
+    expect(screen.getByPlaceholderText("kg")).toHaveValue(69.9);
+    expect(screen.getByLabelText("Sex")).toHaveValue("female");
   });
 
   it("prefills imperial fields converted from the loaded metric profile", async () => {
     await renderAndAwaitLoad(existingProfile);
     fireEvent.click(screen.getByRole("button", { name: /imperial/i }));
-    expect((screen.getByPlaceholderText("ft") as HTMLInputElement).value).toBe("5");
-    expect((screen.getByPlaceholderText("in") as HTMLInputElement).value).toBe("10");
-    expect((screen.getByPlaceholderText("lbs") as HTMLInputElement).value).toBe("154");
+    expect(screen.getByPlaceholderText("ft")).toHaveValue(5);
+    expect(screen.getByPlaceholderText("in")).toHaveValue(10);
+    expect(screen.getByPlaceholderText("lbs")).toHaveValue(154);
   });
 
   it("toggles to imperial on load when the profile prefers imperial", async () => {
     await renderAndAwaitLoad({ ...existingProfile, unit_preference: "imperial" });
-    expect(screen.getByPlaceholderText("ft")).toBeDefined();
-    expect(screen.queryByPlaceholderText("cm")).toBeNull();
+    expect(screen.getByPlaceholderText("ft")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("cm")).not.toBeInTheDocument();
   });
 
   it("leaves fields blank when no profile exists yet", async () => {
     await renderAndAwaitLoad(null);
-    expect((screen.getByLabelText("Age") as HTMLInputElement).value).toBe("");
-    expect((screen.getByPlaceholderText("cm") as HTMLInputElement).value).toBe("");
+    expect(screen.getByLabelText("Age")).not.toHaveValue();
+    expect(screen.getByPlaceholderText("cm")).not.toHaveValue();
   });
 
   it("submits metric values as-is", async () => {
@@ -184,7 +184,7 @@ describe("ProfileForm", () => {
     fillMetricForm();
     // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
-    expect(await screen.findByText("Profile saved.")).toBeDefined();
+    expect(await screen.findByText("Profile saved.")).toBeInTheDocument();
   });
 
   it("shows error message when submission fails", async () => {
@@ -193,20 +193,24 @@ describe("ProfileForm", () => {
     fillMetricForm();
     // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
-    expect(await screen.findByText("Server error")).toBeDefined();
+    expect(await screen.findByText("Server error")).toBeInTheDocument();
   });
 
   it("shows an error when the profile fails to load", async () => {
     mockFetch.mockRejectedValueOnce(new ApiError("Server error", 500));
     render(<ProfileForm />);
-    expect(await screen.findByText("Failed to load your profile. Please try again.")).toBeDefined();
+    expect(
+      await screen.findByText("Failed to load your profile. Please try again."),
+    ).toBeInTheDocument();
   });
 
   it("redirects to sign-in instead of showing an error when the session has expired", async () => {
     mockFetch.mockRejectedValueOnce(new ApiError("Could not validate credentials", 401));
     render(<ProfileForm />);
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
-    expect(screen.queryByText("Failed to load your profile. Please try again.")).toBeNull();
+    expect(
+      screen.queryByText("Failed to load your profile. Please try again."),
+    ).not.toBeInTheDocument();
   });
 
   it("shows 'Saving…' and disables button during submission", async () => {
@@ -222,10 +226,10 @@ describe("ProfileForm", () => {
     // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /saving/i })).toBeDefined());
-    expect((screen.getByRole("button", { name: /saving/i }) as HTMLButtonElement).disabled).toBe(
-      true,
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /saving/i })).toBeInTheDocument(),
     );
+    expect(screen.getByRole("button", { name: /saving/i })).toBeDisabled();
     // biome-ignore lint/style/noNonNullAssertion: resolve is always assigned before this line
     resolve!();
   });

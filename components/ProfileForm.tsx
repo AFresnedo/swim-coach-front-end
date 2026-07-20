@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
-import { ApiError } from "@/lib/front-api";
+import {
+  inputClass,
+  inputErrorClass,
+  inputNormalClass,
+  labelClass,
+  primaryButtonLargeClass,
+} from "@/lib/form-styles";
+import { apiErrorDetails } from "@/lib/front-api";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
@@ -15,8 +21,11 @@ type Profile = {
   unit_preference: UnitSystem;
 };
 
+const CM_PER_INCH = 2.54;
+const KG_PER_LB = 0.453592;
+
 function cmToFtIn(cm: number) {
-  const totalInches = cm / 2.54;
+  const totalInches = cm / CM_PER_INCH;
   let ft = Math.floor(totalInches / 12);
   let inches = Math.round(totalInches % 12);
   if (inches === 12) {
@@ -27,7 +36,7 @@ function cmToFtIn(cm: number) {
 }
 
 function kgToLbs(kg: number) {
-  return Math.round(kg / 0.453592);
+  return Math.round(kg / KG_PER_LB);
 }
 
 export default function ProfileForm() {
@@ -85,9 +94,9 @@ export default function ProfileForm() {
     const height_cm =
       units === "metric"
         ? parseFloat(heightCm)
-        : (parseFloat(heightFt) * 12 + parseFloat(heightIn)) * 2.54;
+        : (parseFloat(heightFt) * 12 + parseFloat(heightIn)) * CM_PER_INCH;
 
-    const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * 0.453592;
+    const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * KG_PER_LB;
 
     try {
       await protectedFrontFetch("/api/profile", {
@@ -103,12 +112,12 @@ export default function ProfileForm() {
       setSaved(true);
     } catch (err) {
       if (isAuthRedirect(err)) return;
-      if (err instanceof ApiError) {
-        setError(err.message);
-        if (err.errors) setFieldErrors(err.errors);
-      } else {
-        setError("Failed to save profile. Please try again.");
-      }
+      const { message, fieldErrors } = apiErrorDetails(
+        err,
+        "Failed to save profile. Please try again.",
+      );
+      setError(message);
+      if (fieldErrors) setFieldErrors(fieldErrors);
     } finally {
       setLoading(false);
     }
@@ -299,11 +308,7 @@ export default function ProfileForm() {
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
-      >
+      <button type="submit" disabled={loading} className={`${primaryButtonLargeClass} mt-2`}>
         {loading ? "Saving…" : "Save profile"}
       </button>
     </form>

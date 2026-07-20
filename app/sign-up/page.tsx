@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
 import { Turnstile, type TurnstileHandle } from "@/components/Turnstile";
-import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import {
+  inputClass,
+  inputErrorClass,
+  inputNormalClass,
+  labelClass,
+  primaryButtonLargeClass,
+} from "@/lib/form-styles";
+import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -42,12 +48,9 @@ export default function SignUpPage() {
       router.push("/");
       router.refresh();
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-        if (err.errors) setFieldErrors(err.errors);
-      } else {
-        setError("Sign up failed. Please try again.");
-      }
+      const { message, fieldErrors } = apiErrorDetails(err, "Sign up failed. Please try again.");
+      setError(message);
+      if (fieldErrors) setFieldErrors(fieldErrors);
       // The submitted token is consumed by Cloudflare on the first verify
       // attempt regardless of why registration failed, so any retry needs a
       // fresh one.
@@ -199,7 +202,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading || !acknowledged || !acknowledgedDataWipe || !turnstileToken}
-            className="mt-2 rounded-full bg-gradient-aqua px-4 py-3 text-sm font-semibold text-white shadow-aqua hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
+            className={`${primaryButtonLargeClass} mt-2`}
           >
             {loading ? "Creating account…" : "Create account"}
           </button>

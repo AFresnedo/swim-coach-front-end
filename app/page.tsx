@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import FeatureCard from "@/app/_components/FeatureCard";
+import HowItWorksStep from "@/app/_components/HowItWorksStep";
+import { FEATURES, HOW_IT_WORKS_STEPS } from "@/lib/home-data";
 import { Stat, SwimCountStat, SwimmerCountStat } from "@/lib/stats";
 import { strokes } from "@/lib/strokes-data";
 
@@ -86,62 +89,8 @@ export default function Home() {
           Track your training today, with AI-powered coaching features on the way.
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              icon: "⏱",
-              title: "Swim Log",
-              desc: "Log every set and split, and browse your history by date and stroke.",
-            },
-            {
-              icon: "🏅",
-              title: "Goal setting",
-              desc: "Set a goal, track it over time, and mark it reached once you get there.",
-            },
-            {
-              icon: "🏊",
-              title: "Stroke-specific drills",
-              desc: "A full library of drills for freestyle, backstroke, breaststroke, and butterfly.",
-            },
-            {
-              icon: "📋",
-              title: "Personalized plans",
-              desc: "AI-generated training plans tailored to your stroke, distance, and fitness level.",
-              comingSoon: true,
-            },
-            {
-              icon: "📈",
-              title: "Performance analytics",
-              desc: "ML-powered insights into pace trends, stroke efficiency, and where you're leaving time on the table.",
-              comingSoon: true,
-            },
-            {
-              icon: "🔔",
-              title: "Rest & recovery guidance",
-              desc: "AI recommendations for when to push and when to rest, based on your training load.",
-              comingSoon: true,
-            },
-          ].map(({ icon, title, desc, comingSoon }) => (
-            <div
-              key={title}
-              className="group rounded-2xl border border-slate-300 dark:border-slate-800 p-6 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-aqua text-2xl shadow-aqua">
-                  {icon}
-                </span>
-                {comingSoon && (
-                  <span className="mt-1 rounded-full bg-indigo-100 dark:bg-indigo-400/10 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                    Coming soon
-                  </span>
-                )}
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-slate-50">
-                {title}
-              </h3>
-              <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                {desc}
-              </p>
-            </div>
+          {FEATURES.map((feature) => (
+            <FeatureCard key={feature.title} {...feature} />
           ))}
         </div>
       </section>
@@ -153,38 +102,8 @@ export default function Home() {
             How it works
           </h2>
           <ol className="grid sm:grid-cols-3 gap-10">
-            {[
-              {
-                step: "1",
-                title: "Tell us about yourself",
-                desc: "Set up your profile and tell us what you're working toward.",
-              },
-              {
-                step: "2",
-                title: "Get your plan",
-                desc: "Soon, we'll turn your profile into a week-by-week training schedule built around your goals.",
-                comingSoon: true,
-              },
-              {
-                step: "3",
-                title: "Track & improve",
-                desc: "Log each session to build your history. Pace-trend analytics are coming soon.",
-              },
-            ].map(({ step, title, desc, comingSoon }) => (
-              <li key={step} className="flex flex-col items-center text-center">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-aqua text-white text-xl font-bold mb-4 shadow-aqua">
-                  {step}
-                </span>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-2 flex items-center gap-2">
-                  {title}
-                  {comingSoon && (
-                    <span className="rounded-full bg-indigo-100 dark:bg-indigo-400/10 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                      Coming soon
-                    </span>
-                  )}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{desc}</p>
-              </li>
+            {HOW_IT_WORKS_STEPS.map((item) => (
+              <HowItWorksStep key={item.step} {...item} />
             ))}
           </ol>
         </div>

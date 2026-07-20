@@ -66,7 +66,7 @@ describe("SwimLog", () => {
   it("shows empty state when there are no times for the selected date", async () => {
     mockFetch.mockResolvedValue({ items: [], next_cursor: null });
     render(<SwimLog />);
-    expect(await screen.findByText(/no times logged for this date yet/i)).toBeDefined();
+    expect(await screen.findByText(/no times logged for this date yet/i)).toBeInTheDocument();
   });
 
   it("refetches when the date changes", async () => {
@@ -86,9 +86,9 @@ describe("SwimLog", () => {
     mockFetch.mockResolvedValue({ items: [loggedTime], next_cursor: null });
     render(<SwimLog />);
 
-    expect(await screen.findByRole("cell", { name: "Freestyle" })).toBeDefined();
-    expect(screen.getByRole("cell", { name: "SCY (short course yards)" })).toBeDefined();
-    expect(screen.getByText("0:32.10")).toBeDefined();
+    expect(await screen.findByRole("cell", { name: "Freestyle" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "SCY (short course yards)" })).toBeInTheDocument();
+    expect(screen.getByText("0:32.10")).toBeInTheDocument();
   });
 
   it("submits a new time via POST /api/swim-times with time parsed from mm:ss", async () => {
@@ -120,7 +120,7 @@ describe("SwimLog", () => {
         }),
       }),
     );
-    expect(await screen.findByText("1:02.35")).toBeDefined();
+    expect(await screen.findByText("1:02.35")).toBeInTheDocument();
   });
 
   it("shows a validation error for invalid time input without calling POST", async () => {
@@ -134,21 +134,21 @@ describe("SwimLog", () => {
       screen.getByRole("button", { name: "Log time" }).closest("form") as HTMLFormElement,
     );
 
-    expect(await screen.findByText(/enter a valid time/i)).toBeDefined();
+    expect(await screen.findByText(/enter a valid time/i)).toBeInTheDocument();
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 
   it("shows an error message when loading times fails", async () => {
     mockFetch.mockRejectedValue(new ApiError("Server error", 500));
     render(<SwimLog />);
-    expect(await screen.findByText("Server error")).toBeDefined();
+    expect(await screen.findByText("Server error")).toBeInTheDocument();
   });
 
   it("redirects to sign-in instead of showing an error when the session has expired", async () => {
     mockFetch.mockRejectedValue(new ApiError("Could not validate credentials", 401));
     render(<SwimLog />);
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
-    expect(screen.queryByText("Could not validate credentials")).toBeNull();
+    expect(screen.queryByText("Could not validate credentials")).not.toBeInTheDocument();
   });
 
   it("refetches with stroke/course/length/official filters applied", async () => {
@@ -196,13 +196,13 @@ describe("SwimLog", () => {
     const today = currentDateInputValue();
     await settleAsyncEffects(1);
 
-    expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Clear filters" })).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Filter by stroke"), {
       target: { value: "backstroke" },
     });
     await settleAsyncEffects(2);
-    expect(screen.getByRole("button", { name: "Clear filters" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Clear filters" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
     await waitFor(() =>
@@ -210,7 +210,7 @@ describe("SwimLog", () => {
         `/api/swim-times?date_from=${today}&date_to=${today}`,
       ),
     );
-    expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Clear filters" })).not.toBeInTheDocument();
   });
 
   it("does not add a newly created time to the table when it doesn't match the active filter", async () => {
@@ -233,7 +233,7 @@ describe("SwimLog", () => {
     );
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(3));
-    expect(screen.queryByText("0:32.10")).toBeNull();
+    expect(screen.queryByText("0:32.10")).not.toBeInTheDocument();
   });
 
   it("shows a Load more button when next_cursor is present, and appends the next page", async () => {
@@ -242,7 +242,7 @@ describe("SwimLog", () => {
     const today = currentDateInputValue();
 
     await screen.findByText("0:32.10");
-    expect(screen.getByRole("button", { name: "Load more" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Load more" })).toBeInTheDocument();
 
     mockFetch.mockResolvedValueOnce({
       items: [{ ...loggedTime, id: 2, notes: "second page" }],
@@ -255,7 +255,7 @@ describe("SwimLog", () => {
         `/api/swim-times?date_from=${today}&date_to=${today}&cursor=abc123`,
       ),
     );
-    expect(await screen.findByText("second page")).toBeDefined();
-    expect(screen.queryByRole("button", { name: "Load more" })).toBeNull();
+    expect(await screen.findByText("second page")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Load more" })).not.toBeInTheDocument();
   });
 });
