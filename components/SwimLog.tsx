@@ -59,6 +59,28 @@ function Field({
   );
 }
 
+function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {
+  return (
+    <tr className="border-b border-slate-50 dark:border-slate-800/50 last:border-0">
+      <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
+        {STROKE_LABELS[swimTime.stroke]}
+      </td>
+      <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
+        {COURSE_LABELS[swimTime.course]}
+      </td>
+      <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">{swimTime.length}</td>
+      <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">{swimTime.attempt_number}</td>
+      <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
+        {formatMmSs(swimTime.time_seconds)}
+      </td>
+      <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
+        {swimTime.is_official ? "Yes" : "No"}
+      </td>
+      <td className="py-2 text-slate-500 dark:text-slate-400">{swimTime.notes ?? ""}</td>
+    </tr>
+  );
+}
+
 function validateFilterLength(value: string): string | null {
   const trimmed = value.trim();
   if (trimmed === "") return null;
@@ -509,28 +531,7 @@ export default function SwimLog() {
             </thead>
             <tbody>
               {times.map((t) => (
-                <tr
-                  key={t.id}
-                  className="border-b border-slate-50 dark:border-slate-800/50 last:border-0"
-                >
-                  <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
-                    {STROKE_LABELS[t.stroke]}
-                  </td>
-                  <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
-                    {COURSE_LABELS[t.course]}
-                  </td>
-                  <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">{t.length}</td>
-                  <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
-                    {t.attempt_number}
-                  </td>
-                  <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
-                    {formatMmSs(t.time_seconds)}
-                  </td>
-                  <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
-                    {t.is_official ? "Yes" : "No"}
-                  </td>
-                  <td className="py-2 text-slate-500 dark:text-slate-400">{t.notes ?? ""}</td>
-                </tr>
+                <SwimTimeRow key={t.id} swimTime={t} />
               ))}
             </tbody>
           </table>
