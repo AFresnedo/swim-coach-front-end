@@ -38,26 +38,7 @@ export default function SwimLog() {
     addIfVisible,
   } = useSwimTimesQuery(selectedDate);
 
-  const {
-    stroke,
-    setStroke,
-    course,
-    setCourse,
-    length,
-    setLength,
-    timeText,
-    setTimeText,
-    attemptNumber,
-    setAttemptNumber,
-    notes,
-    setNotes,
-    isOfficial,
-    setIsOfficial,
-    creating,
-    createError,
-    createFieldErrors,
-    handleCreate,
-  } = useCreateSwimTimeForm({ selectedDate, getViewGeneration, addIfVisible });
+  const createForm = useCreateSwimTimeForm({ selectedDate, getViewGeneration, addIfVisible });
 
   return (
     <div className="flex flex-col gap-8">
@@ -75,26 +56,7 @@ export default function SwimLog() {
         setFilterOfficial={setFilterOfficial}
       />
 
-      <CreateSwimTimeForm
-        stroke={stroke}
-        setStroke={setStroke}
-        course={course}
-        setCourse={setCourse}
-        length={length}
-        setLength={setLength}
-        timeText={timeText}
-        setTimeText={setTimeText}
-        attemptNumber={attemptNumber}
-        setAttemptNumber={setAttemptNumber}
-        notes={notes}
-        setNotes={setNotes}
-        isOfficial={isOfficial}
-        setIsOfficial={setIsOfficial}
-        creating={creating}
-        createError={createError}
-        createFieldErrors={createFieldErrors}
-        handleCreate={handleCreate}
-      />
+      <CreateSwimTimeForm form={createForm} />
 
       <SwimTimesTable
         times={times}

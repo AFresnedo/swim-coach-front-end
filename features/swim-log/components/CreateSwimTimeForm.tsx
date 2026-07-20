@@ -1,4 +1,5 @@
 import Field from "@/components/Field";
+import type { useCreateSwimTimeForm } from "@/features/swim-log/hooks/use-create-swim-time-form";
 import {
   cardClass,
   inputClass,
@@ -10,44 +11,31 @@ import {
 import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/lib/swim-times-data";
 
 export default function CreateSwimTimeForm({
-  stroke,
-  setStroke,
-  course,
-  setCourse,
-  length,
-  setLength,
-  timeText,
-  setTimeText,
-  attemptNumber,
-  setAttemptNumber,
-  notes,
-  setNotes,
-  isOfficial,
-  setIsOfficial,
-  creating,
-  createError,
-  createFieldErrors,
-  handleCreate,
+  form,
 }: {
-  stroke: Stroke;
-  setStroke: (value: Stroke) => void;
-  course: Course;
-  setCourse: (value: Course) => void;
-  length: string;
-  setLength: (value: string) => void;
-  timeText: string;
-  setTimeText: (value: string) => void;
-  attemptNumber: string;
-  setAttemptNumber: (value: string) => void;
-  notes: string;
-  setNotes: (value: string) => void;
-  isOfficial: boolean;
-  setIsOfficial: (value: boolean) => void;
-  creating: boolean;
-  createError: string;
-  createFieldErrors: Record<string, string>;
-  handleCreate: (e: React.SubmitEvent<HTMLFormElement>) => void;
+  form: ReturnType<typeof useCreateSwimTimeForm>;
 }) {
+  const {
+    stroke,
+    setStroke,
+    course,
+    setCourse,
+    length,
+    setLength,
+    timeText,
+    setTimeText,
+    attemptNumber,
+    setAttemptNumber,
+    notes,
+    setNotes,
+    isOfficial,
+    setIsOfficial,
+    creating,
+    createError,
+    createFieldErrors,
+    handleCreate,
+  } = form;
+
   return (
     <form onSubmit={handleCreate} className={`${cardClass} flex flex-col gap-4`}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
