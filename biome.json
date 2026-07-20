@@ -29,6 +29,28 @@
       "preset": "recommended"
     }
   },
+  "overrides": [
+    {
+      "includes": ["**", "!features/swim-log/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/swim-log/**", "!@/features/swim-log/components/SwimLog"],
+                    "message": "Only @/features/swim-log/components/SwimLog (the feature's entry point) may be imported from outside features/swim-log/. Everything else under features/swim-log/ is private to that feature. When a new features/<name>/ folder is added, add a matching override block for it here."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "assist": {
     "actions": {
       "source": {
