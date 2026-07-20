@@ -21,8 +21,11 @@ type Profile = {
   unit_preference: UnitSystem;
 };
 
+const CM_PER_INCH = 2.54;
+const KG_PER_LB = 0.453592;
+
 function cmToFtIn(cm: number) {
-  const totalInches = cm / 2.54;
+  const totalInches = cm / CM_PER_INCH;
   let ft = Math.floor(totalInches / 12);
   let inches = Math.round(totalInches % 12);
   if (inches === 12) {
@@ -33,7 +36,7 @@ function cmToFtIn(cm: number) {
 }
 
 function kgToLbs(kg: number) {
-  return Math.round(kg / 0.453592);
+  return Math.round(kg / KG_PER_LB);
 }
 
 export default function ProfileForm() {
@@ -91,9 +94,9 @@ export default function ProfileForm() {
     const height_cm =
       units === "metric"
         ? parseFloat(heightCm)
-        : (parseFloat(heightFt) * 12 + parseFloat(heightIn)) * 2.54;
+        : (parseFloat(heightFt) * 12 + parseFloat(heightIn)) * CM_PER_INCH;
 
-    const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * 0.453592;
+    const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * KG_PER_LB;
 
     try {
       await protectedFrontFetch("/api/profile", {
