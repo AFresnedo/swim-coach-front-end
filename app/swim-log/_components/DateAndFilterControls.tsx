@@ -13,7 +13,7 @@ import {
   inputNormalClass,
   labelClass,
   secondaryButtonClass,
-} from "@/lib/form-styles";
+} from "@/shared/form-styles";
 
 export default function DateAndFilterControls({
   selectedDate,

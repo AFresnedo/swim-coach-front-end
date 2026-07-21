@@ -14,12 +14,12 @@ vi.mock("next/navigation", () => ({
   useRouter: () => router,
 }));
 
-vi.mock("@/lib/front-api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/front-api")>();
+vi.mock("@/shared/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/shared/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
 });
 
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/shared/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 

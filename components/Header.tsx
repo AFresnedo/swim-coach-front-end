@@ -1,6 +1,6 @@
 import Link from "next/link";
 import HeaderNav from "@/components/HeaderNav";
-import { checkLoggedIn } from "@/lib/auth";
+import { checkLoggedIn } from "@/shared/auth";
 
 export default async function Header() {
   const isLoggedIn = await checkLoggedIn();

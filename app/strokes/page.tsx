@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { strokes } from "@/lib/strokes-data";
+import { strokes } from "@/shared/strokes-data";
 
 export default function StrokesPage() {
   return (

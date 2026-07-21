@@ -8,10 +8,10 @@ import {
   inputNormalClass,
   labelClass,
   primaryButtonLargeClass,
-} from "@/lib/form-styles";
-import { apiErrorDetails } from "@/lib/front-api";
-import { useAbortableEffect } from "@/lib/use-abortable-effect";
-import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+} from "@/shared/form-styles";
+import { apiErrorDetails } from "@/shared/front-api";
+import { useAbortableEffect } from "@/shared/use-abortable-effect";
+import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
 

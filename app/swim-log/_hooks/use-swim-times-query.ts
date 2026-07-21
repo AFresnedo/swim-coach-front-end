@@ -8,9 +8,9 @@ import {
   type SwimTime,
   type SwimTimeFilterParam,
 } from "@/app/swim-log/_lib/swim-times-data";
-import { useAbortableEffect } from "@/lib/use-abortable-effect";
-import { useDebouncedValue } from "@/lib/use-debounced-value";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { useAbortableEffect } from "@/shared/use-abortable-effect";
+import { useDebouncedValue } from "@/shared/use-debounced-value";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 
 export type OfficialFilter = "" | "true" | "false";
 

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { backApiFetch, backendErrorResponse } from "@/lib/back-api";
+import { backApiFetch, backendErrorResponse } from "@/shared/back-api";
 
 export async function PATCH(req: NextRequest, ctx: RouteContext<"/goals/api/[id]">) {
   const { id } = await ctx.params;

@@ -1,4 +1,4 @@
-import { API_URL, safeFetch } from "@/lib/back-api";
+import { API_URL, safeFetch } from "@/shared/back-api";
 
 export async function getUserCount(): Promise<number | null> {
   try {

@@ -10,8 +10,8 @@ import {
   inputErrorClass,
   inputNormalClass,
   primaryButtonLargeClass,
-} from "@/lib/form-styles";
-import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
+} from "@/shared/form-styles";
+import { apiErrorDetails, frontApiFetch } from "@/shared/front-api";
 
 // useSearchParams suspends the tree up to the nearest Suspense boundary
 // during static builds, so it's isolated here rather than called directly

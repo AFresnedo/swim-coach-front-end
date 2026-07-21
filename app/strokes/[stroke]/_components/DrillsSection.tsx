@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Drill } from "@/lib/strokes-data";
+import type { Drill } from "@/shared/strokes-data";
 
 export default function DrillsSection({
   drills,

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/shared/front-api";
 
 // Thrown after useProtectedFrontFetch has already redirected to /sign-in, so
 // callers can bail out of their own catch block instead of also showing a

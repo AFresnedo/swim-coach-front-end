@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import { type Ref, useCallback, useEffect, useImperativeHandle, useRef } from "react";
-import { TURNSTILE_TEST_MODE } from "@/lib/constants";
+import { TURNSTILE_TEST_MODE } from "@/shared/constants";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 

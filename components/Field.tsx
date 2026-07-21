@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { labelClass } from "@/lib/form-styles";
+import { labelClass } from "@/shared/form-styles";
 
 export default function Field({
   htmlFor,

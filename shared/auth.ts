@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { AUTH_COOKIE } from "@/lib/constants";
-import { jwtMaxAge } from "@/lib/jwt";
+import { AUTH_COOKIE } from "@/shared/constants";
+import { jwtMaxAge } from "@/shared/jwt";
 
 export async function checkLoggedIn(): Promise<boolean> {
   const cookieStore = await cookies();

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { backApiFetch, backendErrorResponse } from "@/lib/back-api";
+import { backApiFetch, backendErrorResponse } from "@/shared/back-api";
 
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status") ?? "active";

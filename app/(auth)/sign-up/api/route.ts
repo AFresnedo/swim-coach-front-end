@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { setAuthCookie } from "@/lib/auth";
-import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
-import { TURNSTILE_TEST_MODE } from "@/lib/constants";
+import { setAuthCookie } from "@/shared/auth";
+import { API_URL, normalizeError, safeFetch } from "@/shared/back-api";
+import { TURNSTILE_TEST_MODE } from "@/shared/constants";
 
 // Throws for anything that isn't Cloudflare actually looking at the token and
 // saying yes/no (missing config, network failure, timeout, a non-2xx from

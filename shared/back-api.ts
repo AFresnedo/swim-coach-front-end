@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE } from "@/lib/constants";
+import { AUTH_COOKIE } from "@/shared/constants";
 
 export const API_URL = process.env.API_URL ?? "http://localhost:8000";
 

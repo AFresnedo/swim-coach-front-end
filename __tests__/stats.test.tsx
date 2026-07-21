@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getSwimCount, getUserCount } from "@/app/_lib/stats";
 
-vi.mock("@/lib/back-api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/back-api")>();
+vi.mock("@/shared/back-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/shared/back-api")>();
   return { ...actual, safeFetch: vi.fn() };
 });
 
-import { safeFetch } from "@/lib/back-api";
+import { safeFetch } from "@/shared/back-api";
 
 const mockFetch = vi.mocked(safeFetch);
 

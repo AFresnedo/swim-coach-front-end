@@ -5,7 +5,7 @@ import {
   STROKE_LABELS,
   type SwimTime,
 } from "@/app/swim-log/_lib/swim-times-data";
-import { cardClass, secondaryButtonClass } from "@/lib/form-styles";
+import { cardClass, secondaryButtonClass } from "@/shared/form-styles";
 
 function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {
   return (

@@ -8,9 +8,9 @@ import {
   inputNormalClass,
   labelClass,
   primaryButtonClass,
-} from "@/lib/form-styles";
-import { useAbortableEffect } from "@/lib/use-abortable-effect";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+} from "@/shared/form-styles";
+import { useAbortableEffect } from "@/shared/use-abortable-effect";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 
 export type DeactivationReason = "reached" | "abandoned" | "other";
 export type Goal = {

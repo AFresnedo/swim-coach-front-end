@@ -18,7 +18,7 @@ import {
   inputNormalClass,
   labelClass,
   primaryButtonClass,
-} from "@/lib/form-styles";
+} from "@/shared/form-styles";
 
 function getFieldError(
   errors: Record<string, string>,

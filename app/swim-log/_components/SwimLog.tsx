@@ -5,7 +5,7 @@ import CreateSwimTimeForm from "@/app/swim-log/_components/CreateSwimTimeForm";
 import DateAndFilterControls from "@/app/swim-log/_components/DateAndFilterControls";
 import SwimTimesTable from "@/app/swim-log/_components/SwimTimesTable";
 import { useSwimTimesQuery } from "@/app/swim-log/_hooks/use-swim-times-query";
-import { cardClass } from "@/lib/form-styles";
+import { cardClass } from "@/shared/form-styles";
 
 function todayLocalDate(): string {
   const now = new Date();

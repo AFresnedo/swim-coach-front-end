@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { backApiFetchNoBody, backendErrorResponse } from "@/lib/back-api";
-import { AUTH_COOKIE } from "@/lib/constants";
+import { backApiFetchNoBody, backendErrorResponse } from "@/shared/back-api";
+import { AUTH_COOKIE } from "@/shared/constants";
 
 export async function POST() {
   // The backend has no per-device sessions, so invalidating this token

@@ -4,7 +4,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 
 export default function AccountMenu() {
   const router = useRouter();

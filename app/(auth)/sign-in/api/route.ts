@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { setAuthCookie } from "@/lib/auth";
-import { API_URL, normalizeError, safeFetch } from "@/lib/back-api";
+import { setAuthCookie } from "@/shared/auth";
+import { API_URL, normalizeError, safeFetch } from "@/shared/back-api";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();

@@ -7,8 +7,8 @@ import {
   type Stroke,
   type SwimTime,
 } from "@/app/swim-log/_lib/swim-times-data";
-import { apiErrorDetails } from "@/lib/front-api";
-import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { apiErrorDetails } from "@/shared/front-api";
+import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 
 export type CreateSwimTimeFormParams = {
   selectedDate: string;
