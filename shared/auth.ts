@@ -1,10 +1,28 @@
 import { cookies } from "next/headers";
-import { AUTH_COOKIE } from "@/shared/constants";
-import { jwtMaxAge } from "@/shared/jwt";
+
+export const AUTH_COOKIE = "access_token";
+
+function jwtMaxAge(token: string): number | undefined {
+  // TODO: log when this falls back (no payload segment / bad JSON / missing exp) once
+  // we have a real logging system — console logging isn't useful outside local dev.
+  const payload = token.split(".")[1];
+  if (!payload) return undefined;
+
+  try {
+    const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    return typeof exp === "number" ? Math.max(0, exp - Math.floor(Date.now() / 1000)) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function getAuthToken(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get(AUTH_COOKIE)?.value;
+}
 
 export async function checkLoggedIn(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_COOKIE)?.value;
+  const token = await getAuthToken();
   if (!token) return false;
 
   const maxAge = jwtMaxAge(token);

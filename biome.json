@@ -86,6 +86,7 @@
                   {
                     "group": [
                       "@/app/(auth)/sign-up/_components/**",
+                      "@/app/(auth)/sign-up/_data/**",
                       "!@/app/(auth)/sign-up/_components/Turnstile"
                     ],
                     "message": "Private to app/(auth)/sign-up/, except Turnstile (the route's entry point)."
