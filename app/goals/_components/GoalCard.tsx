@@ -10,7 +10,7 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/shared/form-styles";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/protected-fetch";
 
 const REASON_LABELS: Record<DeactivationReason, string> = {
   reached: "Reached",

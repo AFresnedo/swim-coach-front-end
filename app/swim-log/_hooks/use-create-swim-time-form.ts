@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Course, Stroke, SwimTime } from "@/app/swim-log/_data/swim-times";
 import { parseMmSs } from "@/app/swim-log/_utils/format-time";
 import { apiErrorDetails } from "@/shared/front-api";
-import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
+import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/protected-fetch";
 
 export type CreateSwimTimeFormParams = {
   selectedDate: string;

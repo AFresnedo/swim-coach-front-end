@@ -10,8 +10,8 @@ import {
   primaryButtonLargeClass,
 } from "@/shared/form-styles";
 import { apiErrorDetails } from "@/shared/front-api";
+import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/protected-fetch";
 import { useAbortableEffect } from "@/shared/use-abortable-effect";
-import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
 
