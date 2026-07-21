@@ -19,7 +19,7 @@ export default function Field({
       </label>
       {children}
       {error && (
-        <p id={`${htmlFor}-error`} className="text-xs text-red-600 dark:text-red-400">
+        <p id={`${htmlFor}-error`} className="text-red-600 text-xs dark:text-red-400">
           {error}
         </p>
       )}

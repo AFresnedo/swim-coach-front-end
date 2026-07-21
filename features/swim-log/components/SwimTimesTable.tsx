@@ -11,7 +11,7 @@ import {
 
 function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {
   return (
-    <tr className="border-b border-slate-50 dark:border-slate-800/50 last:border-0">
+    <tr className="border-slate-50 border-b last:border-0 dark:border-slate-800/50">
       <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
         {STROKE_LABELS[swimTime.stroke]}
       </td>
@@ -57,17 +57,17 @@ export default function SwimTimesTable({
   return (
     <>
       {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-red-600 text-sm dark:text-red-400">
           {error}
         </p>
       )}
 
       {loading && times.length === 0 && !error && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading times…</p>
+        <p className="text-slate-500 text-sm dark:text-slate-400">Loading times…</p>
       )}
 
       {!loading && times.length === 0 && !error && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-slate-500 text-sm dark:text-slate-400">
           {filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial
             ? "No times match these filters for this date."
             : "No times logged for this date yet — add one above."}
@@ -78,7 +78,7 @@ export default function SwimTimesTable({
         <div className={`${cardClass} overflow-x-auto`}>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+              <tr className="border-slate-100 border-b text-slate-500 dark:border-slate-800 dark:text-slate-400">
                 <th className="py-2 pr-4 font-medium">Stroke</th>
                 <th className="py-2 pr-4 font-medium">Course</th>
                 <th className="py-2 pr-4 font-medium">Length</th>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Field from "@/components/Field";
 import {
   inputClass,
   inputErrorClass,
@@ -154,20 +155,20 @@ export default function ProfileForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {loadingProfile && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading your profile…</p>
+        <p className="text-slate-500 text-sm dark:text-slate-400">Loading your profile…</p>
       )}
 
       {/* Unit toggle */}
-      <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden text-sm font-medium">
+      <div className="flex overflow-hidden rounded-lg border border-slate-200 font-medium text-sm dark:border-slate-700">
         {(["metric", "imperial"] as UnitSystem[]).map((u) => (
           <button
             key={u}
             type="button"
             onClick={() => setUnits(u)}
-            className={`flex-1 py-2 transition-colors capitalize ${
+            className={`flex-1 py-2 capitalize transition-colors ${
               units === u
                 ? "bg-gradient-aqua text-white"
-                : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
             }`}
           >
             {u}
@@ -176,10 +177,7 @@ export default function ProfileForm() {
       </div>
 
       {/* Age */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="age" className={labelClass}>
-          Age
-        </label>
+      <Field htmlFor="age" label="Age" error={fieldErrors.age}>
         <input
           id="age"
           type="number"
@@ -192,12 +190,7 @@ export default function ProfileForm() {
           placeholder="Years"
           aria-describedby={fieldErrors.age ? "age-error" : undefined}
         />
-        {fieldErrors.age && (
-          <p id="age-error" className="text-xs text-red-600 dark:text-red-400">
-            {fieldErrors.age}
-          </p>
-        )}
-      </div>
+      </Field>
 
       {/* Height */}
       <div className="flex flex-col gap-1.5">
@@ -248,7 +241,7 @@ export default function ProfileForm() {
           </div>
         )}
         {fieldErrors.height_cm && (
-          <p id="height-error" className="text-xs text-red-600 dark:text-red-400">
+          <p id="height-error" className="text-red-600 text-xs dark:text-red-400">
             {fieldErrors.height_cm}
           </p>
         )}
@@ -289,17 +282,14 @@ export default function ProfileForm() {
           />
         )}
         {fieldErrors.weight_kg && (
-          <p id="weight-error" className="text-xs text-red-600 dark:text-red-400">
+          <p id="weight-error" className="text-red-600 text-xs dark:text-red-400">
             {fieldErrors.weight_kg}
           </p>
         )}
       </div>
 
       {/* Sex */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="sex" className={labelClass}>
-          Sex
-        </label>
+      <Field htmlFor="sex" label="Sex" error={fieldErrors.sex}>
         <select
           id="sex"
           required
@@ -315,23 +305,18 @@ export default function ProfileForm() {
           <option value="female">Female</option>
           <option value="prefer_not_to_say">Prefer not to say</option>
         </select>
-        <p id="sex-hint" className="text-xs text-slate-500 dark:text-slate-400">
+        <p id="sex-hint" className="text-slate-500 text-xs dark:text-slate-400">
           Used to power future performance benchmarks.
         </p>
-        {fieldErrors.sex && (
-          <p id="sex-error" className="text-xs text-red-600 dark:text-red-400">
-            {fieldErrors.sex}
-          </p>
-        )}
-      </div>
+      </Field>
 
       {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-red-600 text-sm dark:text-red-400">
           {error}
         </p>
       )}
       {saved && (
-        <p role="status" className="text-sm text-green-600 dark:text-green-400">
+        <p role="status" className="text-green-600 text-sm dark:text-green-400">
           Profile saved.
         </p>
       )}

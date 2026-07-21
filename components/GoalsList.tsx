@@ -104,7 +104,7 @@ export default function GoalsList() {
           placeholder="e.g. Swim a sub-1:00 100m free"
         />
         {createError && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="text-red-600 text-sm dark:text-red-400">
             {createError}
           </p>
         )}
@@ -113,7 +113,7 @@ export default function GoalsList() {
         </button>
       </form>
 
-      <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden text-sm font-medium w-fit">
+      <div className="flex w-fit overflow-hidden rounded-lg border border-slate-200 font-medium text-sm dark:border-slate-700">
         {(["active", "all"] as GoalFilter[]).map((f) => (
           <button
             key={f}
@@ -122,7 +122,7 @@ export default function GoalsList() {
             className={`px-6 py-2 transition-colors ${
               filter === f
                 ? "bg-gradient-aqua text-white"
-                : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
             }`}
           >
             {f === "active" ? "Active" : "All"}
@@ -131,17 +131,17 @@ export default function GoalsList() {
       </div>
 
       {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-red-600 text-sm dark:text-red-400">
           {error}
         </p>
       )}
 
       {loading && goals.length === 0 && !error && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading goals…</p>
+        <p className="text-slate-500 text-sm dark:text-slate-400">Loading goals…</p>
       )}
 
       {!loading && goals.length === 0 && !error && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-slate-500 text-sm dark:text-slate-400">
           {filter === "active"
             ? "No active goals yet — create one above."
             : "No goals yet — create one above."}

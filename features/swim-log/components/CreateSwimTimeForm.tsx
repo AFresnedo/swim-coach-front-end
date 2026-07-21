@@ -236,7 +236,7 @@ export default function CreateSwimTimeForm(props: CreateSwimTimeFormParams) {
       <NotesField value={notes} onChange={setNotes} errors={createFieldErrors} />
 
       {createError && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-red-600 text-sm dark:text-red-400">
           {createError}
         </p>
       )}

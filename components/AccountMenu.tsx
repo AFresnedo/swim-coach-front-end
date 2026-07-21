@@ -25,7 +25,7 @@ export default function AccountMenu() {
 
   return (
     <Menu as="div" className="relative">
-      <MenuButton className="group flex items-center gap-1.5 rounded-full border border-cyan-900/10 dark:border-cyan-400/10 px-4 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:border-cyan-900/20 dark:hover:border-cyan-400/20 transition-colors data-[active]:text-slate-900 dark:data-[active]:text-slate-100">
+      <MenuButton className="group flex items-center gap-1.5 rounded-full border border-cyan-900/10 px-4 py-2 transition-colors hover:border-cyan-900/20 hover:text-slate-900 data-[active]:text-slate-900 dark:border-cyan-400/10 dark:data-[active]:text-slate-100 dark:hover:border-cyan-400/20 dark:hover:text-slate-100">
         <svg
           aria-hidden
           role="presentation"
@@ -58,12 +58,12 @@ export default function AccountMenu() {
       <MenuItems
         anchor="bottom end"
         transition
-        className="z-[calc(var(--z-header)+10)] w-44 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 py-1.5 shadow-lg shadow-cyan-500/5 [--anchor-gap:0.5rem] origin-top transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+        className="z-[calc(var(--z-header)+10)] w-44 origin-top rounded-xl border border-slate-100 bg-white py-1.5 shadow-cyan-500/5 shadow-lg transition duration-100 ease-out [--anchor-gap:0.5rem] data-[closed]:scale-95 data-[closed]:opacity-0 dark:border-slate-800 dark:bg-slate-900"
       >
         <MenuItem>
           <Link
             href="/profile"
-            className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 data-[focus]:bg-slate-50 dark:data-[focus]:bg-slate-800 data-[focus]:text-slate-900 dark:data-[focus]:text-slate-100"
+            className="block px-4 py-2 text-slate-600 text-sm data-[focus]:bg-slate-50 data-[focus]:text-slate-900 dark:text-slate-400 dark:data-[focus]:bg-slate-800 dark:data-[focus]:text-slate-100"
           >
             Profile
           </Link>
@@ -72,7 +72,7 @@ export default function AccountMenu() {
           <button
             type="button"
             onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-400 data-[focus]:bg-slate-50 dark:data-[focus]:bg-slate-800 data-[focus]:text-slate-900 dark:data-[focus]:text-slate-100"
+            className="block w-full px-4 py-2 text-left text-slate-600 text-sm data-[focus]:bg-slate-50 data-[focus]:text-slate-900 dark:text-slate-400 dark:data-[focus]:bg-slate-800 dark:data-[focus]:text-slate-100"
           >
             Log out
           </button>
@@ -81,7 +81,7 @@ export default function AccountMenu() {
       {error && (
         <p
           role="alert"
-          className="absolute right-0 mt-2 w-56 rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs text-red-600 dark:text-red-400 shadow-lg"
+          className="absolute right-0 mt-2 w-56 rounded-lg bg-red-50 px-3 py-2 text-red-600 text-xs shadow-lg dark:bg-red-500/10 dark:text-red-400"
         >
           {error}
         </p>

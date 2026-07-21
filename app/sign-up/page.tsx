@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import Field from "@/components/Field";
 import { PasswordField } from "@/components/PasswordField";
 import { Turnstile, type TurnstileHandle } from "@/components/Turnstile";
 import {
   inputClass,
   inputErrorClass,
   inputNormalClass,
-  labelClass,
   primaryButtonLargeClass,
 } from "@/lib/form-styles";
 import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
@@ -61,20 +61,17 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-full flex items-center justify-center px-6 py-24 bg-page-gradient">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-lg shadow-cyan-500/5">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">
+    <div className="flex min-h-full items-center justify-center bg-page-gradient px-6 py-24">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-100 bg-white p-8 shadow-cyan-500/5 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+        <h1 className="mb-1 font-bold text-2xl text-slate-900 dark:text-slate-50">
           Create your account
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
+        <p className="mb-8 text-slate-500 text-sm dark:text-slate-400">
           Start improving your lap times today.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className={labelClass}>
-              Full name
-            </label>
+          <Field htmlFor="name" label="Full name" error={fieldErrors.name}>
             <input
               id="name"
               type="text"
@@ -86,17 +83,9 @@ export default function SignUpPage() {
               placeholder="Jane Smith"
               aria-describedby={fieldErrors.name ? "name-error" : undefined}
             />
-            {fieldErrors.name && (
-              <p id="name-error" className="text-xs text-red-600 dark:text-red-400">
-                {fieldErrors.name}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className={labelClass}>
-              Email
-            </label>
+          <Field htmlFor="email" label="Email" error={fieldErrors.email}>
             <input
               id="email"
               type="email"
@@ -108,12 +97,7 @@ export default function SignUpPage() {
               placeholder="you@example.com"
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
             />
-            {fieldErrors.email && (
-              <p id="email-error" className="text-xs text-red-600 dark:text-red-400">
-                {fieldErrors.email}
-              </p>
-            )}
-          </div>
+          </Field>
 
           <PasswordField
             id="password"
@@ -138,7 +122,7 @@ export default function SignUpPage() {
           />
 
           {error && (
-            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="text-red-600 text-sm dark:text-red-400">
               {error}
             </p>
           )}
@@ -154,14 +138,14 @@ export default function SignUpPage() {
             />
             <label
               htmlFor="acknowledge-disclaimer"
-              className="text-xs text-slate-500 dark:text-slate-400"
+              className="text-slate-500 text-xs dark:text-slate-400"
             >
               I understand this site&apos;s advice has not been reviewed by a professional and I use
               it at my own risk. Read our{" "}
               <Link
                 href="/disclaimer"
                 target="_blank"
-                className="font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
+                className="font-medium text-cyan-600 hover:underline dark:text-cyan-400"
               >
                 disclaimer
               </Link>
@@ -180,7 +164,7 @@ export default function SignUpPage() {
             />
             <label
               htmlFor="acknowledge-data-wipe"
-              className="text-xs text-slate-500 dark:text-slate-400"
+              className="text-slate-500 text-xs dark:text-slate-400"
             >
               I understand this site is still under active development and my account data
               (including swim times, goals, and profile info) may be wiped or reset at any time
@@ -208,11 +192,11 @@ export default function SignUpPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-center text-slate-500 text-sm dark:text-slate-400">
           Already have an account?{" "}
           <Link
             href="/sign-in"
-            className="font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
+            className="font-medium text-cyan-600 hover:underline dark:text-cyan-400"
           >
             Sign in
           </Link>

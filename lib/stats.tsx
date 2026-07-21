@@ -31,7 +31,7 @@ export async function getSwimCount(): Promise<number | null> {
 export function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p data-testid={`stat-value-${label}`} className="text-3xl font-bold">
+      <p data-testid={`stat-value-${label}`} className="font-bold text-3xl">
         {value}
       </p>
       <p className="mt-1 text-cyan-50 text-sm">{label}</p>

@@ -16,6 +16,15 @@ export type OfficialFilter = "" | "true" | "false";
 
 type SwimTimesPage = { items: SwimTime[]; next_cursor: string | null };
 
+type SwimTimesQueryParams = {
+  date: string;
+  filterStroke: Stroke | "";
+  filterCourse: Course | "";
+  filterLength: string;
+  filterOfficial: OfficialFilter;
+  cursor?: string;
+};
+
 function validateFilterLength(value: string): string | null {
   const trimmed = value.trim();
   if (trimmed === "") return null;
@@ -28,14 +37,7 @@ function validateFilterLength(value: string): string | null {
   return null;
 }
 
-function buildSwimTimesQuery(params: {
-  date: string;
-  filterStroke: Stroke | "";
-  filterCourse: Course | "";
-  filterLength: string;
-  filterOfficial: OfficialFilter;
-  cursor?: string;
-}): string {
+function buildSwimTimesQuery(params: SwimTimesQueryParams): string {
   const values: Partial<Record<SwimTimeFilterParam, string>> = {
     date_from: params.date,
     date_to: params.date,
