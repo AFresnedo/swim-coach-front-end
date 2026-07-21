@@ -7,7 +7,6 @@ import {
   useCreateSwimTimeForm,
 } from "@/features/swim-log/hooks/use-create-swim-time-form";
 import {
-  cardClass,
   inputClass,
   inputErrorClass,
   inputNormalClass,
@@ -207,7 +206,7 @@ export default function CreateSwimTimeForm(props: CreateSwimTimeFormParams) {
   } = useCreateSwimTimeForm(props);
 
   return (
-    <form onSubmit={handleCreate} className={`${cardClass} flex flex-col gap-4`}>
+    <form onSubmit={handleCreate} className="flex flex-col gap-4">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StrokeField value={stroke} onChange={setStroke} errors={createFieldErrors} />
         <CourseField value={course} onChange={setCourse} errors={createFieldErrors} />

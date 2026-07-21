@@ -19,6 +19,11 @@ test("swim log flow: log entry → view for date → date-scoped fetch", async (
 
   const todayValue = await page.getByLabel("Date").inputValue();
 
+  // The create form is collapsed behind a disclosure by default
+  await expect(page.getByRole("spinbutton", { name: "Length", exact: true })).not.toBeVisible();
+  await page.getByText("Log a swim time").click();
+  await expect(page.getByRole("spinbutton", { name: "Length", exact: true })).toBeVisible();
+
   // Create — assert on the actual POST response, not just the resulting DOM,
   // so this fails loudly if the backend ever stops persisting/echoing a field.
   const [createResponse] = await Promise.all([
@@ -104,6 +109,7 @@ test("create error surfaces the backend's field-level validation message", async
   await page.goto("/swim-log");
   await expect(page.getByText(/no times logged for this date yet/i)).toBeVisible();
 
+  await page.getByText("Log a swim time").click();
   await page.getByRole("spinbutton", { name: "Length", exact: true }).fill("50");
   await page.getByRole("textbox", { name: "Time", exact: true }).fill("0:32.10");
   await page.getByLabel("Notes").fill("x".repeat(2001));
