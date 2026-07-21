@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
-import { ApiError, frontApiFetch } from "@/shared/front-api";
+import { ApiError, type FrontApiOptions, frontApiFetch } from "@/shared/front-api";
 
 // Thrown after useProtectedFrontFetch has already redirected to /sign-in, so
 // callers can bail out of their own catch block instead of also showing a
@@ -45,7 +45,10 @@ export function useProtectedFrontFetch() {
   return useCallback(
     // Rest-spread so a call with no options object reaches frontApiFetch as
     // a one-argument call, matching direct frontApiFetch call sites exactly.
-    async function protectedFrontFetch<T>(path: string, ...args: [RequestInit] | []): Promise<T> {
+    async function protectedFrontFetch<T>(
+      path: string,
+      ...args: [FrontApiOptions] | []
+    ): Promise<T> {
       try {
         return await frontApiFetch<T>(path, ...args);
       } catch (err) {

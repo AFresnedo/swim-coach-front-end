@@ -26,20 +26,34 @@ export class BackendError extends Error {
   }
 }
 
+// Forbids a caller from supplying these two keys at all — not just at
+// runtime (where the spread order below already wins regardless), but at
+// compile time, so a bad call fails the build instead of being silently
+// ignored. There's no legitimate reason to override either on this JSON,
+// token-bearing wrapper; a caller with different needs should write its own
+// fetch helper rather than loosen this one's contract.
+type BackApiOptions = Omit<RequestInit, "headers"> & {
+  headers?: Record<string, string> & { Authorization?: never; "Content-Type"?: never };
+};
+
 async function backApiFetchRaw(
   path: string,
   label: string,
-  options: RequestInit = {},
+  options: BackApiOptions = {},
 ): Promise<Response> {
   const token = await getAuthToken();
   if (!token) throw new UnauthenticatedError();
 
   const res = await safeFetch(label, `${API_URL}${path}`, {
     ...options,
+    // Spread options.headers first, although a well-typed caller can't
+    // actually reach this with a conflicting Authorization/Content-Type —
+    // BackApiOptions above already makes that a compile error. This
+    // ordering is free defense-in-depth for a caller that bypasses TypeScript.
     headers: {
+      ...options.headers,
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      ...options.headers,
     },
   });
 
@@ -54,7 +68,7 @@ async function backApiFetchRaw(
 export async function backApiFetch<T>(
   path: string,
   label: string,
-  options: RequestInit = {},
+  options: BackApiOptions = {},
 ): Promise<T> {
   const res = await backApiFetchRaw(path, label, options);
   return res.json();
@@ -65,7 +79,7 @@ export async function backApiFetch<T>(
 export async function backApiFetchNoBody(
   path: string,
   label: string,
-  options: RequestInit = {},
+  options: BackApiOptions = {},
 ): Promise<void> {
   await backApiFetchRaw(path, label, options);
 }
