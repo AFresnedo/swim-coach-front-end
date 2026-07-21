@@ -68,7 +68,11 @@ describe("GoalsList", () => {
   it("fetches active goals by default", async () => {
     mockFetch.mockResolvedValue([]);
     render(<GoalsList />);
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active"));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active", {
+        signal: expect.any(AbortSignal),
+      }),
+    );
   });
 
   it("shows empty state when there are no active goals", async () => {
@@ -80,10 +84,18 @@ describe("GoalsList", () => {
   it("refetches with status=all when the All filter is selected", async () => {
     mockFetch.mockResolvedValue([]);
     render(<GoalsList />);
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active"));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active", {
+        signal: expect.any(AbortSignal),
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "All" }));
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=all"));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=all", {
+        signal: expect.any(AbortSignal),
+      }),
+    );
   });
 
   it("renders active and inactive goals differently", async () => {
@@ -227,7 +239,11 @@ describe("GoalsList", () => {
       }),
     );
     const { unmount } = render(<GoalsList />);
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active"));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active", {
+        signal: expect.any(AbortSignal),
+      }),
+    );
 
     unmount();
     rejectFetch(new ApiError("Could not validate credentials", 401));

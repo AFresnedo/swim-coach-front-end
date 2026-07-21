@@ -8,6 +8,7 @@ RUN npm ci
 COPY next.config.ts postcss.config.mjs tsconfig.json proxy.ts ./
 COPY app/ app/
 COPY components/ components/
+COPY features/ features/
 COPY lib/ lib/
 COPY public/ public/
 

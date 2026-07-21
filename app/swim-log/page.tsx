@@ -1,4 +1,4 @@
-import SwimLog from "@/components/SwimLog";
+import SwimLog from "@/features/swim-log/components/SwimLog";
 
 export default function SwimLogPage() {
   return (

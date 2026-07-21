@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import SwimLog from "@/components/SwimLog";
+import SwimLog from "@/features/swim-log/components/SwimLog";
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -59,7 +59,10 @@ describe("SwimLog", () => {
     render(<SwimLog />);
     const today = currentDateInputValue();
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith(`/api/swim-times?date_from=${today}&date_to=${today}`),
+      expect(mockFetch).toHaveBeenCalledWith(
+        `/api/swim-times?date_from=${today}&date_to=${today}`,
+        { signal: expect.any(AbortSignal) },
+      ),
     );
   });
 
@@ -78,6 +81,7 @@ describe("SwimLog", () => {
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
         "/api/swim-times?date_from=2026-02-14&date_to=2026-02-14",
+        { signal: expect.any(AbortSignal) },
       ),
     );
   });
@@ -163,6 +167,7 @@ describe("SwimLog", () => {
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
         `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke`,
+        { signal: expect.any(AbortSignal) },
       ),
     );
 
@@ -170,6 +175,7 @@ describe("SwimLog", () => {
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
         `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm`,
+        { signal: expect.any(AbortSignal) },
       ),
     );
 
@@ -177,6 +183,7 @@ describe("SwimLog", () => {
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
         `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm&length=100`,
+        { signal: expect.any(AbortSignal) },
       ),
     );
 
@@ -186,6 +193,7 @@ describe("SwimLog", () => {
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
         `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm&length=100&is_official=true`,
+        { signal: expect.any(AbortSignal) },
       ),
     );
   });
@@ -208,6 +216,7 @@ describe("SwimLog", () => {
     await waitFor(() =>
       expect(mockFetch).toHaveBeenLastCalledWith(
         `/api/swim-times?date_from=${today}&date_to=${today}`,
+        { signal: expect.any(AbortSignal) },
       ),
     );
     expect(screen.queryByRole("button", { name: "Clear filters" })).not.toBeInTheDocument();
