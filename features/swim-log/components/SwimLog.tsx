@@ -34,7 +34,7 @@ export default function SwimLog() {
     setFilterOfficial,
     handleLoadMore,
     getViewGeneration,
-    addIfVisible,
+    insertIfCurrentView,
   } = useSwimTimesQuery(selectedDate);
 
   return (
@@ -56,7 +56,7 @@ export default function SwimLog() {
       <CreateSwimTimeForm
         selectedDate={selectedDate}
         getViewGeneration={getViewGeneration}
-        addIfVisible={addIfVisible}
+        insertIfCurrentView={insertIfCurrentView}
       />
 
       <SwimTimesTable

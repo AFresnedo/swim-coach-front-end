@@ -158,7 +158,7 @@ export function useSwimTimesQuery(selectedDate: string) {
     return viewGenerationRef.current;
   }
 
-  function addIfVisible(created: SwimTime, generation: number) {
+  function insertIfCurrentView(created: SwimTime, generation: number) {
     // The create request may resolve after the user has already changed the
     // date or filters — reject it here so a stale response can't insert a
     // swim time into a view the user has since navigated away from.
@@ -193,6 +193,6 @@ export function useSwimTimesQuery(selectedDate: string) {
     setFilterOfficial,
     handleLoadMore,
     getViewGeneration,
-    addIfVisible,
+    insertIfCurrentView,
   };
 }
