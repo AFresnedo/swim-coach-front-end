@@ -1,10 +1,10 @@
-import type { OfficialFilter, SwimTimesFilters } from "@/app/swim-log/_hooks/use-swim-times-query";
 import {
   COURSE_OPTIONS,
   type Course,
   STROKE_OPTIONS,
   type Stroke,
-} from "@/app/swim-log/_lib/swim-times-data";
+} from "@/app/swim-log/_data/swim-times";
+import type { OfficialFilter, SwimTimesFilters } from "@/app/swim-log/_hooks/use-swim-times-query";
 import Field from "@/components/Field";
 import {
   cardClass,

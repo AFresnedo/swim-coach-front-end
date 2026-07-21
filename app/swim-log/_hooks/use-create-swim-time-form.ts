@@ -1,12 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  type Course,
-  parseMmSs,
-  type Stroke,
-  type SwimTime,
-} from "@/app/swim-log/_lib/swim-times-data";
+import type { Course, Stroke, SwimTime } from "@/app/swim-log/_data/swim-times";
+import { parseMmSs } from "@/app/swim-log/_utils/format-time";
 import { apiErrorDetails } from "@/shared/front-api";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/use-protected-front-fetch";
 

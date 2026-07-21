@@ -1,10 +1,6 @@
+import { COURSE_LABELS, STROKE_LABELS, type SwimTime } from "@/app/swim-log/_data/swim-times";
 import type { SwimTimesResults } from "@/app/swim-log/_hooks/use-swim-times-query";
-import {
-  COURSE_LABELS,
-  formatMmSs,
-  STROKE_LABELS,
-  type SwimTime,
-} from "@/app/swim-log/_lib/swim-times-data";
+import { formatMmSs } from "@/app/swim-log/_utils/format-time";
 import { cardClass, secondaryButtonClass } from "@/shared/form-styles";
 
 function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {

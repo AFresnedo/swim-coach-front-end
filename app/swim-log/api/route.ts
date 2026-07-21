@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { SWIM_TIME_FILTER_PARAMS } from "@/app/swim-log/_lib/swim-times-data";
+import { SWIM_TIME_FILTER_PARAMS } from "@/app/swim-log/_data/swim-times";
 import { backApiFetch, backendErrorResponse } from "@/shared/back-api";
 
 export async function GET(req: NextRequest) {

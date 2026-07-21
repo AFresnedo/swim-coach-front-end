@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  type CreateSwimTimeFieldName,
-  type CreateSwimTimeFormParams,
-  useCreateSwimTimeForm,
-} from "@/app/swim-log/_hooks/use-create-swim-time-form";
-import {
   COURSE_OPTIONS,
   type Course,
   STROKE_OPTIONS,
   type Stroke,
-} from "@/app/swim-log/_lib/swim-times-data";
+} from "@/app/swim-log/_data/swim-times";
+import {
+  type CreateSwimTimeFieldName,
+  type CreateSwimTimeFormParams,
+  useCreateSwimTimeForm,
+} from "@/app/swim-log/_hooks/use-create-swim-time-form";
 import Field from "@/components/Field";
 import {
   inputClass,

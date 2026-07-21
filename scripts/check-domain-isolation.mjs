@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { unlinkSync, writeFileSync } from "node:fs";
 
 // biome.json's domain-isolation rule (style/noRestrictedImports, in the single
-// override block covering app/<route>/_components|_hooks|_lib) has a silent
+// override block covering app/<route>/_components|_hooks|_data|_utils) has a silent
 // failure mode: splitting it into more than one override block, or a wrong
 // glob escape, makes it stop enforcing a domain with no lint error at all —
 // `biome check` looks clean either way. See the project-biome-json-editing-
@@ -22,11 +22,12 @@ const cases = [
     expect: "BLOCKED",
   },
   { domain: "swim-log", specifier: "@/app/swim-log/_components/SwimLog", expect: "ALLOWED" },
+  { domain: "swim-log", specifier: "@/app/swim-log/_data/swim-times", expect: "BLOCKED" },
   {
     domain: "swim-log",
-    specifier: "@/app/swim-log/_lib/swim-times-data",
+    specifier: "@/app/swim-log/_utils/format-time",
     expect: "ALLOWED",
-    note: "intentionally global — __tests__/swim-times-data.test.ts imports it directly (the BFF route no longer needs this exception; it moved inside the domain)",
+    note: "intentionally global — __tests__/format-time.test.ts imports it directly",
   },
   { domain: "goals", specifier: "@/app/goals/_components/GoalCard", expect: "BLOCKED" },
   { domain: "goals", specifier: "@/app/goals/_components/GoalsList", expect: "ALLOWED" },
