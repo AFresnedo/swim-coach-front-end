@@ -44,7 +44,7 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      await frontApiFetch("/api/auth/login", {
+      await frontApiFetch("/sign-in/api", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });

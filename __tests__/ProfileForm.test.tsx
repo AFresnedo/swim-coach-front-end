@@ -130,7 +130,7 @@ describe("ProfileForm", () => {
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
     await settleAsyncEffects(2);
-    expect(mockFetch).toHaveBeenLastCalledWith("/api/profile", {
+    expect(mockFetch).toHaveBeenLastCalledWith("/profile/api", {
       method: "PUT",
       body: JSON.stringify({
         age: 25,

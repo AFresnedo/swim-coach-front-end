@@ -68,7 +68,7 @@ export function useCreateSwimTimeForm({
     const generation = getViewGeneration();
     setCreating(true);
     try {
-      const created = await protectedFrontFetch<SwimTime>("/api/swim-times", {
+      const created = await protectedFrontFetch<SwimTime>("/swim-log/api", {
         method: "POST",
         body: JSON.stringify({
           date: selectedDate,

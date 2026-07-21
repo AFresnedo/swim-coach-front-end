@@ -59,7 +59,7 @@ export default function GoalCard({
     setEditError("");
 
     try {
-      const updated = await protectedFrontFetch<Goal>(`/api/goals/${goal.id}`, {
+      const updated = await protectedFrontFetch<Goal>(`/goals/api/${goal.id}`, {
         method: "PATCH",
         body: JSON.stringify({ text: editText }),
       });
@@ -89,7 +89,7 @@ export default function GoalCard({
     setDeactivateError("");
 
     try {
-      const updated = await protectedFrontFetch<Goal>(`/api/goals/${goal.id}/deactivate`, {
+      const updated = await protectedFrontFetch<Goal>(`/goals/api/${goal.id}/deactivate`, {
         method: "PATCH",
         body: JSON.stringify({ reason: deactivateReason }),
       });

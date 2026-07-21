@@ -39,7 +39,7 @@ export default function GoalsList() {
       setLoading(true);
       setError("");
 
-      protectedFrontFetch<Goal[]>(`/api/goals?status=${filter}`, { signal })
+      protectedFrontFetch<Goal[]>(`/goals/api?status=${filter}`, { signal })
         .then((data) => {
           if (signal.aborted) return;
           setGoals(data);
@@ -62,7 +62,7 @@ export default function GoalsList() {
     setCreating(true);
 
     try {
-      const goal = await protectedFrontFetch<Goal>("/api/goals", {
+      const goal = await protectedFrontFetch<Goal>("/goals/api", {
         method: "POST",
         body: JSON.stringify({ text: newText }),
       });

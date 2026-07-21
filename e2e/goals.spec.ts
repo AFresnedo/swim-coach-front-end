@@ -21,7 +21,7 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   // so this fails loudly if the backend ever stops persisting/echoing a field.
   const [createResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes("/api/goals") && res.request().method() === "POST",
+      (res) => res.url().includes("/goals/api") && res.request().method() === "POST",
     ),
     (async () => {
       await page.getByLabel("New goal").fill("Swim a sub-1:00 100m free");
@@ -35,7 +35,7 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   // Edit
   const [editResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes(`/api/goals/${created.id}`) && res.request().method() === "PATCH",
+      (res) => res.url().includes(`/goals/api/${created.id}`) && res.request().method() === "PATCH",
     ),
     (async () => {
       await page.getByRole("button", { name: "Edit" }).click();
@@ -63,7 +63,7 @@ test("goals flow: create → edit → filter → deactivate", async ({ page, tes
   const [deactivateResponse] = await Promise.all([
     page.waitForResponse(
       (res) =>
-        res.url().includes(`/api/goals/${created.id}/deactivate`) &&
+        res.url().includes(`/goals/api/${created.id}/deactivate`) &&
         res.request().method() === "PATCH",
     ),
     confirmButton.click(),
@@ -103,7 +103,7 @@ test("editing two goals at once keeps their edit sessions independent", async ({
   async function createGoal(text: string): Promise<number> {
     const [response] = await Promise.all([
       page.waitForResponse(
-        (res) => res.url().includes("/api/goals") && res.request().method() === "POST",
+        (res) => res.url().includes("/goals/api") && res.request().method() === "POST",
       ),
       (async () => {
         await page.getByLabel("New goal").fill(text);
@@ -129,7 +129,7 @@ test("editing two goals at once keeps their edit sessions independent", async ({
   await cardA.getByLabel("Edit goal").fill("Goal A updated");
   const [editResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes(`/api/goals/${idA}`) && res.request().method() === "PATCH",
+      (res) => res.url().includes(`/goals/api/${idA}`) && res.request().method() === "PATCH",
     ),
     cardA.getByRole("button", { name: "Save" }).click(),
   ]);

@@ -67,7 +67,7 @@ export default function ProfileForm() {
 
   useAbortableEffect(
     (signal) => {
-      protectedFrontFetch<Profile | null>("/api/profile", { signal })
+      protectedFrontFetch<Profile | null>("/profile/api", { signal })
         .then((profile) => {
           if (signal.aborted || !profile) return;
           const { ft, inches } = cmToFtIn(profile.height_cm);
@@ -128,7 +128,7 @@ export default function ProfileForm() {
     const weight_kg = units === "metric" ? parseFloat(weightKg) : parseFloat(weightLbs) * KG_PER_LB;
 
     try {
-      await protectedFrontFetch("/api/profile", {
+      await protectedFrontFetch("/profile/api", {
         method: "PUT",
         body: JSON.stringify({
           age: parseInt(age, 10),

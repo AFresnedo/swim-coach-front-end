@@ -121,7 +121,7 @@ export function useSwimTimesQuery(selectedDate: string) {
         filterOfficial,
       });
 
-      protectedFrontFetch<SwimTimesPage>(`/api/swim-times?${query}`, { signal })
+      protectedFrontFetch<SwimTimesPage>(`/swim-log/api?${query}`, { signal })
         .then((data) => {
           if (signal.aborted) return;
           setTimes(data.items);
@@ -165,7 +165,7 @@ export function useSwimTimesQuery(selectedDate: string) {
         filterOfficial,
         cursor: nextCursor,
       });
-      const data = await protectedFrontFetch<SwimTimesPage>(`/api/swim-times?${query}`);
+      const data = await protectedFrontFetch<SwimTimesPage>(`/swim-log/api?${query}`);
       if (viewGenerationRef.current !== generation) return;
       setTimes((prev) => [...prev, ...data.items]);
       setNextCursor(data.next_cursor);

@@ -41,7 +41,7 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      await frontApiFetch("/api/auth/register", {
+      await frontApiFetch("/sign-up/api", {
         method: "POST",
         body: JSON.stringify({ name, email, password, turnstileToken }),
       });

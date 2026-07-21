@@ -75,7 +75,7 @@ test("sign-up rejected by CAPTCHA shows an error and lets the user retry", async
   // Intercepted before it ever reaches our route handler or the real
   // backend, so this never creates an account and never touches the
   // /auth/register rate limit — no testUser fixture needed.
-  await page.route("**/api/auth/register", (route) =>
+  await page.route("**/sign-up/api", (route) =>
     route.fulfill({
       status: 400,
       contentType: "application/json",
@@ -104,7 +104,7 @@ test("CAPTCHA verification being unavailable shows an error and lets the user re
 }) => {
   // Same rationale as the CAPTCHA-rejected test above: intercepted before it
   // reaches our route handler, so no testUser fixture or rate limit concern.
-  await page.route("**/api/auth/register", (route) =>
+  await page.route("**/sign-up/api", (route) =>
     route.fulfill({
       status: 502,
       contentType: "application/json",
@@ -139,7 +139,7 @@ test("logout failure shows an error and keeps the user logged in", async ({ page
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
-  await page.route("**/api/auth/logout", (route) =>
+  await page.route("**/api/logout", (route) =>
     route.fulfill({
       status: 502,
       contentType: "application/json",
