@@ -10,7 +10,7 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/lib/form-styles";
-import { ApiError } from "@/lib/front-api";
+import { apiErrorDetails } from "@/lib/front-api";
 import {
   COURSE_LABELS,
   COURSE_OPTIONS,
@@ -261,12 +261,12 @@ export default function SwimLog() {
       setIsOfficial(false);
     } catch (err) {
       if (isAuthRedirect(err)) return;
-      if (err instanceof ApiError) {
-        setCreateError(err.message);
-        if (err.errors) setCreateFieldErrors(err.errors);
-      } else {
-        setCreateError("Failed to log time. Please try again.");
-      }
+      const { message, fieldErrors } = apiErrorDetails(
+        err,
+        "Failed to log time. Please try again.",
+      );
+      setCreateError(message);
+      if (fieldErrors) setCreateFieldErrors(fieldErrors);
     } finally {
       setCreating(false);
     }

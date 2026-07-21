@@ -21,7 +21,7 @@ describe("StrokePage", () => {
         searchParams: Promise.resolve({}),
       }),
     );
-    expect(screen.getByText("Catch-Up Drill")).toBeDefined();
+    expect(screen.getByText("Catch-Up Drill")).toBeInTheDocument();
   });
 
   it("hides drills behind a sign-in prompt when logged out", async () => {
@@ -32,8 +32,8 @@ describe("StrokePage", () => {
         searchParams: Promise.resolve({}),
       }),
     );
-    expect(screen.queryByText("Catch-Up Drill")).toBeNull();
-    expect(screen.getByText(/sign in to see/i)).toBeDefined();
+    expect(screen.queryByText("Catch-Up Drill")).not.toBeInTheDocument();
+    expect(screen.getByText(/sign in to see/i)).toBeInTheDocument();
   });
 
   it("renders notFound for an unknown stroke slug", async () => {

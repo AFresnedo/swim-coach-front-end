@@ -23,20 +23,20 @@ describe("Header", () => {
   it("shows sign-in links, 'Features', and 'How it works' when logged out", async () => {
     cookies.mockResolvedValue({ get: () => undefined });
     render(await Header());
-    expect(screen.getByRole("link", { name: "Sign in" })).toBeDefined();
-    expect(screen.getByRole("link", { name: "Get started" })).toBeDefined();
-    expect(screen.getByRole("link", { name: "Features" })).toBeDefined();
-    expect(screen.getByRole("link", { name: "How it works" })).toBeDefined();
-    expect(screen.queryByRole("link", { name: "Goals" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Get started" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Features" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "How it works" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Goals" })).not.toBeInTheDocument();
   });
 
   it("shows Goals and the account menu, but hides 'Features' and 'How it works', when logged in", async () => {
     cookies.mockResolvedValue({ get: () => ({ value: fakeJwt(3600) }) });
     render(await Header());
     expect(screen.getByRole("link", { name: "Goals" }).getAttribute("href")).toBe("/goals");
-    expect(screen.getByRole("button", { name: /account/i })).toBeDefined();
-    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Features" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "How it works" })).toBeNull();
+    expect(screen.getByRole("button", { name: /account/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Features" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "How it works" })).not.toBeInTheDocument();
   });
 });

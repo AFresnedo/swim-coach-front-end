@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import GoalsList from "@/components/GoalsList";
 
@@ -49,6 +49,15 @@ const inactiveGoal = {
   created_at: "2026-01-02T00:00:00Z",
 };
 
+const secondActiveGoal = {
+  id: 3,
+  user_id: 1,
+  text: "Swim 200 IM under 3 minutes",
+  is_active: true,
+  deactivation_reason: null,
+  created_at: "2026-01-03T00:00:00Z",
+};
+
 describe("GoalsList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -65,7 +74,7 @@ describe("GoalsList", () => {
   it("shows empty state when there are no active goals", async () => {
     mockFetch.mockResolvedValue([]);
     render(<GoalsList />);
-    expect(await screen.findByText(/no active goals yet/i)).toBeDefined();
+    expect(await screen.findByText(/no active goals yet/i)).toBeInTheDocument();
   });
 
   it("refetches with status=all when the All filter is selected", async () => {
@@ -81,9 +90,9 @@ describe("GoalsList", () => {
     mockFetch.mockResolvedValue([activeGoal, inactiveGoal]);
     render(<GoalsList />);
 
-    expect(await screen.findByText(activeGoal.text)).toBeDefined();
-    expect(screen.getByText(inactiveGoal.text)).toBeDefined();
-    expect(screen.getByText(/deactivated.*reached/i)).toBeDefined();
+    expect(await screen.findByText(activeGoal.text)).toBeInTheDocument();
+    expect(screen.getByText(inactiveGoal.text)).toBeInTheDocument();
+    expect(screen.getByText(/deactivated.*reached/i)).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Edit" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "Deactivate" })).toHaveLength(1);
   });
@@ -106,7 +115,7 @@ describe("GoalsList", () => {
         body: JSON.stringify({ text: "Swim 200 IM under 3 minutes" }),
       }),
     );
-    expect(await screen.findByText("Swim 200 IM under 3 minutes")).toBeDefined();
+    expect(await screen.findByText("Swim 200 IM under 3 minutes")).toBeInTheDocument();
   });
 
   it("edits a goal via PATCH /api/goals/{id}", async () => {
@@ -129,7 +138,40 @@ describe("GoalsList", () => {
         body: JSON.stringify({ text: "Updated goal text" }),
       }),
     );
-    expect(await screen.findByText("Updated goal text")).toBeDefined();
+    expect(await screen.findByText("Updated goal text")).toBeInTheDocument();
+  });
+
+  it("allows editing two goals independently at the same time", async () => {
+    mockFetch.mockResolvedValueOnce([activeGoal, secondActiveGoal]);
+    render(<GoalsList />);
+    await screen.findByText(activeGoal.text);
+    await screen.findByText(secondActiveGoal.text);
+
+    const cardA = screen.getByTestId(`goal-card-${activeGoal.id}`);
+    const cardB = screen.getByTestId(`goal-card-${secondActiveGoal.id}`);
+
+    fireEvent.click(within(cardA).getByRole("button", { name: "Edit" }));
+    fireEvent.click(within(cardB).getByRole("button", { name: "Edit" }));
+
+    expect(within(cardA).getByLabelText("Edit goal")).toHaveValue(activeGoal.text);
+    expect(within(cardB).getByLabelText("Edit goal")).toHaveValue(secondActiveGoal.text);
+
+    mockFetch.mockResolvedValueOnce({ ...activeGoal, text: "Updated goal A" });
+    fireEvent.change(within(cardA).getByLabelText("Edit goal"), {
+      target: { value: "Updated goal A" },
+    });
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
+    fireEvent.submit(within(cardA).getByRole("button", { name: "Save" }).closest("form")!);
+
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith(`/api/goals/${activeGoal.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ text: "Updated goal A" }),
+      }),
+    );
+    expect(await within(cardA).findByText("Updated goal A")).toBeInTheDocument();
+    // Card B's independent edit session was untouched by card A's save.
+    expect(within(cardB).getByLabelText("Edit goal")).toHaveValue(secondActiveGoal.text);
   });
 
   it("requires a reason before confirming deactivation, then submits PATCH /api/goals/{id}/deactivate", async () => {
@@ -161,20 +203,20 @@ describe("GoalsList", () => {
         body: JSON.stringify({ reason: "reached" }),
       }),
     );
-    await waitFor(() => expect(screen.queryByText(activeGoal.text)).toBeNull());
+    await waitFor(() => expect(screen.queryByText(activeGoal.text)).not.toBeInTheDocument());
   });
 
   it("shows an error message when loading goals fails", async () => {
     mockFetch.mockRejectedValue(new ApiError("Server error", 500));
     render(<GoalsList />);
-    expect(await screen.findByText("Server error")).toBeDefined();
+    expect(await screen.findByText("Server error")).toBeInTheDocument();
   });
 
   it("redirects to sign-in instead of showing an error when the session has expired", async () => {
     mockFetch.mockRejectedValue(new ApiError("Could not validate credentials", 401));
     render(<GoalsList />);
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/sign-in?sessionExpired=1"));
-    expect(screen.queryByText("Could not validate credentials")).toBeNull();
+    expect(screen.queryByText("Could not validate credentials")).not.toBeInTheDocument();
   });
 
   it("does not redirect if a stale request resolves with 401 after the component has unmounted", async () => {
