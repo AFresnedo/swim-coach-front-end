@@ -23,15 +23,7 @@ export default function SwimLog() {
     loading,
     loadingMore,
     error,
-    filterStroke,
-    setFilterStroke,
-    filterCourse,
-    setFilterCourse,
-    filterLength,
-    setFilterLength,
-    filterLengthError,
-    filterOfficial,
-    setFilterOfficial,
+    filters,
     handleLoadMore,
     getViewGeneration,
     insertIfCurrentView,
@@ -42,15 +34,7 @@ export default function SwimLog() {
       <DateAndFilterControls
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        filterStroke={filterStroke}
-        setFilterStroke={setFilterStroke}
-        filterCourse={filterCourse}
-        setFilterCourse={setFilterCourse}
-        filterLength={filterLength}
-        setFilterLength={setFilterLength}
-        filterLengthError={filterLengthError}
-        filterOfficial={filterOfficial}
-        setFilterOfficial={setFilterOfficial}
+        filters={filters}
       />
 
       <CreateSwimTimeForm
@@ -63,10 +47,10 @@ export default function SwimLog() {
         times={times}
         loading={loading}
         error={error}
-        filterStroke={filterStroke}
-        filterCourse={filterCourse}
-        filterLength={filterLength}
-        filterOfficial={filterOfficial}
+        filterStroke={filters.filterStroke}
+        filterCourse={filters.filterCourse}
+        filterLength={filters.filterLength}
+        filterOfficial={filters.filterOfficial}
         nextCursor={nextCursor}
         loadingMore={loadingMore}
         handleLoadMore={handleLoadMore}

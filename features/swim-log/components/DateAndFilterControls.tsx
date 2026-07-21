@@ -1,5 +1,8 @@
 import Field from "@/components/Field";
-import type { OfficialFilter } from "@/features/swim-log/hooks/use-swim-times-query";
+import type {
+  OfficialFilter,
+  SwimTimesFilters,
+} from "@/features/swim-log/hooks/use-swim-times-query";
 import {
   cardClass,
   inputClass,
@@ -13,28 +16,24 @@ import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/lib/
 export default function DateAndFilterControls({
   selectedDate,
   setSelectedDate,
-  filterStroke,
-  setFilterStroke,
-  filterCourse,
-  setFilterCourse,
-  filterLength,
-  setFilterLength,
-  filterLengthError,
-  filterOfficial,
-  setFilterOfficial,
+  filters,
 }: {
   selectedDate: string;
   setSelectedDate: (value: string) => void;
-  filterStroke: Stroke | "";
-  setFilterStroke: (value: Stroke | "") => void;
-  filterCourse: Course | "";
-  setFilterCourse: (value: Course | "") => void;
-  filterLength: string;
-  setFilterLength: (value: string) => void;
-  filterLengthError: string | null;
-  filterOfficial: OfficialFilter;
-  setFilterOfficial: (value: OfficialFilter) => void;
+  filters: SwimTimesFilters;
 }) {
+  const {
+    filterStroke,
+    setFilterStroke,
+    filterCourse,
+    setFilterCourse,
+    filterLength,
+    setFilterLength,
+    filterLengthError,
+    filterOfficial,
+    setFilterOfficial,
+  } = filters;
+
   return (
     <>
       <div className={`${cardClass} flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4`}>
