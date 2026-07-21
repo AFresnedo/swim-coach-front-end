@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import GoalCard from "@/components/GoalCard";
+import GoalCard from "@/app/goals/_components/GoalCard";
 import {
   cardClass,
   inputClass,

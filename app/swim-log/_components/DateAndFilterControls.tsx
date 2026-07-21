@@ -1,8 +1,5 @@
+import type { OfficialFilter, SwimTimesFilters } from "@/app/swim-log/_hooks/use-swim-times-query";
 import Field from "@/components/Field";
-import type {
-  OfficialFilter,
-  SwimTimesFilters,
-} from "@/features/swim-log/hooks/use-swim-times-query";
 import {
   cardClass,
   inputClass,

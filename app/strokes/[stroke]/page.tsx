@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import DrillsSection from "@/components/DrillsSection";
+import DrillsSection from "@/app/strokes/[stroke]/_components/DrillsSection";
 import { checkLoggedIn } from "@/lib/auth";
 import { getStroke, strokes } from "@/lib/strokes-data";
 

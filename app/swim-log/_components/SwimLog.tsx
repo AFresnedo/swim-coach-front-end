@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import CreateSwimTimeForm from "@/features/swim-log/components/CreateSwimTimeForm";
-import DateAndFilterControls from "@/features/swim-log/components/DateAndFilterControls";
-import SwimTimesTable from "@/features/swim-log/components/SwimTimesTable";
-import { useSwimTimesQuery } from "@/features/swim-log/hooks/use-swim-times-query";
+import CreateSwimTimeForm from "@/app/swim-log/_components/CreateSwimTimeForm";
+import DateAndFilterControls from "@/app/swim-log/_components/DateAndFilterControls";
+import SwimTimesTable from "@/app/swim-log/_components/SwimTimesTable";
+import { useSwimTimesQuery } from "@/app/swim-log/_hooks/use-swim-times-query";
 import { cardClass } from "@/lib/form-styles";
 
 function todayLocalDate(): string {

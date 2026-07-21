@@ -1,4 +1,4 @@
-import GoalsList from "@/components/GoalsList";
+import GoalsList from "@/app/goals/_components/GoalsList";
 
 export default function GoalsPage() {
   return (

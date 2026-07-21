@@ -1,4 +1,4 @@
-import type { Step } from "@/lib/home-data";
+import type { Step } from "@/app/_lib/home-data";
 
 export default function HowItWorksStep({ step, title, desc, comingSoon }: Step) {
   return (

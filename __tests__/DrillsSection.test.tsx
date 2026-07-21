@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import DrillsSection from "@/components/DrillsSection";
+import DrillsSection from "@/app/strokes/[stroke]/_components/DrillsSection";
 
 const drills = [{ name: "Catch-Up Drill", focus: "Timing", desc: "Keep one arm extended." }];
 

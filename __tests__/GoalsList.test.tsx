@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import GoalsList from "@/components/GoalsList";
+import GoalsList from "@/app/goals/_components/GoalsList";
 
 const push = vi.fn();
 const replace = vi.fn();

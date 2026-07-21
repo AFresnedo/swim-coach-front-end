@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import SwimLog from "@/features/swim-log/components/SwimLog";
+import SwimLog from "@/app/swim-log/_components/SwimLog";
 
 const push = vi.fn();
 const replace = vi.fn();

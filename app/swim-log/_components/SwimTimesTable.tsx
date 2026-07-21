@@ -1,4 +1,4 @@
-import type { SwimTimesResults } from "@/features/swim-log/hooks/use-swim-times-query";
+import type { SwimTimesResults } from "@/app/swim-log/_hooks/use-swim-times-query";
 import { cardClass, secondaryButtonClass } from "@/lib/form-styles";
 import { COURSE_LABELS, formatMmSs, STROKE_LABELS, type SwimTime } from "@/lib/swim-times-data";
 

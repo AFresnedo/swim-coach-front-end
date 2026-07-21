@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { DeactivationReason, Goal } from "@/components/GoalsList";
+import type { DeactivationReason, Goal } from "@/app/goals/_components/GoalsList";
 import {
   cardClass,
   inputClass,
