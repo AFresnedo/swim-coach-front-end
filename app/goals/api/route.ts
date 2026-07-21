@@ -3,9 +3,10 @@ import { backApiFetch, backendErrorResponse } from "@/shared/back-api";
 
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status") ?? "active";
+  const query = new URLSearchParams({ status });
 
   try {
-    return NextResponse.json(await backApiFetch(`/goals?status=${status}`, "goals"));
+    return NextResponse.json(await backApiFetch(`/goals?${query.toString()}`, "goals"));
   } catch (err) {
     return backendErrorResponse(err, "Failed to load goals");
   }
