@@ -19,13 +19,13 @@ Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · Biome · Vitest · Pl
 
 Next.js Route Handlers act as a proxy layer in front of the backend (a BFF —
 backend-for-frontend — pattern): the browser never talks to the FastAPI API directly,
-and server-only secrets (like the Turnstile secret key) never reach the client. Each
-route handler lives under its own page's route segment (e.g. `app/goals/api/route.ts`
-next to `app/goals/page.tsx`) rather than a shared `app/api/` tree. Sign-in, sign-up,
-and logout live together under the `app/(auth)/` route group — grouped in the file tree
-without affecting their URLs (`/sign-in`, `/sign-up`), except logout, which gains a real
-`/logout` URL it never had as a page-less `app/api/` route. Auth state, protected routes,
-and session expiry are handled client-side on top of that.
+and server-only secrets (like the Turnstile secret key) never reach the client. Route
+handlers are colocated with the page they serve (e.g. `app/goals/api/route.ts` next to
+`app/goals/page.tsx`) rather than grouped under a single `app/api/` directory. Sign-in,
+sign-up, and logout live together under the `app/(auth)/` route group, which organizes
+them in the file tree without adding `/auth` to their URLs (`/sign-in`, `/sign-up`,
+`/logout`). Auth state, protected routes, and session expiry are handled client-side on
+top of that.
 
 ## Setup
 
