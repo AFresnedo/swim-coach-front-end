@@ -8,25 +8,46 @@ import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-fron
 export type CreateSwimTimeFormParams = {
   selectedDate: string;
   getViewGeneration: () => number;
-  addIfVisible: (created: SwimTime, generation: number) => void;
+  insertIfCurrentView: (created: SwimTime, generation: number) => void;
 };
+
+export type CreateSwimTimeFieldName =
+  | "stroke"
+  | "course"
+  | "length"
+  | "time_seconds"
+  | "attempt_number"
+  | "notes";
+
+const DEFAULT_ATTEMPT_NUMBER = "1";
 
 export function useCreateSwimTimeForm({
   selectedDate,
   getViewGeneration,
-  addIfVisible,
+  insertIfCurrentView,
 }: CreateSwimTimeFormParams) {
   const protectedFrontFetch = useProtectedFrontFetch();
   const [stroke, setStroke] = useState<Stroke>("freestyle");
   const [course, setCourse] = useState<Course>("scy");
   const [length, setLength] = useState("");
   const [timeText, setTimeText] = useState("");
-  const [attemptNumber, setAttemptNumber] = useState("1");
+  const [attemptNumber, setAttemptNumber] = useState(DEFAULT_ATTEMPT_NUMBER);
   const [notes, setNotes] = useState("");
   const [isOfficial, setIsOfficial] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
   const [createFieldErrors, setCreateFieldErrors] = useState<Record<string, string>>({});
+
+  function resetPerSwimFields() {
+    // stroke and course aren't part of this reset — logging several swims
+    // back-to-back usually means repeating the same stroke and course, so
+    // leaving them selected saves re-picking them for every entry.
+    setLength("");
+    setTimeText("");
+    setAttemptNumber(DEFAULT_ATTEMPT_NUMBER);
+    setNotes("");
+    setIsOfficial(false);
+  }
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,18 +70,15 @@ export function useCreateSwimTimeForm({
           stroke,
           course,
           length: Number(length),
-          attempt_number: attemptNumber.trim() === "" ? 1 : Number(attemptNumber),
+          attempt_number:
+            attemptNumber.trim() === "" ? Number(DEFAULT_ATTEMPT_NUMBER) : Number(attemptNumber),
           time_seconds: timeSeconds,
           is_official: isOfficial,
           notes: notes.trim() === "" ? null : notes.trim(),
         }),
       });
-      addIfVisible(created, generation);
-      setLength("");
-      setTimeText("");
-      setAttemptNumber("1");
-      setNotes("");
-      setIsOfficial(false);
+      insertIfCurrentView(created, generation);
+      resetPerSwimFields();
     } catch (err) {
       if (isAuthRedirect(err)) return;
       const { message, fieldErrors } = apiErrorDetails(
