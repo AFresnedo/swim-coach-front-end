@@ -139,7 +139,7 @@ test("logout failure shows an error and keeps the user logged in", async ({ page
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
-  await page.route("**/api/logout", (route) =>
+  await page.route("**/logout", (route) =>
     route.fulfill({
       status: 502,
       contentType: "application/json",

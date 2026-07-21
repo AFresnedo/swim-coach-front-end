@@ -47,7 +47,7 @@
         "!app/swim-log/**",
         "!app/goals/**",
         "!app/profile/**",
-        "!app/sign-up/**",
+        "!app/(auth)/sign-up/**",
         "!app/strokes/\\[stroke\\]/**",
         "!app/page.tsx",
         "!app/_components/**",
@@ -83,10 +83,10 @@
                   },
                   {
                     "group": [
-                      "@/app/sign-up/_components/**",
-                      "!@/app/sign-up/_components/Turnstile"
+                      "@/app/(auth)/sign-up/_components/**",
+                      "!@/app/(auth)/sign-up/_components/Turnstile"
                     ],
-                    "message": "Private to app/sign-up/, except Turnstile (the route's entry point)."
+                    "message": "Private to app/(auth)/sign-up/, except Turnstile (the route's entry point)."
                   },
                   {
                     "group": [

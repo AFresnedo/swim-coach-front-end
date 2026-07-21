@@ -21,7 +21,7 @@ describe("POST /sign-up/api", () => {
 
   it("rejects a non-object JSON body instead of crashing", async () => {
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
@@ -35,7 +35,7 @@ describe("POST /sign-up/api", () => {
 
   it("rejects a JSON array body instead of forwarding it downstream (arrays are typeof 'object' too)", async () => {
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
@@ -51,7 +51,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
@@ -69,7 +69,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn().mockRejectedValue(new Error("network down"));
     vi.stubGlobal("fetch", fetchMock);
@@ -86,7 +86,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
     vi.stubGlobal("fetch", fetchMock);
@@ -103,7 +103,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn().mockImplementation(
       async () =>
@@ -125,7 +125,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi
       .fn()
@@ -152,7 +152,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-secret");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi
       .fn()
@@ -182,7 +182,7 @@ describe("POST /sign-up/api", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
@@ -200,7 +200,7 @@ describe("POST /sign-up/api", () => {
   it("skips siteverify entirely in test mode", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
     vi.resetModules();
-    const { POST } = await import("@/app/sign-up/api/route");
+    const { POST } = await import("@/app/(auth)/sign-up/api/route");
 
     const fetchMock = vi
       .fn()

@@ -9,7 +9,7 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn().mockResolvedValue({ get: getCookie, delete: deleteCookie }),
 }));
 
-import { POST } from "@/app/api/logout/route";
+import { POST } from "@/app/(auth)/logout/route";
 
 describe("POST /api/logout", () => {
   afterEach(() => {

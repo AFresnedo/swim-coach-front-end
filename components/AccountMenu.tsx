@@ -14,7 +14,7 @@ export default function AccountMenu() {
   async function handleLogout() {
     setError("");
     try {
-      await protectedFrontFetch("/api/logout", { method: "POST" });
+      await protectedFrontFetch("/logout", { method: "POST" });
       router.push("/");
       router.refresh();
     } catch (err) {

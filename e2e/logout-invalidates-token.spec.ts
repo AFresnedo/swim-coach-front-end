@@ -55,7 +55,7 @@ test("a failed backend revoke keeps the session intact instead of silently loggi
 
   // Simulate the backend revoke call failing (down, timeout, etc.) - the BFF
   // route should refuse to clear the cookie or report success in this case.
-  await page.route("**/api/logout", (route) =>
+  await page.route("**/logout", (route) =>
     route.fulfill({
       status: 502,
       contentType: "application/json",

@@ -38,11 +38,15 @@ const cases = [
   },
   { domain: "profile", specifier: "@/app/profile/_components/ProfileForm", expect: "ALLOWED" },
   {
-    domain: "sign-up",
-    specifier: "@/app/sign-up/_components/SomeFutureHelper",
+    domain: "(auth)/sign-up",
+    specifier: "@/app/(auth)/sign-up/_components/SomeFutureHelper",
     expect: "BLOCKED",
   },
-  { domain: "sign-up", specifier: "@/app/sign-up/_components/Turnstile", expect: "ALLOWED" },
+  {
+    domain: "(auth)/sign-up",
+    specifier: "@/app/(auth)/sign-up/_components/Turnstile",
+    expect: "ALLOWED",
+  },
   {
     domain: "strokes/[stroke]",
     specifier: "@/app/strokes/[stroke]/_components/SomeFutureHelper",

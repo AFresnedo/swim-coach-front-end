@@ -6,7 +6,7 @@ export const AUTH_COOKIE = "access_token";
 export const SITE_INDEXABLE = process.env.SITE_INDEXABLE === "true";
 
 // Bypasses the Turnstile widget (components/Turnstile.tsx) and siteverify
-// call (app/sign-up/api/route.ts) entirely when true. Only ever set in
+// call (app/(auth)/sign-up/api/route.ts) entirely when true. Only ever set in
 // .env.local for local dev/e2e — never in ../infra's staging/prod env
 // config, or sign-up ships with no CAPTCHA enforcement. Read via the
 // NEXT_PUBLIC_ name (NEXT_PUBLIC_ vars are also readable server-side) so

@@ -1,7 +1,7 @@
 import { cleanup, render } from "@testing-library/react";
 import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { TurnstileHandle } from "@/app/sign-up/_components/Turnstile";
+import type { TurnstileHandle } from "@/app/(auth)/sign-up/_components/Turnstile";
 
 const { scriptProps } = vi.hoisted(() => ({
   scriptProps: { current: null as null | { onReady?: () => void; onError?: () => void } },
@@ -28,7 +28,7 @@ describe("Turnstile", () => {
   it("bypasses the widget and verifies immediately in test mode", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
     vi.resetModules();
-    const { Turnstile } = await import("@/app/sign-up/_components/Turnstile");
+    const { Turnstile } = await import("@/app/(auth)/sign-up/_components/Turnstile");
     const onVerify = vi.fn();
 
     const { container } = render(
@@ -43,7 +43,7 @@ describe("Turnstile", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
     vi.resetModules();
-    const { Turnstile } = await import("@/app/sign-up/_components/Turnstile");
+    const { Turnstile } = await import("@/app/(auth)/sign-up/_components/Turnstile");
 
     const renderWidget = vi.fn().mockReturnValue("widget-id");
     const resetWidget = vi.fn();
@@ -79,7 +79,7 @@ describe("Turnstile", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
     vi.resetModules();
-    const { Turnstile } = await import("@/app/sign-up/_components/Turnstile");
+    const { Turnstile } = await import("@/app/(auth)/sign-up/_components/Turnstile");
 
     const onError = vi.fn();
     render(<Turnstile onVerify={vi.fn()} onExpire={vi.fn()} onError={onError} />);
@@ -94,7 +94,7 @@ describe("Turnstile", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
     vi.resetModules();
-    const { Turnstile } = await import("@/app/sign-up/_components/Turnstile");
+    const { Turnstile } = await import("@/app/(auth)/sign-up/_components/Turnstile");
 
     const resetWidget = vi.fn();
     window.turnstile = {
@@ -117,7 +117,7 @@ describe("Turnstile", () => {
   it("reset() clears the caller's token and re-issues the test-mode token in test mode", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_TEST_MODE", "true");
     vi.resetModules();
-    const { Turnstile } = await import("@/app/sign-up/_components/Turnstile");
+    const { Turnstile } = await import("@/app/(auth)/sign-up/_components/Turnstile");
 
     const onVerify = vi.fn();
     const onExpire = vi.fn();

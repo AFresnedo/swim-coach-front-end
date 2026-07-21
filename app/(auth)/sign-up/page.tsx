@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { Turnstile, type TurnstileHandle } from "@/app/sign-up/_components/Turnstile";
+import { Turnstile, type TurnstileHandle } from "@/app/(auth)/sign-up/_components/Turnstile";
 import Field from "@/components/Field";
 import { PasswordField } from "@/components/PasswordField";
 import {
