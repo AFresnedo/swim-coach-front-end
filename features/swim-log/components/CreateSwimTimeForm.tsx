@@ -2,6 +2,7 @@
 
 import Field from "@/components/Field";
 import {
+  type CreateSwimTimeFieldName,
   type CreateSwimTimeFormParams,
   useCreateSwimTimeForm,
 } from "@/features/swim-log/hooks/use-create-swim-time-form";
@@ -14,6 +15,174 @@ import {
   primaryButtonClass,
 } from "@/lib/form-styles";
 import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/lib/swim-times-data";
+
+function getFieldError(
+  errors: Record<string, string>,
+  field: CreateSwimTimeFieldName,
+): string | undefined {
+  return errors[field];
+}
+
+function StrokeField({
+  value,
+  onChange,
+  errors,
+}: {
+  value: Stroke;
+  onChange: (value: Stroke) => void;
+  errors: Record<string, string>;
+}) {
+  const error = getFieldError(errors, "stroke");
+  return (
+    <Field htmlFor="log-stroke" label="Stroke" error={error}>
+      <select
+        id="log-stroke"
+        value={value}
+        onChange={(e) => onChange(e.target.value as Stroke)}
+        className={`${inputClass} ${error ? inputErrorClass : inputNormalClass}`}
+        aria-describedby={error ? "log-stroke-error" : undefined}
+      >
+        {STROKE_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}
+
+function CourseField({
+  value,
+  onChange,
+  errors,
+}: {
+  value: Course;
+  onChange: (value: Course) => void;
+  errors: Record<string, string>;
+}) {
+  const error = getFieldError(errors, "course");
+  return (
+    <Field htmlFor="log-course" label="Course" error={error}>
+      <select
+        id="log-course"
+        value={value}
+        onChange={(e) => onChange(e.target.value as Course)}
+        className={`${inputClass} ${error ? inputErrorClass : inputNormalClass}`}
+        aria-describedby={error ? "log-course-error" : undefined}
+      >
+        {COURSE_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}
+
+function LengthField({
+  value,
+  onChange,
+  errors,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  errors: Record<string, string>;
+}) {
+  const error = getFieldError(errors, "length");
+  return (
+    <Field htmlFor="log-length" label="Length" error={error}>
+      <input
+        id="log-length"
+        type="number"
+        min={1}
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="50"
+        className={`${inputClass} ${error ? inputErrorClass : inputNormalClass}`}
+        aria-describedby={error ? "log-length-error" : undefined}
+      />
+    </Field>
+  );
+}
+
+function TimeField({
+  value,
+  onChange,
+  errors,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  errors: Record<string, string>;
+}) {
+  const error = getFieldError(errors, "time_seconds");
+  return (
+    <Field htmlFor="log-time" label="Time" error={error}>
+      <input
+        id="log-time"
+        type="text"
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="1:02.35"
+        className={`${inputClass} ${error ? inputErrorClass : inputNormalClass}`}
+        aria-describedby={error ? "log-time-error" : undefined}
+      />
+    </Field>
+  );
+}
+
+function AttemptField({
+  value,
+  onChange,
+  errors,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  errors: Record<string, string>;
+}) {
+  const error = getFieldError(errors, "attempt_number");
+  return (
+    <Field htmlFor="log-attempt" label="Attempt #" error={error}>
+      <input
+        id="log-attempt"
+        type="number"
+        min={1}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`${inputClass} ${error ? inputErrorClass : inputNormalClass}`}
+        aria-describedby={error ? "log-attempt-error" : undefined}
+      />
+    </Field>
+  );
+}
+
+function NotesField({
+  value,
+  onChange,
+  errors,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  errors: Record<string, string>;
+}) {
+  const error = getFieldError(errors, "notes");
+  return (
+    <Field htmlFor="log-notes" label="Notes" error={error}>
+      <textarea
+        id="log-notes"
+        rows={2}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`${inputClass} ${error ? inputErrorClass : inputNormalClass}`}
+        placeholder="Optional"
+        aria-describedby={error ? "log-notes-error" : undefined}
+      />
+    </Field>
+  );
+}
 
 export default function CreateSwimTimeForm(props: CreateSwimTimeFormParams) {
   const {
@@ -40,76 +209,15 @@ export default function CreateSwimTimeForm(props: CreateSwimTimeFormParams) {
   return (
     <form onSubmit={handleCreate} className={`${cardClass} flex flex-col gap-4`}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Field htmlFor="log-stroke" label="Stroke" error={createFieldErrors.stroke}>
-          <select
-            id="log-stroke"
-            value={stroke}
-            onChange={(e) => setStroke(e.target.value as Stroke)}
-            className={`${inputClass} ${createFieldErrors.stroke ? inputErrorClass : inputNormalClass}`}
-            aria-describedby={createFieldErrors.stroke ? "log-stroke-error" : undefined}
-          >
-            {STROKE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field htmlFor="log-course" label="Course" error={createFieldErrors.course}>
-          <select
-            id="log-course"
-            value={course}
-            onChange={(e) => setCourse(e.target.value as Course)}
-            className={`${inputClass} ${createFieldErrors.course ? inputErrorClass : inputNormalClass}`}
-            aria-describedby={createFieldErrors.course ? "log-course-error" : undefined}
-          >
-            {COURSE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field htmlFor="log-length" label="Length" error={createFieldErrors.length}>
-          <input
-            id="log-length"
-            type="number"
-            min={1}
-            required
-            value={length}
-            onChange={(e) => setLength(e.target.value)}
-            placeholder="50"
-            className={`${inputClass} ${createFieldErrors.length ? inputErrorClass : inputNormalClass}`}
-            aria-describedby={createFieldErrors.length ? "log-length-error" : undefined}
-          />
-        </Field>
-
-        <Field htmlFor="log-time" label="Time" error={createFieldErrors.time_seconds}>
-          <input
-            id="log-time"
-            type="text"
-            required
-            value={timeText}
-            onChange={(e) => setTimeText(e.target.value)}
-            placeholder="1:02.35"
-            className={`${inputClass} ${createFieldErrors.time_seconds ? inputErrorClass : inputNormalClass}`}
-            aria-describedby={createFieldErrors.time_seconds ? "log-time-error" : undefined}
-          />
-        </Field>
-
-        <Field htmlFor="log-attempt" label="Attempt #" error={createFieldErrors.attempt_number}>
-          <input
-            id="log-attempt"
-            type="number"
-            min={1}
-            value={attemptNumber}
-            onChange={(e) => setAttemptNumber(e.target.value)}
-            className={`${inputClass} ${createFieldErrors.attempt_number ? inputErrorClass : inputNormalClass}`}
-            aria-describedby={createFieldErrors.attempt_number ? "log-attempt-error" : undefined}
-          />
-        </Field>
+        <StrokeField value={stroke} onChange={setStroke} errors={createFieldErrors} />
+        <CourseField value={course} onChange={setCourse} errors={createFieldErrors} />
+        <LengthField value={length} onChange={setLength} errors={createFieldErrors} />
+        <TimeField value={timeText} onChange={setTimeText} errors={createFieldErrors} />
+        <AttemptField
+          value={attemptNumber}
+          onChange={setAttemptNumber}
+          errors={createFieldErrors}
+        />
 
         <div className="flex items-end gap-2 pb-2.5">
           <input
@@ -125,17 +233,7 @@ export default function CreateSwimTimeForm(props: CreateSwimTimeFormParams) {
         </div>
       </div>
 
-      <Field htmlFor="log-notes" label="Notes" error={createFieldErrors.notes}>
-        <textarea
-          id="log-notes"
-          rows={2}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          className={`${inputClass} ${createFieldErrors.notes ? inputErrorClass : inputNormalClass}`}
-          placeholder="Optional"
-          aria-describedby={createFieldErrors.notes ? "log-notes-error" : undefined}
-        />
-      </Field>
+      <NotesField value={notes} onChange={setNotes} errors={createFieldErrors} />
 
       {createError && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
