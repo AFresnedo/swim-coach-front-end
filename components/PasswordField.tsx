@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { inputClass, inputErrorClass, inputNormalClass, labelClass } from "@/lib/form-styles";
+import Field from "@/components/Field";
+import { inputClass, inputErrorClass, inputNormalClass } from "@/lib/form-styles";
 
 type PasswordFieldProps = {
   label: string;
@@ -30,10 +31,7 @@ export function PasswordField({
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className={labelClass}>
-        {label}
-      </label>
+    <Field htmlFor={inputId} label={label} error={error}>
       <div className="relative">
         <input
           id={inputId}
@@ -85,11 +83,6 @@ export function PasswordField({
       <p aria-live="polite" className="sr-only">
         {visible ? `${label} is now shown` : `${label} is now hidden`}
       </p>
-      {error && (
-        <p id={errorId} className="text-xs text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
-    </div>
+    </Field>
   );
 }
