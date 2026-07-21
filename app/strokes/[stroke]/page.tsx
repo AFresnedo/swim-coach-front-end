@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import DrillsSection from "@/app/strokes/[stroke]/_components/DrillsSection";
 import { checkLoggedIn } from "@/shared/auth";
-import { getStroke, strokes } from "@/shared/strokes-data";
+import { getStroke, strokes } from "@/shared/content/strokes";
 
 export function generateStaticParams() {
   return strokes.map(({ slug }) => ({ stroke: slug }));

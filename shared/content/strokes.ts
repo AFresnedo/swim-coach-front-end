@@ -4,7 +4,7 @@ export type Drill = {
   desc: string;
 };
 
-export type Stroke = {
+export type StrokeContent = {
   slug: string;
   icon: string;
   name: string;
