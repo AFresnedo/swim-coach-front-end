@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import GoalCard from "@/components/GoalCard";
 import {
   cardClass,
@@ -9,6 +9,7 @@ import {
   labelClass,
   primaryButtonClass,
 } from "@/lib/form-styles";
+import { useAbortableEffect } from "@/lib/use-abortable-effect";
 import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 export type DeactivationReason = "reached" | "abandoned" | "other";
@@ -33,28 +34,27 @@ export default function GoalsList() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError("");
+  useAbortableEffect(
+    (signal) => {
+      setLoading(true);
+      setError("");
 
-    protectedFrontFetch<Goal[]>(`/api/goals?status=${filter}`)
-      .then((data) => {
-        if (!cancelled) setGoals(data);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        const message = protectedErrorMessage(err, "Failed to load goals. Please try again.");
-        if (message) setError(message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [filter, protectedFrontFetch]);
+      protectedFrontFetch<Goal[]>(`/api/goals?status=${filter}`, { signal })
+        .then((data) => {
+          if (signal.aborted) return;
+          setGoals(data);
+        })
+        .catch((err) => {
+          if (signal.aborted) return;
+          const message = protectedErrorMessage(err, "Failed to load goals. Please try again.");
+          if (message) setError(message);
+        })
+        .finally(() => {
+          if (!signal.aborted) setLoading(false);
+        });
+    },
+    [filter, protectedFrontFetch],
+  );
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   inputClass,
   inputErrorClass,
@@ -9,6 +9,7 @@ import {
   primaryButtonLargeClass,
 } from "@/lib/form-styles";
 import { apiErrorDetails } from "@/lib/front-api";
+import { useAbortableEffect } from "@/lib/use-abortable-effect";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 type UnitSystem = "metric" | "imperial";
@@ -55,34 +56,31 @@ export default function ProfileForm() {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    protectedFrontFetch<Profile | null>("/api/profile")
-      .then((profile) => {
-        if (cancelled || !profile) return;
-        const { ft, inches } = cmToFtIn(profile.height_cm);
-        setAge(String(profile.age));
-        setHeightCm(String(profile.height_cm));
-        setHeightFt(String(ft));
-        setHeightIn(String(inches));
-        setWeightKg(String(profile.weight_kg));
-        setWeightLbs(String(kgToLbs(profile.weight_kg)));
-        setSex(profile.sex);
-        setUnits(profile.unit_preference);
-      })
-      .catch((err) => {
-        if (cancelled || isAuthRedirect(err)) return;
-        setError("Failed to load your profile. Please try again.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingProfile(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [protectedFrontFetch]);
+  useAbortableEffect(
+    (signal) => {
+      protectedFrontFetch<Profile | null>("/api/profile", { signal })
+        .then((profile) => {
+          if (signal.aborted || !profile) return;
+          const { ft, inches } = cmToFtIn(profile.height_cm);
+          setAge(String(profile.age));
+          setHeightCm(String(profile.height_cm));
+          setHeightFt(String(ft));
+          setHeightIn(String(inches));
+          setWeightKg(String(profile.weight_kg));
+          setWeightLbs(String(kgToLbs(profile.weight_kg)));
+          setSex(profile.sex);
+          setUnits(profile.unit_preference);
+        })
+        .catch((err) => {
+          if (signal.aborted || isAuthRedirect(err)) return;
+          setError("Failed to load your profile. Please try again.");
+        })
+        .finally(() => {
+          if (!signal.aborted) setLoadingProfile(false);
+        });
+    },
+    [protectedFrontFetch],
+  );
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
