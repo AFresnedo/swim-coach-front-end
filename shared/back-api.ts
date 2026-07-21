@@ -111,3 +111,14 @@ export function backendErrorResponse(err: unknown, fallback: string): NextRespon
   }
   return NextResponse.json({ detail: "Server unavailable" }, { status: 502 });
 }
+
+// A dynamic route segment's raw string value gets forwarded as-is into the
+// backend request path (e.g. `/goals/${id}`) — without validating its shape
+// first, a value like "../../other-resource" would smuggle extra path
+// segments into that URL instead of naming a single resource. Restricting it
+// to a plain positive integer closes that off before it reaches backApiFetch.
+export function parseNumericId(raw: string): number | NextResponse {
+  return /^[1-9]\d*$/.test(raw)
+    ? Number(raw)
+    : NextResponse.json({ detail: "Invalid id" }, { status: 400 });
+}

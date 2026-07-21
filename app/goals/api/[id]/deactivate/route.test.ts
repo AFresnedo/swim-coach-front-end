@@ -48,6 +48,20 @@ describe("PATCH /goals/api/[id]/deactivate", () => {
     expect(await res.json()).toEqual(deactivated);
   });
 
+  it("returns 400 without calling the backend when the id isn't a plain positive integer", async () => {
+    getCookie.mockReturnValue({ value: fakeJwt(3600) });
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await PATCH(
+      makeRequest({ reason: "reached" }),
+      makeContext("../../other-resource"),
+    );
+
+    expect(res.status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("returns 401 without calling the backend when there's no auth cookie", async () => {
     getCookie.mockReturnValue(undefined);
     const fetchMock = vi.fn();

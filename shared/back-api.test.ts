@@ -13,6 +13,7 @@ import {
   backApiFetchNoBody,
   backendErrorResponse,
   normalizeError,
+  parseNumericId,
   safeFetch,
   UnauthenticatedError,
 } from "@/shared/back-api";
@@ -107,6 +108,28 @@ describe("normalizeError", () => {
 
   it("falls back to the given message for anything else (missing/unrecognized detail)", () => {
     expect(normalizeError(undefined, "fallback message")).toEqual({ detail: "fallback message" });
+  });
+});
+
+describe("parseNumericId", () => {
+  it("returns the parsed number for a plain positive integer string", () => {
+    expect(parseNumericId("42")).toBe(42);
+  });
+
+  it.each([
+    ["a leading zero", "042"],
+    ["zero", "0"],
+    ["a negative number", "-1"],
+    ["a decimal", "1.5"],
+    ["non-digit characters", "abc"],
+    ["a path traversal attempt", "../../other-resource"],
+    ["an extra path segment", "5/deactivate"],
+    ["an empty string", ""],
+  ])("rejects %s (%j) with a 400 response", async (_label, raw) => {
+    const res = parseNumericId(raw);
+    if (typeof res === "number") throw new Error("expected an invalid id to be rejected");
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ detail: "Invalid id" });
   });
 });
 
