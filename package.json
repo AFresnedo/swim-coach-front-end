@@ -11,6 +11,7 @@
     "check": "biome check --write .",
     "check:ci": "node scripts/check-changed.mjs",
     "check:ci:full": "biome check .",
+    "check:domain-isolation": "node scripts/check-domain-isolation.mjs",
     "test": "vitest",
     "test:e2e": "playwright test"
   },

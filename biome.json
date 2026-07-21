@@ -42,7 +42,18 @@
   },
   "overrides": [
     {
-      "includes": ["**", "!app/swim-log/**", "!app/api/swim-times/**"],
+      "includes": [
+        "**",
+        "!app/swim-log/**",
+        "!app/api/swim-times/**",
+        "!app/goals/**",
+        "!app/profile/**",
+        "!app/sign-up/**",
+        "!app/strokes/\\[stroke\\]/**",
+        "!app/page.tsx",
+        "!app/_components/**",
+        "!app/_lib/**"
+      ],
       "linter": {
         "rules": {
           "style": {
@@ -55,29 +66,39 @@
                       "@/app/swim-log/_components/**",
                       "@/app/swim-log/_hooks/**",
                       "@/app/swim-log/_lib/**",
-                      "!@/app/swim-log/_components/SwimLog"
+                      "!@/app/swim-log/_components/SwimLog",
+                      "!@/app/swim-log/_lib/swim-times-data"
                     ],
-                    "message": "Only @/app/swim-log/_components/SwimLog (the route's entry point) may be imported from outside app/swim-log/. Everything else under app/swim-log/_components, _hooks, and _lib is private to that route, except _lib/swim-times-data, which app/api/swim-times/route.ts is also allowed to import since that route is swim-log's own backend-for-frontend endpoint. When a new app/<route>/_components, _hooks, or _lib folder grows past one file, add a matching override block for it here."
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["**", "!app/goals/**"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
+                    "message": "Private to app/swim-log/, except SwimLog (the route's entry point, imported by app/swim-log/page.tsx and its own __tests__ file) and _lib/swim-times-data (also imported by app/api/swim-times/route.ts, swim-log's own BFF endpoint, and its own __tests__ file). This override is deliberately ONE block covering every domain, each as its own entry in `patterns` below: Biome does not merge style.noRestrictedImports config across separate override blocks when a file matches more than one, so N per-domain override blocks would silently disable protection for every domain but the last one added. When a new app/<route>/ domain is created: add \"!app/<route>/**\" to this block's `includes`, and one new pattern here blocking \"@/app/<route>/_components/**\" etc., negating the entry point plus anything a __tests__/*.test.tsx imports directly. If the route segment has glob metacharacters (e.g. \"[stroke]\"), escape as \\[ \\] in both includes and group globs, doubled to \\\\[ \\\\] in this JSON source since a bare backslash isn't a valid JSON escape."
+                  },
                   {
                     "group": ["@/app/goals/_components/**", "!@/app/goals/_components/GoalsList"],
-                    "message": "Only @/app/goals/_components/GoalsList (the route's entry point) may be imported from outside app/goals/. GoalCard is private to that route."
+                    "message": "Private to app/goals/, except GoalsList (the route's entry point)."
+                  },
+                  {
+                    "group": [
+                      "@/app/profile/_components/**",
+                      "!@/app/profile/_components/ProfileForm"
+                    ],
+                    "message": "Private to app/profile/, except ProfileForm (the route's entry point)."
+                  },
+                  {
+                    "group": [
+                      "@/app/sign-up/_components/**",
+                      "!@/app/sign-up/_components/Turnstile"
+                    ],
+                    "message": "Private to app/sign-up/, except Turnstile (the route's entry point)."
+                  },
+                  {
+                    "group": [
+                      "@/app/strokes/\\[stroke\\]/_components/**",
+                      "!@/app/strokes/\\[stroke\\]/_components/DrillsSection"
+                    ],
+                    "message": "Private to app/strokes/[stroke]/, except DrillsSection (the route's entry point)."
+                  },
+                  {
+                    "group": ["@/app/_components/**", "@/app/_lib/**", "!@/app/_lib/stats"],
+                    "message": "Private to the home route (app/page.tsx), except _lib/stats (its own __tests__ file imports it directly)."
                   }
                 ]
               }
