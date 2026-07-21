@@ -54,6 +54,40 @@ test("profile flow: save → reload → prefilled from a fresh load", async ({ p
   await expect(page.getByPlaceholder("lbs")).toHaveValue("154");
 });
 
+test("profile flow: editing height in metric then toggling to imperial before saving keeps the edit", async ({
+  page,
+  testUser,
+}) => {
+  const { email, password } = testUser;
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
+  await page.getByRole("textbox", { name: "Confirm password" }).fill(password);
+  await page.getByRole("checkbox", { name: /disclaimer/i }).check();
+  await page.getByRole("checkbox", { name: /wipe/i }).check();
+  await page.getByRole("button", { name: /create account/i }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.goto("/profile");
+  await page.getByLabel("Age").fill("28");
+  await page.getByPlaceholder("cm").fill("160");
+  await page.getByPlaceholder("kg").fill("50");
+  await page.getByLabel("Sex").selectOption("female");
+
+  // Toggle to imperial without touching the ft/in/lbs fields directly — the
+  // edit just made in metric must still be what gets saved.
+  await page.getByRole("button", { name: "imperial" }).click();
+  await page.getByRole("button", { name: "Save profile" }).click();
+  await expect(page.getByText("Profile saved.")).toBeVisible();
+
+  const profile = await reloadAndGetProfile(page);
+  // 50kg → round(50 / 0.453592) = 110lbs → round(110 * 0.453592, 1) = 49.9kg,
+  // a rounding round-trip through the resync, not data loss.
+  expect(profile).toMatchObject({ height_cm: 160, weight_kg: 49.9 });
+});
+
 test("profile flow: saving while imperial is selected reloads with imperial pre-selected", async ({
   page,
   testUser,

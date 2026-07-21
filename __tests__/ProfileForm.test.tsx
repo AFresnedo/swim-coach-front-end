@@ -165,6 +165,44 @@ describe("ProfileForm", () => {
     expect(body.unit_preference).toBe("imperial");
   });
 
+  it("resyncs imperial fields from an edit made in metric before toggling", async () => {
+    await renderAndAwaitLoad(existingProfile);
+    mockFetch.mockResolvedValueOnce({ ok: true });
+    // Edit height/weight while metric is active, then toggle without touching
+    // the imperial fields directly — they must pick up the edit, not the
+    // stale values computed from the profile load.
+    fireEvent.change(screen.getByPlaceholderText("cm"), { target: { value: "160" } });
+    fireEvent.change(screen.getByPlaceholderText("kg"), { target: { value: "50" } });
+    fireEvent.click(screen.getByRole("button", { name: /imperial/i }));
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
+    fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
+
+    await settleAsyncEffects(2);
+    const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+    expect(body.height_cm).toBe(160);
+    // 50kg → round(50 / 0.453592) = 110lbs → round(110 * 0.453592, 1) = 49.9kg
+    expect(body.weight_kg).toBe(49.9);
+  });
+
+  it("resyncs metric fields from an edit made in imperial before toggling back", async () => {
+    await renderAndAwaitLoad(existingProfile);
+    mockFetch.mockResolvedValueOnce({ ok: true });
+    fireEvent.click(screen.getByRole("button", { name: /imperial/i }));
+    fireEvent.change(screen.getByPlaceholderText("ft"), { target: { value: "6" } });
+    fireEvent.change(screen.getByPlaceholderText("in"), { target: { value: "0" } });
+    fireEvent.change(screen.getByPlaceholderText("lbs"), { target: { value: "200" } });
+    fireEvent.click(screen.getByRole("button", { name: /metric/i }));
+    // biome-ignore lint/style/noNonNullAssertion: form always exists in these tests
+    fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
+
+    await settleAsyncEffects(2);
+    const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+    // 6ft 0in = 72in * 2.54 = 182.9cm
+    expect(body.height_cm).toBe(182.9);
+    // 200lbs * 0.453592 = 90.7184 → 90.7kg
+    expect(body.weight_kg).toBe(90.7);
+  });
+
   it("submits 'prefer_not_to_say' when selected for sex", async () => {
     await renderAndAwaitLoad();
     mockFetch.mockResolvedValueOnce({ ok: true });
