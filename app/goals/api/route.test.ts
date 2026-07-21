@@ -50,6 +50,19 @@ describe("GET /goals/api", () => {
     );
   });
 
+  it("percent-encodes a status value instead of letting it inject extra query params", async () => {
+    getCookie.mockReturnValue({ value: fakeJwt(3600) });
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify([]), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    // Decodes to "x&admin=true" — if spliced into the URL unescaped, this
+    // would smuggle a second, attacker-controlled query param to the backend.
+    await GET(makeGetRequest("?status=x%26admin%3Dtrue"));
+
+    const calledUrl = fetchMock.mock.calls[0][0] as string;
+    expect(calledUrl).toBe("http://localhost:8000/goals?status=x%26admin%3Dtrue");
+  });
+
   it("returns 401 without calling the backend when there's no auth cookie", async () => {
     getCookie.mockReturnValue(undefined);
     const fetchMock = vi.fn();
