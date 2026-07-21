@@ -18,40 +18,15 @@ function todayLocalDate(): string {
 export default function SwimLog() {
   const [selectedDate, setSelectedDate] = useState(todayLocalDate);
 
-  const {
-    times,
-    nextCursor,
-    loading,
-    loadingMore,
-    error,
-    filterStroke,
-    setFilterStroke,
-    filterCourse,
-    setFilterCourse,
-    filterLength,
-    setFilterLength,
-    filterLengthError,
-    filterOfficial,
-    setFilterOfficial,
-    handleLoadMore,
-    getViewGeneration,
-    insertIfCurrentView,
-  } = useSwimTimesQuery(selectedDate);
+  const { results, filters, getViewGeneration, insertIfCurrentView } =
+    useSwimTimesQuery(selectedDate);
 
   return (
     <div className="flex flex-col gap-8">
       <DateAndFilterControls
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        filterStroke={filterStroke}
-        setFilterStroke={setFilterStroke}
-        filterCourse={filterCourse}
-        setFilterCourse={setFilterCourse}
-        filterLength={filterLength}
-        setFilterLength={setFilterLength}
-        filterLengthError={filterLengthError}
-        filterOfficial={filterOfficial}
-        setFilterOfficial={setFilterOfficial}
+        filters={filters}
       />
 
       <details className={`group ${cardClass}`}>
@@ -80,18 +55,7 @@ export default function SwimLog() {
         </div>
       </details>
 
-      <SwimTimesTable
-        times={times}
-        loading={loading}
-        error={error}
-        filterStroke={filterStroke}
-        filterCourse={filterCourse}
-        filterLength={filterLength}
-        filterOfficial={filterOfficial}
-        nextCursor={nextCursor}
-        loadingMore={loadingMore}
-        handleLoadMore={handleLoadMore}
-      />
+      <SwimTimesTable results={results} hasActiveFilters={filters.hasActiveFilters} />
     </div>
   );
 }

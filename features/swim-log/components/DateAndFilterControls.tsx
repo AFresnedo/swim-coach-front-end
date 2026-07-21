@@ -1,5 +1,8 @@
 import Field from "@/components/Field";
-import type { OfficialFilter } from "@/features/swim-log/hooks/use-swim-times-query";
+import type {
+  OfficialFilter,
+  SwimTimesFilters,
+} from "@/features/swim-log/hooks/use-swim-times-query";
 import {
   cardClass,
   inputClass,
@@ -13,27 +16,11 @@ import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/lib/
 export default function DateAndFilterControls({
   selectedDate,
   setSelectedDate,
-  filterStroke,
-  setFilterStroke,
-  filterCourse,
-  setFilterCourse,
-  filterLength,
-  setFilterLength,
-  filterLengthError,
-  filterOfficial,
-  setFilterOfficial,
+  filters,
 }: {
   selectedDate: string;
   setSelectedDate: (value: string) => void;
-  filterStroke: Stroke | "";
-  setFilterStroke: (value: Stroke | "") => void;
-  filterCourse: Course | "";
-  setFilterCourse: (value: Course | "") => void;
-  filterLength: string;
-  setFilterLength: (value: string) => void;
-  filterLengthError: string | null;
-  filterOfficial: OfficialFilter;
-  setFilterOfficial: (value: OfficialFilter) => void;
+  filters: SwimTimesFilters;
 }) {
   return (
     <>
@@ -56,8 +43,8 @@ export default function DateAndFilterControls({
           <Field htmlFor="filter-stroke" label="Filter by stroke">
             <select
               id="filter-stroke"
-              value={filterStroke}
-              onChange={(e) => setFilterStroke(e.target.value as Stroke | "")}
+              value={filters.filterStroke}
+              onChange={(e) => filters.setFilterStroke(e.target.value as Stroke | "")}
               className={`${inputClass} ${inputNormalClass}`}
             >
               <option value="">All strokes</option>
@@ -72,8 +59,8 @@ export default function DateAndFilterControls({
           <Field htmlFor="filter-course" label="Filter by course">
             <select
               id="filter-course"
-              value={filterCourse}
-              onChange={(e) => setFilterCourse(e.target.value as Course | "")}
+              value={filters.filterCourse}
+              onChange={(e) => filters.setFilterCourse(e.target.value as Course | "")}
               className={`${inputClass} ${inputNormalClass}`}
             >
               <option value="">All courses</option>
@@ -85,24 +72,24 @@ export default function DateAndFilterControls({
             </select>
           </Field>
 
-          <Field htmlFor="filter-length" label="Filter by length" error={filterLengthError}>
+          <Field htmlFor="filter-length" label="Filter by length" error={filters.filterLengthError}>
             <input
               id="filter-length"
               type="number"
               min={1}
-              value={filterLength}
-              onChange={(e) => setFilterLength(e.target.value)}
+              value={filters.filterLength}
+              onChange={(e) => filters.setFilterLength(e.target.value)}
               placeholder="Any"
-              className={`${inputClass} ${filterLengthError ? inputErrorClass : inputNormalClass}`}
-              aria-describedby={filterLengthError ? "filter-length-error" : undefined}
+              className={`${inputClass} ${filters.filterLengthError ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={filters.filterLengthError ? "filter-length-error" : undefined}
             />
           </Field>
 
           <Field htmlFor="filter-official" label="Filter by official status">
             <select
               id="filter-official"
-              value={filterOfficial}
-              onChange={(e) => setFilterOfficial(e.target.value as OfficialFilter)}
+              value={filters.filterOfficial}
+              onChange={(e) => filters.setFilterOfficial(e.target.value as OfficialFilter)}
               className={`${inputClass} ${inputNormalClass}`}
             >
               <option value="">All times</option>
@@ -112,14 +99,14 @@ export default function DateAndFilterControls({
           </Field>
         </div>
 
-        {(filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial) && (
+        {filters.hasActiveFilters && (
           <button
             type="button"
             onClick={() => {
-              setFilterStroke("");
-              setFilterCourse("");
-              setFilterLength("");
-              setFilterOfficial("");
+              filters.setFilterStroke("");
+              filters.setFilterCourse("");
+              filters.setFilterLength("");
+              filters.setFilterOfficial("");
             }}
             className={`${secondaryButtonClass} self-start`}
           >

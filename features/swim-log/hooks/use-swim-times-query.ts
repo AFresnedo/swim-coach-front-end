@@ -25,6 +25,28 @@ type SwimTimesQueryParams = {
   cursor?: string;
 };
 
+export type SwimTimesFilters = {
+  filterStroke: Stroke | "";
+  setFilterStroke: (value: Stroke | "") => void;
+  filterCourse: Course | "";
+  setFilterCourse: (value: Course | "") => void;
+  filterLength: string;
+  setFilterLength: (value: string) => void;
+  filterLengthError: string | null;
+  filterOfficial: OfficialFilter;
+  setFilterOfficial: (value: OfficialFilter) => void;
+  hasActiveFilters: boolean;
+};
+
+export type SwimTimesResults = {
+  times: SwimTime[];
+  nextCursor: string | null;
+  loading: boolean;
+  loadingMore: boolean;
+  error: string;
+  handleLoadMore: () => void;
+};
+
 function validateFilterLength(value: string): string | null {
   const trimmed = value.trim();
   if (trimmed === "") return null;
@@ -71,6 +93,9 @@ export function useSwimTimesQuery(selectedDate: string) {
 
   const viewGenerationRef = useRef(0);
   const filterLengthError = validateFilterLength(filterLength);
+  const hasActiveFilters = Boolean(
+    filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial,
+  );
   const debouncedFilterLength = useDebouncedValue(filterLength, 300);
   const debouncedFilterLengthError = validateFilterLength(debouncedFilterLength);
 
@@ -179,21 +204,26 @@ export function useSwimTimesQuery(selectedDate: string) {
   }
 
   return {
-    times,
-    nextCursor,
-    loading,
-    loadingMore,
-    error,
-    filterStroke,
-    setFilterStroke,
-    filterCourse,
-    setFilterCourse,
-    filterLength,
-    setFilterLength,
-    filterLengthError,
-    filterOfficial,
-    setFilterOfficial,
-    handleLoadMore,
+    results: {
+      times,
+      nextCursor,
+      loading,
+      loadingMore,
+      error,
+      handleLoadMore,
+    },
+    filters: {
+      filterStroke,
+      setFilterStroke,
+      filterCourse,
+      setFilterCourse,
+      filterLength,
+      setFilterLength,
+      filterLengthError,
+      filterOfficial,
+      setFilterOfficial,
+      hasActiveFilters,
+    },
     getViewGeneration,
     insertIfCurrentView,
   };

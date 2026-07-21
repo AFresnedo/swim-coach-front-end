@@ -1,13 +1,6 @@
-import type { OfficialFilter } from "@/features/swim-log/hooks/use-swim-times-query";
+import type { SwimTimesResults } from "@/features/swim-log/hooks/use-swim-times-query";
 import { cardClass, secondaryButtonClass } from "@/lib/form-styles";
-import {
-  COURSE_LABELS,
-  type Course,
-  formatMmSs,
-  STROKE_LABELS,
-  type Stroke,
-  type SwimTime,
-} from "@/lib/swim-times-data";
+import { COURSE_LABELS, formatMmSs, STROKE_LABELS, type SwimTime } from "@/lib/swim-times-data";
 
 function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {
   return (
@@ -32,49 +25,33 @@ function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {
 }
 
 export default function SwimTimesTable({
-  times,
-  loading,
-  error,
-  filterStroke,
-  filterCourse,
-  filterLength,
-  filterOfficial,
-  nextCursor,
-  loadingMore,
-  handleLoadMore,
+  results,
+  hasActiveFilters,
 }: {
-  times: SwimTime[];
-  loading: boolean;
-  error: string;
-  filterStroke: Stroke | "";
-  filterCourse: Course | "";
-  filterLength: string;
-  filterOfficial: OfficialFilter;
-  nextCursor: string | null;
-  loadingMore: boolean;
-  handleLoadMore: () => void;
+  results: SwimTimesResults;
+  hasActiveFilters: boolean;
 }) {
   return (
     <>
-      {error && (
+      {results.error && (
         <p role="alert" className="text-red-600 text-sm dark:text-red-400">
-          {error}
+          {results.error}
         </p>
       )}
 
-      {loading && times.length === 0 && !error && (
+      {results.loading && results.times.length === 0 && !results.error && (
         <p className="text-slate-500 text-sm dark:text-slate-400">Loading times…</p>
       )}
 
-      {!loading && times.length === 0 && !error && (
+      {!results.loading && results.times.length === 0 && !results.error && (
         <p className="text-slate-500 text-sm dark:text-slate-400">
-          {filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial
+          {hasActiveFilters
             ? "No times match these filters for this date."
             : "No times logged for this date yet — add one above."}
         </p>
       )}
 
-      {times.length > 0 && (
+      {results.times.length > 0 && (
         <div className={`${cardClass} overflow-x-auto`}>
           <table className="w-full text-left text-sm">
             <thead>
@@ -89,20 +66,20 @@ export default function SwimTimesTable({
               </tr>
             </thead>
             <tbody>
-              {times.map((t) => (
+              {results.times.map((t) => (
                 <SwimTimeRow key={t.id} swimTime={t} />
               ))}
             </tbody>
           </table>
 
-          {nextCursor && (
+          {results.nextCursor && (
             <button
               type="button"
-              onClick={handleLoadMore}
-              disabled={loadingMore}
+              onClick={results.handleLoadMore}
+              disabled={results.loadingMore}
               className={`${secondaryButtonClass} mt-4`}
             >
-              {loadingMore ? "Loading…" : "Load more"}
+              {results.loadingMore ? "Loading…" : "Load more"}
             </button>
           )}
         </div>
