@@ -17,17 +17,8 @@ function todayLocalDate(): string {
 export default function SwimLog() {
   const [selectedDate, setSelectedDate] = useState(todayLocalDate);
 
-  const {
-    times,
-    nextCursor,
-    loading,
-    loadingMore,
-    error,
-    filters,
-    handleLoadMore,
-    getViewGeneration,
-    insertIfCurrentView,
-  } = useSwimTimesQuery(selectedDate);
+  const { results, filters, getViewGeneration, insertIfCurrentView } =
+    useSwimTimesQuery(selectedDate);
 
   return (
     <div className="flex flex-col gap-8">
@@ -43,18 +34,7 @@ export default function SwimLog() {
         insertIfCurrentView={insertIfCurrentView}
       />
 
-      <SwimTimesTable
-        times={times}
-        loading={loading}
-        error={error}
-        filterStroke={filters.filterStroke}
-        filterCourse={filters.filterCourse}
-        filterLength={filters.filterLength}
-        filterOfficial={filters.filterOfficial}
-        nextCursor={nextCursor}
-        loadingMore={loadingMore}
-        handleLoadMore={handleLoadMore}
-      />
+      <SwimTimesTable results={results} hasActiveFilters={filters.hasActiveFilters} />
     </div>
   );
 }

@@ -99,10 +99,7 @@ export default function DateAndFilterControls({
           </Field>
         </div>
 
-        {(filters.filterStroke ||
-          filters.filterCourse ||
-          filters.filterLength.trim() !== "" ||
-          filters.filterOfficial) && (
+        {filters.hasActiveFilters && (
           <button
             type="button"
             onClick={() => {

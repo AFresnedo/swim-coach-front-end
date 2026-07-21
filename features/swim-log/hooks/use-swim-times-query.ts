@@ -35,6 +35,16 @@ export type SwimTimesFilters = {
   filterLengthError: string | null;
   filterOfficial: OfficialFilter;
   setFilterOfficial: (value: OfficialFilter) => void;
+  hasActiveFilters: boolean;
+};
+
+export type SwimTimesResults = {
+  times: SwimTime[];
+  nextCursor: string | null;
+  loading: boolean;
+  loadingMore: boolean;
+  error: string;
+  handleLoadMore: () => void;
 };
 
 function validateFilterLength(value: string): string | null {
@@ -83,6 +93,9 @@ export function useSwimTimesQuery(selectedDate: string) {
 
   const viewGenerationRef = useRef(0);
   const filterLengthError = validateFilterLength(filterLength);
+  const hasActiveFilters = Boolean(
+    filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial,
+  );
   const debouncedFilterLength = useDebouncedValue(filterLength, 300);
   const debouncedFilterLengthError = validateFilterLength(debouncedFilterLength);
 
@@ -191,11 +204,14 @@ export function useSwimTimesQuery(selectedDate: string) {
   }
 
   return {
-    times,
-    nextCursor,
-    loading,
-    loadingMore,
-    error,
+    results: {
+      times,
+      nextCursor,
+      loading,
+      loadingMore,
+      error,
+      handleLoadMore,
+    },
     filters: {
       filterStroke,
       setFilterStroke,
@@ -206,8 +222,8 @@ export function useSwimTimesQuery(selectedDate: string) {
       filterLengthError,
       filterOfficial,
       setFilterOfficial,
+      hasActiveFilters,
     },
-    handleLoadMore,
     getViewGeneration,
     insertIfCurrentView,
   };
