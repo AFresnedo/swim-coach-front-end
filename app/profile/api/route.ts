@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { BackendError, backApiFetch, backendErrorResponse } from "@/shared/back-api";
+import { BackendError, backApiFetch, routeErrorResponse } from "@/shared/back-api";
 
 export async function GET() {
   try {
@@ -10,7 +10,7 @@ export async function GET() {
     if (err instanceof BackendError && err.status === 404) {
       return NextResponse.json(null);
     }
-    return backendErrorResponse(err, "Failed to load profile");
+    return routeErrorResponse(err, "Failed to load profile");
   }
 }
 
@@ -24,6 +24,6 @@ export async function PUT(req: NextRequest) {
     });
     return NextResponse.json({ ok: true });
   } catch (err) {
-    return backendErrorResponse(err, "Failed to save profile");
+    return routeErrorResponse(err, "Failed to save profile");
   }
 }

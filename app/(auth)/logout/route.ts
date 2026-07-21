@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/shared/auth";
-import { backApiFetchNoBody, backendErrorResponse } from "@/shared/back-api";
+import { backApiFetchNoBody, routeErrorResponse } from "@/shared/back-api";
 
 export async function POST() {
   // The backend has no per-device sessions, so invalidating this token
@@ -13,7 +13,7 @@ export async function POST() {
   try {
     await backApiFetchNoBody("/auth/logout", "auth/logout", { method: "POST" });
   } catch (err) {
-    return backendErrorResponse(err, "Log out failed");
+    return routeErrorResponse(err, "Log out failed");
   }
 
   const cookieStore = await cookies();

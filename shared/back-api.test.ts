@@ -11,9 +11,10 @@ import {
   BackendError,
   backApiFetch,
   backApiFetchNoBody,
-  backendErrorResponse,
+  InvalidIdError,
   normalizeError,
   parseNumericId,
+  routeErrorResponse,
   safeFetch,
   UnauthenticatedError,
 } from "@/shared/back-api";
@@ -125,29 +126,32 @@ describe("parseNumericId", () => {
     ["a path traversal attempt", "../../other-resource"],
     ["an extra path segment", "5/deactivate"],
     ["an empty string", ""],
-  ])("rejects %s (%j) with a 400 response", async (_label, raw) => {
-    const res = parseNumericId(raw);
-    if (typeof res === "number") throw new Error("expected an invalid id to be rejected");
-    expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ detail: "Invalid id" });
+  ])("throws InvalidIdError for %s (%j)", (_label, raw) => {
+    expect(() => parseNumericId(raw)).toThrow(InvalidIdError);
   });
 });
 
-describe("backendErrorResponse", () => {
+describe("routeErrorResponse", () => {
   it("maps UnauthenticatedError to 401", async () => {
-    const res = backendErrorResponse(new UnauthenticatedError(), "fallback");
+    const res = routeErrorResponse(new UnauthenticatedError(), "fallback");
     expect(res.status).toBe(401);
     expect(await res.json()).toEqual({ detail: "Not authenticated" });
   });
 
+  it("maps InvalidIdError to 400", async () => {
+    const res = routeErrorResponse(new InvalidIdError(), "fallback");
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ detail: "Invalid id" });
+  });
+
   it("maps BackendError to its own status and normalized detail", async () => {
-    const res = backendErrorResponse(new BackendError(404, "Not found"), "fallback");
+    const res = routeErrorResponse(new BackendError(404, "Not found"), "fallback");
     expect(res.status).toBe(404);
     expect(await res.json()).toEqual({ detail: "Not found" });
   });
 
   it("maps anything else (e.g. a thrown network error) to 502", async () => {
-    const res = backendErrorResponse(new Error("ECONNREFUSED"), "fallback");
+    const res = routeErrorResponse(new Error("ECONNREFUSED"), "fallback");
     expect(res.status).toBe(502);
     expect(await res.json()).toEqual({ detail: "Server unavailable" });
   });

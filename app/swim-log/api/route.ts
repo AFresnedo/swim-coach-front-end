@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { SWIM_TIME_FILTER_PARAMS } from "@/app/swim-log/_data/swim-times";
-import { backApiFetch, backendErrorResponse } from "@/shared/back-api";
+import { backApiFetch, routeErrorResponse } from "@/shared/back-api";
 
 export async function GET(req: NextRequest) {
   const query = new URLSearchParams();
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   try {
     return NextResponse.json(await backApiFetch(`/swim-times?${query.toString()}`, "swim-times"));
   } catch (err) {
-    return backendErrorResponse(err, "Failed to load swim times");
+    return routeErrorResponse(err, "Failed to load swim times");
   }
 }
 
@@ -26,6 +26,6 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(data, { status: 201 });
   } catch (err) {
-    return backendErrorResponse(err, "Failed to create swim time");
+    return routeErrorResponse(err, "Failed to create swim time");
   }
 }

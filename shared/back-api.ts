@@ -26,6 +26,8 @@ export class BackendError extends Error {
   }
 }
 
+export class InvalidIdError extends Error {}
+
 // Forbids a caller from supplying these two keys at all — not just at
 // runtime (where the spread order below already wins regardless), but at
 // compile time, so a bad call fails the build instead of being silently
@@ -102,9 +104,12 @@ export function normalizeError(
   return { detail: fallback };
 }
 
-export function backendErrorResponse(err: unknown, fallback: string): NextResponse {
+export function routeErrorResponse(err: unknown, fallback: string): NextResponse {
   if (err instanceof UnauthenticatedError) {
     return NextResponse.json({ detail: "Not authenticated" }, { status: 401 });
+  }
+  if (err instanceof InvalidIdError) {
+    return NextResponse.json({ detail: "Invalid id" }, { status: 400 });
   }
   if (err instanceof BackendError) {
     return NextResponse.json(normalizeError(err.detail, fallback), { status: err.status });
@@ -117,8 +122,7 @@ export function backendErrorResponse(err: unknown, fallback: string): NextRespon
 // first, a value like "../../other-resource" would smuggle extra path
 // segments into that URL instead of naming a single resource. Restricting it
 // to a plain positive integer closes that off before it reaches backApiFetch.
-export function parseNumericId(raw: string): number | NextResponse {
-  return /^[1-9]\d*$/.test(raw)
-    ? Number(raw)
-    : NextResponse.json({ detail: "Invalid id" }, { status: 400 });
+export function parseNumericId(raw: string): number {
+  if (!/^[1-9]\d*$/.test(raw)) throw new InvalidIdError();
+  return Number(raw);
 }

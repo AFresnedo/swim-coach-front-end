@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { backApiFetch, backendErrorResponse } from "@/shared/back-api";
+import { backApiFetch, routeErrorResponse } from "@/shared/back-api";
 
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status") ?? "active";
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   try {
     return NextResponse.json(await backApiFetch(`/goals?${query.toString()}`, "goals"));
   } catch (err) {
-    return backendErrorResponse(err, "Failed to load goals");
+    return routeErrorResponse(err, "Failed to load goals");
   }
 }
 
@@ -22,6 +22,6 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(data, { status: 201 });
   } catch (err) {
-    return backendErrorResponse(err, "Failed to create goal");
+    return routeErrorResponse(err, "Failed to create goal");
   }
 }
