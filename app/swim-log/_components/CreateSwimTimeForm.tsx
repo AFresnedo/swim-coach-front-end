@@ -13,7 +13,7 @@ import {
   labelClass,
   primaryButtonClass,
 } from "@/lib/form-styles";
-import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/lib/swim-times-data";
+import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/app/swim-log/_lib/swim-times-data";
 
 function getFieldError(
   errors: Record<string, string>,

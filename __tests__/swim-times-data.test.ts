@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMmSs } from "@/lib/swim-times-data";
+import { formatMmSs } from "@/app/swim-log/_lib/swim-times-data";
 
 describe("formatMmSs", () => {
   it("formats sub-minute times", () => {

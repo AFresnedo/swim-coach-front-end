@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { apiErrorDetails } from "@/lib/front-api";
-import { type Course, parseMmSs, type Stroke, type SwimTime } from "@/lib/swim-times-data";
+import { type Course, parseMmSs, type Stroke, type SwimTime } from "@/app/swim-log/_lib/swim-times-data";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
 export type CreateSwimTimeFormParams = {

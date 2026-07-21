@@ -7,7 +7,7 @@ import {
   SWIM_TIME_FILTER_PARAMS,
   type SwimTime,
   type SwimTimeFilterParam,
-} from "@/lib/swim-times-data";
+} from "@/app/swim-log/_lib/swim-times-data";
 import { useAbortableEffect } from "@/lib/use-abortable-effect";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
