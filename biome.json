@@ -42,7 +42,7 @@
   },
   "overrides": [
     {
-      "includes": ["**", "!features/swim-log/**"],
+      "includes": ["**", "!app/swim-log/**", "!app/api/swim-times/**"],
       "linter": {
         "rules": {
           "style": {
@@ -51,8 +51,33 @@
               "options": {
                 "patterns": [
                   {
-                    "group": ["@/features/swim-log/**", "!@/features/swim-log/components/SwimLog"],
-                    "message": "Only @/features/swim-log/components/SwimLog (the feature's entry point) may be imported from outside features/swim-log/. Everything else under features/swim-log/ is private to that feature. When a new features/<name>/ folder is added, add a matching override block for it here."
+                    "group": [
+                      "@/app/swim-log/_components/**",
+                      "@/app/swim-log/_hooks/**",
+                      "@/app/swim-log/_lib/**",
+                      "!@/app/swim-log/_components/SwimLog"
+                    ],
+                    "message": "Only @/app/swim-log/_components/SwimLog (the route's entry point) may be imported from outside app/swim-log/. Everything else under app/swim-log/_components, _hooks, and _lib is private to that route, except _lib/swim-times-data, which app/api/swim-times/route.ts is also allowed to import since that route is swim-log's own backend-for-frontend endpoint. When a new app/<route>/_components, _hooks, or _lib folder grows past one file, add a matching override block for it here."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**", "!app/goals/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/app/goals/_components/**", "!@/app/goals/_components/GoalsList"],
+                    "message": "Only @/app/goals/_components/GoalsList (the route's entry point) may be imported from outside app/goals/. GoalCard is private to that route."
                   }
                 ]
               }
