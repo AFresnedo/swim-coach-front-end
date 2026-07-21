@@ -59,10 +59,10 @@ const cases = [
     expect: "ALLOWED",
   },
   { domain: "home", specifier: "@/app/_components/FeatureCard", expect: "BLOCKED" },
-  { domain: "home", specifier: "@/app/_lib/home-data", expect: "BLOCKED" },
+  { domain: "home", specifier: "@/app/_data/home-data", expect: "BLOCKED" },
   {
     domain: "home",
-    specifier: "@/app/_lib/stats",
+    specifier: "@/app/_data/stats",
     expect: "ALLOWED",
     note: "intentionally global — __tests__/stats.test.tsx imports it directly",
   },

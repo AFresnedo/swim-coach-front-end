@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getSwimCount, getUserCount } from "@/app/_lib/stats";
+import { getSwimCount, getUserCount } from "@/app/_data/stats";
 
 vi.mock("@/shared/back-api", async (importActual) => {
   const actual = await importActual<typeof import("@/shared/back-api")>();

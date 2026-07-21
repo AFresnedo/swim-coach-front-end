@@ -1,4 +1,4 @@
-import { getSwimCount, getUserCount } from "@/app/_lib/stats";
+import { getSwimCount, getUserCount } from "@/app/_data/stats";
 
 export function Stat({ value, label }: { value: string; label: string }) {
   return (
