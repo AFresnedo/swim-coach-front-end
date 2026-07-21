@@ -119,7 +119,7 @@ export default function GoalCard({
             className={`${inputClass} ${inputNormalClass}`}
           />
           {editError && (
-            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="text-red-600 text-sm dark:text-red-400">
               {editError}
             </p>
           )}
@@ -153,7 +153,7 @@ export default function GoalCard({
             <option value="other">Other</option>
           </select>
           {deactivateError && (
-            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="text-red-600 text-sm dark:text-red-400">
               {deactivateError}
             </p>
           )}
@@ -169,7 +169,7 @@ export default function GoalCard({
       ) : goal.is_active ? (
         <div className="flex items-start justify-between gap-4">
           <p className="text-slate-900 dark:text-slate-50">{goal.text}</p>
-          <div className="flex gap-2 shrink-0">
+          <div className="flex shrink-0 gap-2">
             <button type="button" onClick={startEdit} className={secondaryButtonClass}>
               Edit
             </button>
@@ -180,10 +180,10 @@ export default function GoalCard({
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          <p className="text-slate-500 dark:text-slate-400 line-through decoration-slate-300 dark:decoration-slate-600">
+          <p className="text-slate-500 line-through decoration-slate-300 dark:text-slate-400 dark:decoration-slate-600">
             {goal.text}
           </p>
-          <span className="w-fit rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">
+          <span className="w-fit rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600 text-xs dark:bg-slate-800 dark:text-slate-400">
             Deactivated —{" "}
             {goal.deactivation_reason ? REASON_LABELS[goal.deactivation_reason] : "Unknown"}
           </span>

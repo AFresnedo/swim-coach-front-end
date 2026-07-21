@@ -22,7 +22,7 @@ function SessionExpiredBanner() {
   return (
     <p
       role="status"
-      className="mb-6 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-400"
+      className="mb-6 rounded-lg bg-amber-50 px-3 py-2 text-amber-700 text-sm dark:bg-amber-500/10 dark:text-amber-400"
     >
       Your session expired — please sign in again.
     </p>
@@ -60,10 +60,10 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-full flex items-center justify-center px-6 py-24 bg-page-gradient">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-lg shadow-cyan-500/5">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">Welcome back</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
+    <div className="flex min-h-full items-center justify-center bg-page-gradient px-6 py-24">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-100 bg-white p-8 shadow-cyan-500/5 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+        <h1 className="mb-1 font-bold text-2xl text-slate-900 dark:text-slate-50">Welcome back</h1>
+        <p className="mb-8 text-slate-500 text-sm dark:text-slate-400">
           Sign in to continue your training.
         </p>
 
@@ -97,7 +97,7 @@ export default function SignInPage() {
           />
 
           {error && (
-            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="text-red-600 text-sm dark:text-red-400">
               {error}
             </p>
           )}
@@ -107,11 +107,11 @@ export default function SignInPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-center text-slate-500 text-sm dark:text-slate-400">
           Don&apos;t have an account?{" "}
           <Link
             href="/sign-up"
-            className="font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
+            className="font-medium text-cyan-600 hover:underline dark:text-cyan-400"
           >
             Sign up
           </Link>

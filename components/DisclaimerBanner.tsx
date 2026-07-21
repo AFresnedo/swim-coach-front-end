@@ -15,7 +15,7 @@ export default function DisclaimerBanner() {
   if (!visible) return null;
 
   return (
-    <div className="flex items-center justify-center gap-3 px-4 py-2.5 text-sm bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-b border-amber-200 dark:border-amber-900">
+    <div className="flex items-center justify-center gap-3 border-amber-200 border-b bg-amber-100 px-4 py-2.5 text-amber-900 text-sm dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
       <p className="text-center">
         <span aria-hidden="true">⚠️</span> Information on this site has not been reviewed by a
         licensed swim coach, physical therapist, or medical professional. Verify anything you use
@@ -31,7 +31,7 @@ export default function DisclaimerBanner() {
           setVisible(false);
         }}
         aria-label="Dismiss disclaimer"
-        className="shrink-0 rounded-full p-1 hover:bg-amber-200/60 dark:hover:bg-amber-900/60 transition-colors"
+        className="shrink-0 rounded-full p-1 transition-colors hover:bg-amber-200/60 dark:hover:bg-amber-900/60"
       >
         ✕
       </button>
