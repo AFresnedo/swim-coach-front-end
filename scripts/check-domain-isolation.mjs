@@ -49,6 +49,11 @@ const cases = [
     expect: "ALLOWED",
   },
   {
+    domain: "(auth)/sign-up",
+    specifier: "@/app/(auth)/sign-up/_data/turnstile-test-mode",
+    expect: "BLOCKED",
+  },
+  {
     domain: "strokes/[stroke]",
     specifier: "@/app/strokes/[stroke]/_components/SomeFutureHelper",
     expect: "BLOCKED",

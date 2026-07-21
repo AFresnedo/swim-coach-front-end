@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE } from "@/shared/constants";
+import { AUTH_COOKIE } from "@/shared/auth";
 
 export function proxy(request: NextRequest) {
   if (!request.cookies.has(AUTH_COOKIE)) {

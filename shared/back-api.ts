@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE } from "@/shared/constants";
+import { getAuthToken } from "@/shared/auth";
 
 export const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
@@ -32,8 +31,7 @@ async function backApiFetchRaw(
   label: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_COOKIE)?.value;
+  const token = await getAuthToken();
   if (!token) throw new UnauthenticatedError();
 
   const res = await safeFetch(label, `${API_URL}${path}`, {
