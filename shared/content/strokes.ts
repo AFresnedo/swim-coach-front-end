@@ -13,7 +13,7 @@ export type StrokeContent = {
   drills: Drill[];
 };
 
-export const strokes: Stroke[] = [
+export const strokes: StrokeContent[] = [
   {
     slug: "freestyle",
     icon: "🏊",
@@ -176,6 +176,6 @@ export const strokes: Stroke[] = [
   },
 ];
 
-export function getStroke(slug: string): Stroke | undefined {
+export function getStroke(slug: string): StrokeContent | undefined {
   return strokes.find((stroke) => stroke.slug === slug);
 }
