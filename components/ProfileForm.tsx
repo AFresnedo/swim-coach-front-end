@@ -40,6 +40,14 @@ function kgToLbs(kg: number) {
   return Math.round(kg / KG_PER_LB);
 }
 
+function ftInToCm(ft: number, inches: number) {
+  return Math.round((ft * 12 + inches) * 2.54 * 10) / 10;
+}
+
+function lbsToKg(lbs: number) {
+  return Math.round(lbs * 0.453592 * 10) / 10;
+}
+
 export default function ProfileForm() {
   const protectedFrontFetch = useProtectedFrontFetch();
   const [units, setUnits] = useState<UnitSystem>("metric");
@@ -81,6 +89,28 @@ export default function ProfileForm() {
     },
     [protectedFrontFetch],
   );
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally only resyncs on unit toggle, not on every keystroke in the source fields
+  useEffect(() => {
+    if (units === "imperial") {
+      const cm = parseFloat(heightCm);
+      if (!Number.isNaN(cm)) {
+        const { ft, inches } = cmToFtIn(cm);
+        setHeightFt(String(ft));
+        setHeightIn(String(inches));
+      }
+      const kg = parseFloat(weightKg);
+      if (!Number.isNaN(kg)) setWeightLbs(String(kgToLbs(kg)));
+    } else {
+      const ft = parseFloat(heightFt);
+      const inches = parseFloat(heightIn);
+      if (!Number.isNaN(ft) && !Number.isNaN(inches)) {
+        setHeightCm(String(ftInToCm(ft, inches)));
+      }
+      const lbs = parseFloat(weightLbs);
+      if (!Number.isNaN(lbs)) setWeightKg(String(lbsToKg(lbs)));
+    }
+  }, [units]);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
