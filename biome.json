@@ -51,7 +51,8 @@
         "!app/strokes/\\[stroke\\]/**",
         "!app/page.tsx",
         "!app/_components/**",
-        "!app/_data/**"
+        "!app/_data/**",
+        "!app/_content/**"
       ],
       "linter": {
         "rules": {
@@ -96,7 +97,12 @@
                     "message": "Private to app/strokes/[stroke]/, except DrillsSection (the route's entry point)."
                   },
                   {
-                    "group": ["@/app/_components/**", "@/app/_data/**", "!@/app/_data/stats"],
+                    "group": [
+                      "@/app/_components/**",
+                      "@/app/_data/**",
+                      "@/app/_content/**",
+                      "!@/app/_data/stats"
+                    ],
                     "message": "Private to the home route (app/page.tsx), except _data/stats (its own __tests__ file imports it directly)."
                   }
                 ]

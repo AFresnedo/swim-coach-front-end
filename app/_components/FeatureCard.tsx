@@ -1,4 +1,4 @@
-import type { Feature } from "@/app/_data/home-data";
+import type { Feature } from "@/app/_content/home-data";
 
 export default function FeatureCard({ icon, title, desc, comingSoon }: Feature) {
   return (

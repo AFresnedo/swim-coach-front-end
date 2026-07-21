@@ -59,7 +59,7 @@ const cases = [
     expect: "ALLOWED",
   },
   { domain: "home", specifier: "@/app/_components/FeatureCard", expect: "BLOCKED" },
-  { domain: "home", specifier: "@/app/_data/home-data", expect: "BLOCKED" },
+  { domain: "home", specifier: "@/app/_content/home-data", expect: "BLOCKED" },
   {
     domain: "home",
     specifier: "@/app/_data/stats",
