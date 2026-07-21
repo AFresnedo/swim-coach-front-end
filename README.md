@@ -17,11 +17,13 @@ Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · Biome · Vitest · Pl
 
 ## Architecture
 
-Next.js API routes under `app/api/` act as a proxy layer in front of the backend (a
-BFF — backend-for-frontend — pattern): the browser never talks to the FastAPI API
-directly, and server-only secrets (like the Turnstile secret key) never reach the
-client. Auth state, protected routes, and session expiry are handled client-side on
-top of that.
+Next.js Route Handlers act as a proxy layer in front of the backend (a BFF —
+backend-for-frontend — pattern): the browser never talks to the FastAPI API directly,
+and server-only secrets (like the Turnstile secret key) never reach the client. Each
+route handler lives under its own page's route segment (e.g. `app/goals/api/route.ts`
+next to `app/goals/page.tsx`) rather than a shared `app/api/` tree, except `app/api/logout/`,
+which has no owning page since logging out isn't specific to any one route. Auth state,
+protected routes, and session expiry are handled client-side on top of that.
 
 ## Setup
 

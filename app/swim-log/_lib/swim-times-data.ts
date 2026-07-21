@@ -34,7 +34,7 @@ export const COURSE_OPTIONS: { value: Course; label: string }[] = [
   { value: "lcm", label: "LCM (long course meters)" },
 ];
 
-// The BFF route (app/api/swim-times/route.ts) forwards exactly these keys
+// The BFF route (app/swim-log/api/route.ts) forwards exactly these keys
 // from the incoming request to the backend; the query builder below sets
 // exactly these keys. Sharing one list keeps the two from drifting apart.
 export const SWIM_TIME_FILTER_PARAMS = [

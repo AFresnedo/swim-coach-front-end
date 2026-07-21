@@ -26,7 +26,7 @@ const cases = [
     domain: "swim-log",
     specifier: "@/app/swim-log/_lib/swim-times-data",
     expect: "ALLOWED",
-    note: "intentionally global — also used by app/api/swim-times/route.ts and its own test",
+    note: "intentionally global — __tests__/swim-times-data.test.ts imports it directly (the BFF route no longer needs this exception; it moved inside the domain)",
   },
   { domain: "goals", specifier: "@/app/goals/_components/GoalCard", expect: "BLOCKED" },
   { domain: "goals", specifier: "@/app/goals/_components/GoalsList", expect: "ALLOWED" },

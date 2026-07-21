@@ -59,10 +59,9 @@ describe("SwimLog", () => {
     render(<SwimLog />);
     const today = currentDateInputValue();
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith(
-        `/swim-log/api?date_from=${today}&date_to=${today}`,
-        { signal: expect.any(AbortSignal) },
-      ),
+      expect(mockFetch).toHaveBeenCalledWith(`/swim-log/api?date_from=${today}&date_to=${today}`, {
+        signal: expect.any(AbortSignal),
+      }),
     );
   });
 

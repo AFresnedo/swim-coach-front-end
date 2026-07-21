@@ -45,7 +45,6 @@
       "includes": [
         "**",
         "!app/swim-log/**",
-        "!app/api/swim-times/**",
         "!app/goals/**",
         "!app/profile/**",
         "!app/sign-up/**",
@@ -69,7 +68,7 @@
                       "!@/app/swim-log/_components/SwimLog",
                       "!@/app/swim-log/_lib/swim-times-data"
                     ],
-                    "message": "Private to app/swim-log/, except SwimLog (the route's entry point, imported by app/swim-log/page.tsx and its own __tests__ file) and _lib/swim-times-data (also imported by app/api/swim-times/route.ts, swim-log's own BFF endpoint, and its own __tests__ file). This override is deliberately ONE block covering every domain, each as its own entry in `patterns` below: Biome does not merge style.noRestrictedImports config across separate override blocks when a file matches more than one, so N per-domain override blocks would silently disable protection for every domain but the last one added. When a new app/<route>/ domain is created: add \"!app/<route>/**\" to this block's `includes`, and one new pattern here blocking \"@/app/<route>/_components/**\" etc., negating the entry point plus anything a __tests__/*.test.tsx imports directly. If the route segment has glob metacharacters (e.g. \"[stroke]\"), escape as \\[ \\] in both includes and group globs, doubled to \\\\[ \\\\] in this JSON source since a bare backslash isn't a valid JSON escape."
+                    "message": "Private to app/swim-log/, except SwimLog (the route's entry point, imported by app/swim-log/page.tsx and its own __tests__ file) and _lib/swim-times-data (its own __tests__ file, __tests__/swim-times-data.test.ts, imports it directly — swim-log's BFF route no longer needs this exception since it moved inside the domain at app/swim-log/api/route.ts). This override is deliberately ONE block covering every domain, each as its own entry in `patterns` below: Biome does not merge style.noRestrictedImports config across separate override blocks when a file matches more than one, so N per-domain override blocks would silently disable protection for every domain but the last one added. When a new app/<route>/ domain is created: add \"!app/<route>/**\" to this block's `includes`, and one new pattern here blocking \"@/app/<route>/_components/**\" etc., negating the entry point plus anything a __tests__/*.test.tsx imports directly. If the route segment has glob metacharacters (e.g. \"[stroke]\"), escape as \\[ \\] in both includes and group globs, doubled to \\\\[ \\\\] in this JSON source since a bare backslash isn't a valid JSON escape."
                   },
                   {
                     "group": ["@/app/goals/_components/**", "!@/app/goals/_components/GoalsList"],

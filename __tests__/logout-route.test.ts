@@ -9,9 +9,9 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn().mockResolvedValue({ get: getCookie, delete: deleteCookie }),
 }));
 
-import { POST } from "@/app/api/auth/logout/route";
+import { POST } from "@/app/api/logout/route";
 
-describe("POST /api/auth/logout", () => {
+describe("POST /api/logout", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     getCookie.mockReset();
