@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fakeJwt } from "./helpers/fake-jwt";
+import { fakeJwt } from "@/test-helpers/fake-jwt";
 
 const { getCookie, setCookie } = vi.hoisted(() => ({ getCookie: vi.fn(), setCookie: vi.fn() }));
 

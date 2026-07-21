@@ -63,6 +63,13 @@ npx playwright install chromium   # one-time, before the first e2e run
 npm run test:e2e     # Playwright — end-to-end flows
 ```
 
+Vitest unit tests are colocated as `*.test.ts`/`*.test.tsx` directly beside the file
+they cover (e.g. `shared/auth.test.ts` next to `shared/auth.ts`) rather than gathered
+into a separate `__tests__/` tree, so a reader lands on a file's test the moment they
+open its folder. Cross-cutting test infrastructure that isn't specific to one file
+lives at the repo root instead: `domain-isolation.test.ts` checks the whole import
+graph, and `test-helpers/` holds shared test fixtures like the fake JWT builder.
+
 Playwright covers auth, route protection, goals authorization, session expiry, and
 mobile navigation, auto-starting the dev server (`npm run dev`) against
 `http://localhost:3000` if one isn't already running.

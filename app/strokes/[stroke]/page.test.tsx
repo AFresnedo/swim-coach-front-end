@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fakeJwt } from "./helpers/fake-jwt";
+import { fakeJwt } from "@/test-helpers/fake-jwt";
 
 const { getCookie } = vi.hoisted(() => ({ getCookie: vi.fn() }));
 

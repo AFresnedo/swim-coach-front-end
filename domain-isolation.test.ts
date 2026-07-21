@@ -3,7 +3,7 @@ import { dirname, join, relative } from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
-const REPO_ROOT = join(__dirname, "..");
+const REPO_ROOT = __dirname;
 const SKIP_DIRS = new Set(["node_modules", ".next", ".git", "out", "build", "test-results"]);
 
 type Domain = {
@@ -15,9 +15,10 @@ type Domain = {
   // other domain's route folder — so it lists its one owned file explicitly instead.
   exclusiveRoot: boolean;
   ownedFiles?: string[];
-  // Private paths (relative to root) that outside files may import anyway: a route's
-  // entry-point component, or a file a specific __tests__ spec imports directly.
-  exceptions: string[];
+  // Private paths (relative to root) that outside files may import anyway — e.g. a
+  // route's entry-point component. Tests are colocated inside the domain they cover,
+  // so they never need an entry here; this is only for genuine non-test exceptions.
+  exceptions?: string[];
 };
 
 const DOMAINS: Domain[] = [
@@ -25,38 +26,32 @@ const DOMAINS: Domain[] = [
     name: "swim-log",
     root: "app/swim-log",
     exclusiveRoot: true,
-    exceptions: ["_components/SwimLog", "_utils/format-time"],
   },
   {
     name: "goals",
     root: "app/goals",
     exclusiveRoot: true,
-    exceptions: ["_components/GoalsList"],
   },
   {
     name: "profile",
     root: "app/profile",
     exclusiveRoot: true,
-    exceptions: ["_components/ProfileForm"],
   },
   {
     name: "(auth)/sign-up",
     root: "app/(auth)/sign-up",
     exclusiveRoot: true,
-    exceptions: ["_components/Turnstile"],
   },
   {
     name: "strokes/[stroke]",
     root: "app/strokes/[stroke]",
     exclusiveRoot: true,
-    exceptions: ["_components/DrillsSection"],
   },
   {
     name: "home",
     root: "app",
     exclusiveRoot: false,
     ownedFiles: ["app/page"],
-    exceptions: ["_data/stats"],
   },
 ];
 
@@ -134,7 +129,9 @@ describe("domain isolation", () => {
           if (!privateAreaOf(domain, target)) continue;
           if (belongsToDomain(domain, importerRelPath)) break;
 
-          const isException = domain.exceptions.some((e) => `${domain.root}/${e}` === target);
+          const isException = (domain.exceptions ?? []).some(
+            (e) => `${domain.root}/${e}` === target,
+          );
           if (!isException) {
             violations.push(`${importerRelPath} imports ${target} (private to ${domain.name})`);
           }
