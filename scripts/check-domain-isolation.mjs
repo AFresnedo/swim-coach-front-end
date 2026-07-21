@@ -66,15 +66,39 @@ const cases = [
 
 const scratchPath = "app/_domain_isolation_check_tmp.ts";
 
+// Uses --reporter=json rather than matching Biome's human-readable text: a
+// config parse error (e.g. an unescaped glob bracket) never prints a JSON
+// summary line at all, so "no parseable JSON line" is a structural signal
+// for CONFIG_ERROR that doesn't depend on any specific error wording. Once
+// there IS a JSON line, checking diagnostics[].category against the rule's
+// own id ("lint/style/noRestrictedImports") is far more stable than matching
+// the rule's `message` text, which is free-form prose we wrote ourselves and
+// could reword later. Biome calls --reporter=json itself "unstable/
+// experimental," but a rule id is a config key used throughout the tool,
+// so it's a safer bet than prose either way.
 function classify(specifier) {
   writeFileSync(scratchPath, `import x from "${specifier}";\nexport default x;\n`);
-  const result = spawnSync("npx", ["biome", "lint", "--verbose", scratchPath], {
+  const result = spawnSync("npx", ["biome", "lint", "--reporter=json", scratchPath], {
     encoding: "utf-8",
   });
-  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
-  if (output.includes("configuration resulted in errors")) return "CONFIG_ERROR";
-  if (output.includes("lint/style/noRestrictedImports")) return "BLOCKED";
-  return "ALLOWED";
+  const summaryLine = (result.stdout ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.startsWith("{") && line.endsWith("}"));
+
+  if (!summaryLine) return "CONFIG_ERROR";
+
+  let parsed;
+  try {
+    parsed = JSON.parse(summaryLine);
+  } catch {
+    return "CONFIG_ERROR";
+  }
+
+  const blocked = (parsed.diagnostics ?? []).some(
+    (d) => d.category === "lint/style/noRestrictedImports",
+  );
+  return blocked ? "BLOCKED" : "ALLOWED";
 }
 
 let failures = 0;
