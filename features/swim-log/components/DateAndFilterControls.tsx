@@ -22,18 +22,6 @@ export default function DateAndFilterControls({
   setSelectedDate: (value: string) => void;
   filters: SwimTimesFilters;
 }) {
-  const {
-    filterStroke,
-    setFilterStroke,
-    filterCourse,
-    setFilterCourse,
-    filterLength,
-    setFilterLength,
-    filterLengthError,
-    filterOfficial,
-    setFilterOfficial,
-  } = filters;
-
   return (
     <>
       <div className={`${cardClass} flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4`}>
@@ -55,8 +43,8 @@ export default function DateAndFilterControls({
           <Field htmlFor="filter-stroke" label="Filter by stroke">
             <select
               id="filter-stroke"
-              value={filterStroke}
-              onChange={(e) => setFilterStroke(e.target.value as Stroke | "")}
+              value={filters.filterStroke}
+              onChange={(e) => filters.setFilterStroke(e.target.value as Stroke | "")}
               className={`${inputClass} ${inputNormalClass}`}
             >
               <option value="">All strokes</option>
@@ -71,8 +59,8 @@ export default function DateAndFilterControls({
           <Field htmlFor="filter-course" label="Filter by course">
             <select
               id="filter-course"
-              value={filterCourse}
-              onChange={(e) => setFilterCourse(e.target.value as Course | "")}
+              value={filters.filterCourse}
+              onChange={(e) => filters.setFilterCourse(e.target.value as Course | "")}
               className={`${inputClass} ${inputNormalClass}`}
             >
               <option value="">All courses</option>
@@ -84,24 +72,24 @@ export default function DateAndFilterControls({
             </select>
           </Field>
 
-          <Field htmlFor="filter-length" label="Filter by length" error={filterLengthError}>
+          <Field htmlFor="filter-length" label="Filter by length" error={filters.filterLengthError}>
             <input
               id="filter-length"
               type="number"
               min={1}
-              value={filterLength}
-              onChange={(e) => setFilterLength(e.target.value)}
+              value={filters.filterLength}
+              onChange={(e) => filters.setFilterLength(e.target.value)}
               placeholder="Any"
-              className={`${inputClass} ${filterLengthError ? inputErrorClass : inputNormalClass}`}
-              aria-describedby={filterLengthError ? "filter-length-error" : undefined}
+              className={`${inputClass} ${filters.filterLengthError ? inputErrorClass : inputNormalClass}`}
+              aria-describedby={filters.filterLengthError ? "filter-length-error" : undefined}
             />
           </Field>
 
           <Field htmlFor="filter-official" label="Filter by official status">
             <select
               id="filter-official"
-              value={filterOfficial}
-              onChange={(e) => setFilterOfficial(e.target.value as OfficialFilter)}
+              value={filters.filterOfficial}
+              onChange={(e) => filters.setFilterOfficial(e.target.value as OfficialFilter)}
               className={`${inputClass} ${inputNormalClass}`}
             >
               <option value="">All times</option>
@@ -111,14 +99,17 @@ export default function DateAndFilterControls({
           </Field>
         </div>
 
-        {(filterStroke || filterCourse || filterLength.trim() !== "" || filterOfficial) && (
+        {(filters.filterStroke ||
+          filters.filterCourse ||
+          filters.filterLength.trim() !== "" ||
+          filters.filterOfficial) && (
           <button
             type="button"
             onClick={() => {
-              setFilterStroke("");
-              setFilterCourse("");
-              setFilterLength("");
-              setFilterOfficial("");
+              filters.setFilterStroke("");
+              filters.setFilterCourse("");
+              filters.setFilterLength("");
+              filters.setFilterOfficial("");
             }}
             className={`${secondaryButtonClass} self-start`}
           >
