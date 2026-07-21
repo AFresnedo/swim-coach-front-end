@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { backApiFetch, backendErrorResponse } from "@/lib/back-api";
 import { SWIM_TIME_FILTER_PARAMS } from "@/app/swim-log/_lib/swim-times-data";
+import { backApiFetch, backendErrorResponse } from "@/lib/back-api";
 
 export async function GET(req: NextRequest) {
   const query = new URLSearchParams();

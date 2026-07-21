@@ -5,6 +5,12 @@ import {
   type CreateSwimTimeFormParams,
   useCreateSwimTimeForm,
 } from "@/app/swim-log/_hooks/use-create-swim-time-form";
+import {
+  COURSE_OPTIONS,
+  type Course,
+  STROKE_OPTIONS,
+  type Stroke,
+} from "@/app/swim-log/_lib/swim-times-data";
 import Field from "@/components/Field";
 import {
   inputClass,
@@ -13,7 +19,6 @@ import {
   labelClass,
   primaryButtonClass,
 } from "@/lib/form-styles";
-import { COURSE_OPTIONS, type Course, STROKE_OPTIONS, type Stroke } from "@/app/swim-log/_lib/swim-times-data";
 
 function getFieldError(
   errors: Record<string, string>,

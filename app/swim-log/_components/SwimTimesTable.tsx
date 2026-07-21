@@ -1,6 +1,11 @@
 import type { SwimTimesResults } from "@/app/swim-log/_hooks/use-swim-times-query";
+import {
+  COURSE_LABELS,
+  formatMmSs,
+  STROKE_LABELS,
+  type SwimTime,
+} from "@/app/swim-log/_lib/swim-times-data";
 import { cardClass, secondaryButtonClass } from "@/lib/form-styles";
-import { COURSE_LABELS, formatMmSs, STROKE_LABELS, type SwimTime } from "@/app/swim-log/_lib/swim-times-data";
 
 function SwimTimeRow({ swimTime }: { swimTime: SwimTime }) {
   return (
