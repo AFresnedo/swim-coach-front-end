@@ -14,6 +14,8 @@ import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protect
 
 export type OfficialFilter = "" | "true" | "false";
 
+type SwimTimesPage = { items: SwimTime[]; next_cursor: string | null };
+
 function validateFilterLength(value: string): string | null {
   const trimmed = value.trim();
   if (trimmed === "") return null;
@@ -92,10 +94,7 @@ export function useSwimTimesQuery(selectedDate: string) {
         filterOfficial,
       });
 
-      protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(
-        `/api/swim-times?${query}`,
-        { signal },
-      )
+      protectedFrontFetch<SwimTimesPage>(`/api/swim-times?${query}`, { signal })
         .then((data) => {
           if (signal.aborted) return;
           setTimes(data.items);
@@ -139,9 +138,7 @@ export function useSwimTimesQuery(selectedDate: string) {
         filterOfficial,
         cursor: nextCursor,
       });
-      const data = await protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(
-        `/api/swim-times?${query}`,
-      );
+      const data = await protectedFrontFetch<SwimTimesPage>(`/api/swim-times?${query}`);
       if (viewGenerationRef.current !== generation) return;
       setTimes((prev) => [...prev, ...data.items]);
       setNextCursor(data.next_cursor);
