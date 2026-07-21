@@ -24,7 +24,7 @@ Whenever you add a feature or change existing user-facing behavior, add or updat
 
 ## Unit test coverage
 
-Unit tests are required, not optional, for new components/features with non-trivial logic (form handling, data fetching, state transitions) — matching the existing `__tests__/*.test.tsx` conventions (vitest). This is in addition to, not instead of, the E2E coverage above.
+Unit tests are required, not optional, for new components/features with non-trivial logic (form handling, data fetching, state transitions) — matching the existing convention (vitest) of colocating a `*.test.ts`/`*.test.tsx` file directly beside the source file it covers, rather than in a separate `__tests__/` tree. This is in addition to, not instead of, the E2E coverage above.
 
 ## Serious engineering effort
 
