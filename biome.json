@@ -26,7 +26,15 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "correctness": {
+        "useExhaustiveDependencies": {
+          "level": "error",
+          "options": {
+            "hooks": [{ "name": "useAbortableEffect", "closureIndex": 0, "dependenciesIndex": 1 }]
+          }
+        }
+      }
     }
   },
   "overrides": [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   type Course,
   type Stroke,
@@ -8,6 +8,7 @@ import {
   type SwimTime,
   type SwimTimeFilterParam,
 } from "@/lib/swim-times-data";
+import { useAbortableEffect } from "@/lib/use-abortable-effect";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
 
@@ -69,57 +70,59 @@ export function useSwimTimesQuery(selectedDate: string) {
   const debouncedFilterLength = useDebouncedValue(filterLength, 300);
   const debouncedFilterLengthError = validateFilterLength(debouncedFilterLength);
 
-  useEffect(() => {
-    viewGenerationRef.current += 1;
-    let cancelled = false;
-    setError("");
+  useAbortableEffect(
+    (signal) => {
+      viewGenerationRef.current += 1;
+      setError("");
 
-    if (debouncedFilterLengthError) {
-      setLoading(false);
-      setTimes([]);
-      setNextCursor(null);
-      return;
-    }
+      if (debouncedFilterLengthError) {
+        setLoading(false);
+        setTimes([]);
+        setNextCursor(null);
+        return;
+      }
 
-    setLoading(true);
+      setLoading(true);
 
-    const query = buildSwimTimesQuery({
-      date: selectedDate,
-      filterStroke,
-      filterCourse,
-      filterLength: debouncedFilterLength,
-      filterOfficial,
-    });
-
-    protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(
-      `/api/swim-times?${query}`,
-    )
-      .then((data) => {
-        if (cancelled) return;
-        setTimes(data.items);
-        setNextCursor(data.next_cursor);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        const message = protectedErrorMessage(err, "Failed to load swim times. Please try again.");
-        if (message) setError(message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+      const query = buildSwimTimesQuery({
+        date: selectedDate,
+        filterStroke,
+        filterCourse,
+        filterLength: debouncedFilterLength,
+        filterOfficial,
       });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    selectedDate,
-    filterStroke,
-    filterCourse,
-    debouncedFilterLength,
-    filterOfficial,
-    debouncedFilterLengthError,
-    protectedFrontFetch,
-  ]);
+      protectedFrontFetch<{ items: SwimTime[]; next_cursor: string | null }>(
+        `/api/swim-times?${query}`,
+        { signal },
+      )
+        .then((data) => {
+          if (signal.aborted) return;
+          setTimes(data.items);
+          setNextCursor(data.next_cursor);
+        })
+        .catch((err) => {
+          if (signal.aborted) return;
+          const message = protectedErrorMessage(
+            err,
+            "Failed to load swim times. Please try again.",
+          );
+          if (message) setError(message);
+        })
+        .finally(() => {
+          if (!signal.aborted) setLoading(false);
+        });
+    },
+    [
+      selectedDate,
+      filterStroke,
+      filterCourse,
+      debouncedFilterLength,
+      filterOfficial,
+      debouncedFilterLengthError,
+      protectedFrontFetch,
+    ],
+  );
 
   async function handleLoadMore() {
     if (!nextCursor) return;
