@@ -7,7 +7,7 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn().mockResolvedValue({ get: getCookie, set: setCookie }),
 }));
 
-const { checkLoggedIn, setAuthCookie } = await import("@/lib/auth");
+const { checkLoggedIn, setAuthCookie } = await import("@/shared/auth");
 
 describe("checkLoggedIn", () => {
   it("returns false when there is no auth cookie", async () => {

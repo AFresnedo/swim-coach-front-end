@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import GoalsList from "@/components/GoalsList";
+import GoalsList from "@/app/goals/_components/GoalsList";
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -14,12 +14,12 @@ vi.mock("next/navigation", () => ({
   useRouter: () => router,
 }));
 
-vi.mock("@/lib/front-api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/front-api")>();
+vi.mock("@/shared/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/shared/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
 });
 
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/shared/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
@@ -69,7 +69,7 @@ describe("GoalsList", () => {
     mockFetch.mockResolvedValue([]);
     render(<GoalsList />);
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active", {
+      expect(mockFetch).toHaveBeenCalledWith("/goals/api?status=active", {
         signal: expect.any(AbortSignal),
       }),
     );
@@ -85,14 +85,14 @@ describe("GoalsList", () => {
     mockFetch.mockResolvedValue([]);
     render(<GoalsList />);
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active", {
+      expect(mockFetch).toHaveBeenCalledWith("/goals/api?status=active", {
         signal: expect.any(AbortSignal),
       }),
     );
 
     fireEvent.click(screen.getByRole("button", { name: "All" }));
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=all", {
+      expect(mockFetch).toHaveBeenCalledWith("/goals/api?status=all", {
         signal: expect.any(AbortSignal),
       }),
     );
@@ -109,7 +109,7 @@ describe("GoalsList", () => {
     expect(screen.getAllByRole("button", { name: "Deactivate" })).toHaveLength(1);
   });
 
-  it("submits a new goal via POST /api/goals", async () => {
+  it("submits a new goal via POST /goals/api", async () => {
     mockFetch.mockResolvedValueOnce([]);
     render(<GoalsList />);
     await settleAsyncEffects(1);
@@ -122,7 +122,7 @@ describe("GoalsList", () => {
     fireEvent.submit(screen.getByRole("button", { name: "Add goal" }).closest("form")!);
 
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/goals", {
+      expect(mockFetch).toHaveBeenCalledWith("/goals/api", {
         method: "POST",
         body: JSON.stringify({ text: "Swim 200 IM under 3 minutes" }),
       }),
@@ -130,7 +130,7 @@ describe("GoalsList", () => {
     expect(await screen.findByText("Swim 200 IM under 3 minutes")).toBeInTheDocument();
   });
 
-  it("edits a goal via PATCH /api/goals/{id}", async () => {
+  it("edits a goal via PATCH /goals/api/{id}", async () => {
     mockFetch.mockResolvedValueOnce([activeGoal]);
     render(<GoalsList />);
     await screen.findByText(activeGoal.text);
@@ -145,7 +145,7 @@ describe("GoalsList", () => {
     fireEvent.submit(screen.getByRole("button", { name: "Save" }).closest("form")!);
 
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith(`/api/goals/${activeGoal.id}`, {
+      expect(mockFetch).toHaveBeenCalledWith(`/goals/api/${activeGoal.id}`, {
         method: "PATCH",
         body: JSON.stringify({ text: "Updated goal text" }),
       }),
@@ -176,7 +176,7 @@ describe("GoalsList", () => {
     fireEvent.submit(within(cardA).getByRole("button", { name: "Save" }).closest("form")!);
 
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith(`/api/goals/${activeGoal.id}`, {
+      expect(mockFetch).toHaveBeenCalledWith(`/goals/api/${activeGoal.id}`, {
         method: "PATCH",
         body: JSON.stringify({ text: "Updated goal A" }),
       }),
@@ -186,7 +186,7 @@ describe("GoalsList", () => {
     expect(within(cardB).getByLabelText("Edit goal")).toHaveValue(secondActiveGoal.text);
   });
 
-  it("requires a reason before confirming deactivation, then submits PATCH /api/goals/{id}/deactivate", async () => {
+  it("requires a reason before confirming deactivation, then submits PATCH /goals/api/{id}/deactivate", async () => {
     mockFetch.mockResolvedValueOnce([activeGoal]);
     render(<GoalsList />);
     await screen.findByText(activeGoal.text);
@@ -196,7 +196,7 @@ describe("GoalsList", () => {
 
     fireEvent.click(confirmButton);
     expect(mockFetch).not.toHaveBeenCalledWith(
-      `/api/goals/${activeGoal.id}/deactivate`,
+      `/goals/api/${activeGoal.id}/deactivate`,
       expect.anything(),
     );
 
@@ -210,7 +210,7 @@ describe("GoalsList", () => {
     fireEvent.click(confirmButton);
 
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith(`/api/goals/${activeGoal.id}/deactivate`, {
+      expect(mockFetch).toHaveBeenCalledWith(`/goals/api/${activeGoal.id}/deactivate`, {
         method: "PATCH",
         body: JSON.stringify({ reason: "reached" }),
       }),
@@ -240,7 +240,7 @@ describe("GoalsList", () => {
     );
     const { unmount } = render(<GoalsList />);
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/goals?status=active", {
+      expect(mockFetch).toHaveBeenCalledWith("/goals/api?status=active", {
         signal: expect.any(AbortSignal),
       }),
     );

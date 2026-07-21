@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import Field from "@/components/Field";
-import { inputClass, inputErrorClass, inputNormalClass } from "@/lib/form-styles";
+import { inputClass, inputErrorClass, inputNormalClass } from "@/shared/form-styles";
 
 type PasswordFieldProps = {
   label: string;

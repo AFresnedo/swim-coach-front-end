@@ -6,9 +6,9 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn().mockResolvedValue({ get: getCookie }),
 }));
 
-import { GET } from "@/app/api/profile/route";
+import { GET } from "@/app/profile/api/route";
 
-describe("GET /api/profile", () => {
+describe("GET /profile/api", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     getCookie.mockReset();

@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import SwimLog from "@/features/swim-log/components/SwimLog";
+import SwimLog from "@/app/swim-log/_components/SwimLog";
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -14,12 +14,12 @@ vi.mock("next/navigation", () => ({
   useRouter: () => router,
 }));
 
-vi.mock("@/lib/front-api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/front-api")>();
+vi.mock("@/shared/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/shared/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
 });
 
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/shared/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
@@ -59,10 +59,9 @@ describe("SwimLog", () => {
     render(<SwimLog />);
     const today = currentDateInputValue();
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}`,
-        { signal: expect.any(AbortSignal) },
-      ),
+      expect(mockFetch).toHaveBeenCalledWith(`/swim-log/api?date_from=${today}&date_to=${today}`, {
+        signal: expect.any(AbortSignal),
+      }),
     );
   });
 
@@ -80,7 +79,7 @@ describe("SwimLog", () => {
     fireEvent.change(screen.getByLabelText("Date"), { target: { value: "2026-02-14" } });
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
-        "/api/swim-times?date_from=2026-02-14&date_to=2026-02-14",
+        "/swim-log/api?date_from=2026-02-14&date_to=2026-02-14",
         { signal: expect.any(AbortSignal) },
       ),
     );
@@ -95,7 +94,7 @@ describe("SwimLog", () => {
     expect(screen.getByText("0:32.10")).toBeInTheDocument();
   });
 
-  it("submits a new time via POST /api/swim-times with time parsed from mm:ss", async () => {
+  it("submits a new time via POST /swim-log/api with time parsed from mm:ss", async () => {
     mockFetch.mockResolvedValueOnce({ items: [], next_cursor: null });
     render(<SwimLog />);
     await settleAsyncEffects(1);
@@ -110,7 +109,7 @@ describe("SwimLog", () => {
     );
 
     await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/swim-times", {
+      expect(mockFetch).toHaveBeenCalledWith("/swim-log/api", {
         method: "POST",
         body: JSON.stringify({
           date: today,
@@ -166,7 +165,7 @@ describe("SwimLog", () => {
     });
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke`,
+        `/swim-log/api?date_from=${today}&date_to=${today}&stroke=backstroke`,
         { signal: expect.any(AbortSignal) },
       ),
     );
@@ -174,7 +173,7 @@ describe("SwimLog", () => {
     fireEvent.change(screen.getByLabelText("Filter by course"), { target: { value: "lcm" } });
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm`,
+        `/swim-log/api?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm`,
         { signal: expect.any(AbortSignal) },
       ),
     );
@@ -182,7 +181,7 @@ describe("SwimLog", () => {
     fireEvent.change(screen.getByLabelText("Filter by length"), { target: { value: "100" } });
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm&length=100`,
+        `/swim-log/api?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm&length=100`,
         { signal: expect.any(AbortSignal) },
       ),
     );
@@ -192,7 +191,7 @@ describe("SwimLog", () => {
     });
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm&length=100&is_official=true`,
+        `/swim-log/api?date_from=${today}&date_to=${today}&stroke=backstroke&course=lcm&length=100&is_official=true`,
         { signal: expect.any(AbortSignal) },
       ),
     );
@@ -215,7 +214,7 @@ describe("SwimLog", () => {
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
     await waitFor(() =>
       expect(mockFetch).toHaveBeenLastCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}`,
+        `/swim-log/api?date_from=${today}&date_to=${today}`,
         { signal: expect.any(AbortSignal) },
       ),
     );
@@ -261,7 +260,7 @@ describe("SwimLog", () => {
 
     await waitFor(() =>
       expect(mockFetch).toHaveBeenCalledWith(
-        `/api/swim-times?date_from=${today}&date_to=${today}&cursor=abc123`,
+        `/swim-log/api?date_from=${today}&date_to=${today}&cursor=abc123`,
       ),
     );
     expect(await screen.findByText("second page")).toBeInTheDocument();

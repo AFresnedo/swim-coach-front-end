@@ -1,14 +1,14 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
-// Reloads and returns the actual GET /api/profile response body, so tests can
+// Reloads and returns the actual GET /profile/api response body, so tests can
 // assert against what the backend returned rather than just the resulting
 // DOM — a full page reload could in principle render the right values for the
 // wrong reason (e.g. a stale cache), and this closes that gap.
 async function reloadAndGetProfile(page: Page) {
   const [response] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes("/api/profile") && res.request().method() === "GET",
+      (res) => res.url().includes("/profile/api") && res.request().method() === "GET",
     ),
     page.reload(),
   ]);

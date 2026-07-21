@@ -29,7 +29,7 @@ test("a user cannot edit or deactivate another user's goal by ID", async ({
   await pageA.goto("/goals");
   const [createResponse] = await Promise.all([
     pageA.waitForResponse(
-      (res) => res.url().includes("/api/goals") && res.request().method() === "POST",
+      (res) => res.url().includes("/goals/api") && res.request().method() === "POST",
     ),
     (async () => {
       await pageA.getByLabel("New goal").fill("User A's private goal");
@@ -42,12 +42,12 @@ test("a user cannot edit or deactivate another user's goal by ID", async ({
   const pageB = await contextB.newPage();
   await signUp(pageB, otherUser);
 
-  const editAttempt = await contextB.request.patch(`/api/goals/${goal.id}`, {
+  const editAttempt = await contextB.request.patch(`/goals/api/${goal.id}`, {
     data: { text: "hijacked by user B" },
   });
   expect(editAttempt.status()).toBe(404);
 
-  const deactivateAttempt = await contextB.request.patch(`/api/goals/${goal.id}/deactivate`, {
+  const deactivateAttempt = await contextB.request.patch(`/goals/api/${goal.id}/deactivate`, {
     data: { reason: "reached" },
   });
   expect(deactivateAttempt.status()).toBe(404);

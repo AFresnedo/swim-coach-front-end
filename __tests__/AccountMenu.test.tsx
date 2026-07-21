@@ -19,12 +19,12 @@ vi.mock("next/navigation", () => ({
   useRouter: () => router,
 }));
 
-vi.mock("@/lib/front-api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/front-api")>();
+vi.mock("@/shared/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/shared/front-api")>();
   return { ...actual, frontApiFetch: vi.fn().mockResolvedValue({ ok: true }) };
 });
 
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/shared/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
@@ -52,9 +52,7 @@ describe("AccountMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Log out" }));
 
-    await waitFor(() =>
-      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", { method: "POST" }),
-    );
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith("/logout", { method: "POST" }));
     expect(push).toHaveBeenCalledWith("/");
     expect(refresh).toHaveBeenCalled();
   });

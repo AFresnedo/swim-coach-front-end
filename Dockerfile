@@ -8,8 +8,7 @@ RUN npm ci
 COPY next.config.ts postcss.config.mjs tsconfig.json proxy.ts ./
 COPY app/ app/
 COPY components/ components/
-COPY features/ features/
-COPY lib/ lib/
+COPY shared/ shared/
 COPY public/ public/
 
 # NEXT_PUBLIC_* vars are inlined into the build output, not read at container

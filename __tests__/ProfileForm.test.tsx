@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import ProfileForm from "@/components/ProfileForm";
+import ProfileForm from "@/app/profile/_components/ProfileForm";
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -14,12 +14,12 @@ vi.mock("next/navigation", () => ({
   useRouter: () => router,
 }));
 
-vi.mock("@/lib/front-api", async (importActual) => {
-  const actual = await importActual<typeof import("@/lib/front-api")>();
+vi.mock("@/shared/front-api", async (importActual) => {
+  const actual = await importActual<typeof import("@/shared/front-api")>();
   return { ...actual, frontApiFetch: vi.fn() };
 });
 
-import { ApiError, frontApiFetch } from "@/lib/front-api";
+import { ApiError, frontApiFetch } from "@/shared/front-api";
 
 const mockFetch = vi.mocked(frontApiFetch);
 
@@ -130,7 +130,7 @@ describe("ProfileForm", () => {
     fireEvent.submit(screen.getByRole("button", { name: /save profile/i }).closest("form")!);
 
     await settleAsyncEffects(2);
-    expect(mockFetch).toHaveBeenLastCalledWith("/api/profile", {
+    expect(mockFetch).toHaveBeenLastCalledWith("/profile/api", {
       method: "PUT",
       body: JSON.stringify({
         age: 25,

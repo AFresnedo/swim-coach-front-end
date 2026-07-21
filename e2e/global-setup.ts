@@ -38,7 +38,7 @@ function collectRoutes(dir: string, segments: string[] = []): string[] {
  * past Playwright's default 5s assertion timeout.
  *
  * We saw exactly this: `auth-nav.spec.ts` failed a `toHaveURL("/")` check
- * after clicking "Log out" (which hits the trivial `/api/auth/logout` route —
+ * after clicking "Log out" (which hits the trivial `/logout` route —
  * nothing about that handler is slow) only when all 4 spec files ran
  * together. Re-running the full suite immediately after — with every route
  * already compiled and cached in the dev server's memory from the first

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import DrillsSection from "@/components/DrillsSection";
-import { checkLoggedIn } from "@/lib/auth";
-import { getStroke, strokes } from "@/lib/strokes-data";
+import DrillsSection from "@/app/strokes/[stroke]/_components/DrillsSection";
+import { checkLoggedIn } from "@/shared/auth";
+import { getStroke, strokes } from "@/shared/content/strokes";
 
 export function generateStaticParams() {
   return strokes.map(({ slug }) => ({ stroke: slug }));

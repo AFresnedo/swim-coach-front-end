@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import FeatureCard from "@/app/_components/FeatureCard";
 import HowItWorksStep from "@/app/_components/HowItWorksStep";
-import { FEATURES, HOW_IT_WORKS_STEPS } from "@/lib/home-data";
-import { Stat, SwimCountStat, SwimmerCountStat } from "@/lib/stats";
-import { strokes } from "@/lib/strokes-data";
+import { Stat, SwimCountStat, SwimmerCountStat } from "@/app/_components/Stat";
+import { FEATURES, HOW_IT_WORKS_STEPS } from "@/app/_content/home-data";
+import { strokes } from "@/shared/content/strokes";
 
 const drillCount = strokes.reduce((total, stroke) => total + stroke.drills.length, 0);
 

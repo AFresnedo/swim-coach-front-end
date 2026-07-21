@@ -4,7 +4,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/lib/use-protected-front-fetch";
+import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/protected-fetch";
 
 export default function AccountMenu() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function AccountMenu() {
   async function handleLogout() {
     setError("");
     try {
-      await protectedFrontFetch("/api/auth/logout", { method: "POST" });
+      await protectedFrontFetch("/logout", { method: "POST" });
       router.push("/");
       router.refresh();
     } catch (err) {
