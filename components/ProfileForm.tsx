@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Field from "@/components/Field";
 import {
   inputClass,
   inputErrorClass,
@@ -176,10 +177,7 @@ export default function ProfileForm() {
       </div>
 
       {/* Age */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="age" className={labelClass}>
-          Age
-        </label>
+      <Field htmlFor="age" label="Age" error={fieldErrors.age}>
         <input
           id="age"
           type="number"
@@ -192,12 +190,7 @@ export default function ProfileForm() {
           placeholder="Years"
           aria-describedby={fieldErrors.age ? "age-error" : undefined}
         />
-        {fieldErrors.age && (
-          <p id="age-error" className="text-xs text-red-600 dark:text-red-400">
-            {fieldErrors.age}
-          </p>
-        )}
-      </div>
+      </Field>
 
       {/* Height */}
       <div className="flex flex-col gap-1.5">
@@ -296,10 +289,7 @@ export default function ProfileForm() {
       </div>
 
       {/* Sex */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="sex" className={labelClass}>
-          Sex
-        </label>
+      <Field htmlFor="sex" label="Sex" error={fieldErrors.sex}>
         <select
           id="sex"
           required
@@ -318,12 +308,7 @@ export default function ProfileForm() {
         <p id="sex-hint" className="text-xs text-slate-500 dark:text-slate-400">
           Used to power future performance benchmarks.
         </p>
-        {fieldErrors.sex && (
-          <p id="sex-error" className="text-xs text-red-600 dark:text-red-400">
-            {fieldErrors.sex}
-          </p>
-        )}
-      </div>
+      </Field>
 
       {error && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">

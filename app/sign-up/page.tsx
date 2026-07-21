@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import Field from "@/components/Field";
 import { PasswordField } from "@/components/PasswordField";
 import { Turnstile, type TurnstileHandle } from "@/components/Turnstile";
 import {
   inputClass,
   inputErrorClass,
   inputNormalClass,
-  labelClass,
   primaryButtonLargeClass,
 } from "@/lib/form-styles";
 import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
@@ -71,10 +71,7 @@ export default function SignUpPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className={labelClass}>
-              Full name
-            </label>
+          <Field htmlFor="name" label="Full name" error={fieldErrors.name}>
             <input
               id="name"
               type="text"
@@ -86,17 +83,9 @@ export default function SignUpPage() {
               placeholder="Jane Smith"
               aria-describedby={fieldErrors.name ? "name-error" : undefined}
             />
-            {fieldErrors.name && (
-              <p id="name-error" className="text-xs text-red-600 dark:text-red-400">
-                {fieldErrors.name}
-              </p>
-            )}
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className={labelClass}>
-              Email
-            </label>
+          <Field htmlFor="email" label="Email" error={fieldErrors.email}>
             <input
               id="email"
               type="email"
@@ -108,12 +97,7 @@ export default function SignUpPage() {
               placeholder="you@example.com"
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
             />
-            {fieldErrors.email && (
-              <p id="email-error" className="text-xs text-red-600 dark:text-red-400">
-                {fieldErrors.email}
-              </p>
-            )}
-          </div>
+          </Field>
 
           <PasswordField
             id="password"

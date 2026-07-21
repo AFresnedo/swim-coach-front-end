@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import Field from "@/components/Field";
 import { PasswordField } from "@/components/PasswordField";
 import {
   inputClass,
   inputErrorClass,
   inputNormalClass,
-  labelClass,
   primaryButtonLargeClass,
 } from "@/lib/form-styles";
 import { apiErrorDetails, frontApiFetch } from "@/lib/front-api";
@@ -72,10 +72,7 @@ export default function SignInPage() {
         </Suspense>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className={labelClass}>
-              Email
-            </label>
+          <Field htmlFor="email" label="Email" error={fieldErrors.email}>
             <input
               id="email"
               type="email"
@@ -87,12 +84,7 @@ export default function SignInPage() {
               placeholder="you@example.com"
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
             />
-            {fieldErrors.email && (
-              <p id="email-error" className="text-xs text-red-600 dark:text-red-400">
-                {fieldErrors.email}
-              </p>
-            )}
-          </div>
+          </Field>
 
           <PasswordField
             id="password"
