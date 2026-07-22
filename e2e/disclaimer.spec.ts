@@ -7,7 +7,7 @@ test("disclaimer banner is visible for logged-out and logged-in users", async ({
   const { email, password } = testUser;
 
   await page.goto("/");
-  await expect(page.getByText(/has not been reviewed by a/i)).toBeVisible();
+  await expect(page.locator("p", { hasText: /has not been reviewed by a/i })).toBeVisible();
 
   await page.goto("/sign-up");
   // Confirms NEXT_PUBLIC_TURNSTILE_TEST_MODE is actually being read by this
@@ -24,12 +24,12 @@ test("disclaimer banner is visible for logged-out and logged-in users", async ({
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
-  await expect(page.getByText(/has not been reviewed by a/i)).toBeVisible();
+  await expect(page.locator("p", { hasText: /has not been reviewed by a/i })).toBeVisible();
 });
 
 test("dismissing the disclaimer banner hides it for the rest of the session", async ({ page }) => {
   await page.goto("/");
-  const banner = page.getByText(/has not been reviewed by a/i);
+  const banner = page.locator("p", { hasText: /has not been reviewed by a/i });
   await expect(banner).toBeVisible();
 
   await page.getByRole("button", { name: "Dismiss disclaimer" }).click();
