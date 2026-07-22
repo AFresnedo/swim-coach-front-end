@@ -44,27 +44,21 @@ describe("proxy", () => {
     expect(first).not.toBe(second);
   });
 
-  it.each([
-    "/sign-in",
-    "/strokes/freestyle",
-    "/goals/api",
-    "/logout",
-  ])("sets a Content-Security-Policy header on %s by default", (path) => {
-    const res = proxy(makeRequest(path, { cookie: `${AUTH_COOKIE}=token` }));
-    expect(res.headers.get("Content-Security-Policy")).toContain("script-src");
-  });
+  it.each(["/sign-in", "/strokes/freestyle", "/goals/api", "/logout"])(
+    "sets a Content-Security-Policy header on %s by default",
+    (path) => {
+      const res = proxy(makeRequest(path, { cookie: `${AUTH_COOKIE}=token` }));
+      expect(res.headers.get("Content-Security-Policy")).toContain("script-src");
+    },
+  );
 
-  it.each([
-    "/",
-    "/strokes",
-    "/disclaimer",
-    "/goals",
-    "/profile",
-    "/swim-log",
-  ])("does not set a Content-Security-Policy header on %s, which uses a cached shell instead", (path) => {
-    const res = proxy(makeRequest(path, { cookie: `${AUTH_COOKIE}=token` }));
-    expect(res.headers.get("Content-Security-Policy")).toBeNull();
-  });
+  it.each(["/", "/strokes", "/disclaimer", "/goals", "/profile", "/swim-log"])(
+    "does not set a Content-Security-Policy header on %s, which uses a cached shell instead",
+    (path) => {
+      const res = proxy(makeRequest(path, { cookie: `${AUTH_COOKIE}=token` }));
+      expect(res.headers.get("Content-Security-Policy")).toBeNull();
+    },
+  );
 
   // /goals is both a PROTECTED_PATH and a CACHED_SHELL_PATH, so this is the
   // one request shape where those two branches in proxy() could interfere.
