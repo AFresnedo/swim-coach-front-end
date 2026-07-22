@@ -3,7 +3,7 @@ import { API_URL, safeFetch } from "@/shared/back-api";
 
 // Shared with Home's own cacheLife call (app/page.tsx), so the page's overall
 // cache window can't drift out of sync with the stats it displays.
-export const STATS_CACHE_LIFE = { revalidate: 60 } as const;
+export const STATS_CACHE_LIFE = { revalidate: 300 } as const;
 
 export async function getUserCount(): Promise<number | null> {
   "use cache";
