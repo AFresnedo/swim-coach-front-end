@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import DrillsSection from "@/app/strokes/[stroke]/_components/DrillsSection";
+import { DynamicHole } from "@/components/DynamicHole";
 import { checkLoggedIn } from "@/shared/auth";
 import { getStroke, strokes } from "@/shared/content/strokes";
 
@@ -8,12 +9,21 @@ export function generateStaticParams() {
   return strokes.map(({ slug }) => ({ stroke: slug }));
 }
 
-export default async function StrokePage({ params }: PageProps<"/strokes/[stroke]">) {
-  const { stroke: slug } = await params;
+// A standalone function so StrokePage below has something to wrap in a
+// Suspense boundary (required by cacheComponents for checkLoggedIn's cookie
+// read) without also wrapping the stroke content, which doesn't depend on it.
+export async function GatedDrills({ slug }: { slug: string }) {
   const stroke = getStroke(slug);
   if (!stroke) notFound();
 
   const isLoggedIn = await checkLoggedIn();
+  return <DrillsSection drills={stroke.drills} isLoggedIn={isLoggedIn} />;
+}
+
+export default async function StrokePage({ params }: PageProps<"/strokes/[stroke]">) {
+  const { stroke: slug } = await params;
+  const stroke = getStroke(slug);
+  if (!stroke) notFound();
 
   return (
     <div className="min-h-full bg-page-gradient px-6 py-16">
@@ -34,7 +44,14 @@ export default async function StrokePage({ params }: PageProps<"/strokes/[stroke
           </p>
         </div>
 
-        <DrillsSection drills={stroke.drills} isLoggedIn={isLoggedIn} />
+        {/* No fallback: checkLoggedIn is a local cookie read with no network
+            call, so the gap is expected to be near instant — and a
+            placeholder couldn't reserve the right amount of space anyway
+            without already knowing whether the real content is the drills
+            grid or the shorter sign-in prompt. */}
+        <DynamicHole>
+          <GatedDrills slug={slug} />
+        </DynamicHole>
       </div>
     </div>
   );

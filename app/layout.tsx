@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import Header from "@/components/Header";
+import { DynamicHole } from "@/components/DynamicHole";
+import Header, { HeaderFallback } from "@/components/Header";
 import { SITE_INDEXABLE } from "@/shared/site-config";
 
 const geistSans = Geist({
@@ -44,7 +45,9 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <DisclaimerBanner />
-        <Header />
+        <DynamicHole fallback={<HeaderFallback />}>
+          <Header />
+        </DynamicHole>
         {children}
       </body>
     </html>

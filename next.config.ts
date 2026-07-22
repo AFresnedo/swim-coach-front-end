@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  cacheComponents: true,
   experimental: {
     // Corruption risk after branch switches/merges: the .githooks/post-checkout
     // and .githooks/post-merge hooks warn when this may be stale (they don't

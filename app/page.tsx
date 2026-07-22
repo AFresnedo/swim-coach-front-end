@@ -1,14 +1,19 @@
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
 import FeatureCard from "@/app/_components/FeatureCard";
 import HowItWorksStep from "@/app/_components/HowItWorksStep";
 import { Stat, SwimCountStat, SwimmerCountStat } from "@/app/_components/Stat";
 import { FEATURES, HOW_IT_WORKS_STEPS } from "@/app/_content/home-data";
+import { STATS_CACHE_LIFE } from "@/app/_data/stats";
 import { strokes } from "@/shared/content/strokes";
 
 const drillCount = strokes.reduce((total, stroke) => total + stroke.drills.length, 0);
 
-export default function Home() {
+export default async function Home() {
+  "use cache";
+  cacheLife(STATS_CACHE_LIFE);
+
   return (
     <div className="flex min-h-full flex-col bg-white dark:bg-slate-950">
       {/* Hero */}
