@@ -44,8 +44,39 @@ describe("proxy", () => {
     expect(first).not.toBe(second);
   });
 
-  it("does not set a CSP header for routes outside the CSP scope", () => {
-    const res = proxy(makeRequest("/goals", { cookie: `${AUTH_COOKIE}=token` }));
+  it.each([
+    "/sign-in",
+    "/strokes/freestyle",
+    "/goals/api",
+    "/logout",
+  ])("sets a Content-Security-Policy header on %s by default", (path) => {
+    const res = proxy(makeRequest(path, { cookie: `${AUTH_COOKIE}=token` }));
+    expect(res.headers.get("Content-Security-Policy")).toContain("script-src");
+  });
+
+  it.each([
+    "/",
+    "/strokes",
+    "/disclaimer",
+    "/goals",
+    "/profile",
+    "/swim-log",
+  ])("does not set a Content-Security-Policy header on %s, which uses a cached shell instead", (path) => {
+    const res = proxy(makeRequest(path, { cookie: `${AUTH_COOKIE}=token` }));
+    expect(res.headers.get("Content-Security-Policy")).toBeNull();
+  });
+
+  // /goals is both a PROTECTED_PATH and a CACHED_SHELL_PATH, so this is the
+  // one request shape where those two branches in proxy() could interfere.
+  // If the cached-shell check ever moved above the auth check, this would
+  // start returning the cached shell straight through instead of redirecting
+  // a logged-out visitor — a protected page silently rendering for someone
+  // who was never authenticated. The CSP assertion confirms the redirect
+  // response short-circuits cleanly, rather than also falling through to
+  // withNonceAndCsp.
+  it("still redirects a cached-shell protected route to /sign-in when logged out", () => {
+    const res = proxy(makeRequest("/goals"));
+    expect(res.headers.get("location")).toBe("http://localhost:3000/sign-in");
     expect(res.headers.get("Content-Security-Policy")).toBeNull();
   });
 });
