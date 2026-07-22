@@ -69,16 +69,6 @@ type RouteContext = {
   isAuthenticated: boolean;
 };
 
-// A guard clause, not one rule among several — it must run first, since
-// nothing else about a page (CSP, caching) matters once the visitor is being
-// redirected away from it.
-function redirectIfProtectedAndUnauthenticated(ctx: RouteContext): NextResponse | null {
-  if (PROTECTED_PATH.test(ctx.pathname) && !ctx.isAuthenticated) {
-    return NextResponse.redirect(new URL("/sign-in", ctx.request.url));
-  }
-  return null;
-}
-
 // One decision with two exhaustive branches: a cached-shell path skips CSP,
 // everything else gets it.
 function applyCspUnlessCachedShell(ctx: RouteContext): NextResponse {
@@ -95,8 +85,11 @@ export function proxy(request: NextRequest) {
     isAuthenticated: request.cookies.has(AUTH_COOKIE),
   };
 
-  const redirect = redirectIfProtectedAndUnauthenticated(ctx);
-  if (redirect) return redirect;
+  // Guard clause: nothing else about a page (CSP, caching) matters once the
+  // visitor is being redirected away from it, so this has to run first.
+  if (PROTECTED_PATH.test(ctx.pathname) && !ctx.isAuthenticated) {
+    return NextResponse.redirect(new URL("/sign-in", ctx.request.url));
+  }
 
   return applyCspUnlessCachedShell(ctx);
 }
