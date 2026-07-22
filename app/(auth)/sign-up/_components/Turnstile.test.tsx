@@ -32,7 +32,7 @@ describe("Turnstile", () => {
     const onVerify = vi.fn();
 
     const { container } = render(
-      <Turnstile onVerify={onVerify} onExpire={vi.fn()} onError={vi.fn()} />,
+      <Turnstile nonce="test-nonce" onVerify={onVerify} onExpire={vi.fn()} onError={vi.fn()} />,
     );
 
     expect(onVerify).toHaveBeenCalledWith("test-mode-token");
@@ -52,7 +52,9 @@ describe("Turnstile", () => {
     const onVerify = vi.fn();
     const onExpire = vi.fn();
     const onError = vi.fn();
-    render(<Turnstile onVerify={onVerify} onExpire={onExpire} onError={onError} />);
+    render(
+      <Turnstile nonce="test-nonce" onVerify={onVerify} onExpire={onExpire} onError={onError} />,
+    );
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(renderWidget).toHaveBeenCalledWith(
@@ -82,7 +84,9 @@ describe("Turnstile", () => {
     const { Turnstile } = await import("@/app/(auth)/sign-up/_components/Turnstile");
 
     const onError = vi.fn();
-    render(<Turnstile onVerify={vi.fn()} onExpire={vi.fn()} onError={onError} />);
+    render(
+      <Turnstile nonce="test-nonce" onVerify={vi.fn()} onExpire={vi.fn()} onError={onError} />,
+    );
 
     expect(scriptProps.current?.onError).toBeDefined();
     scriptProps.current?.onError?.();
@@ -105,7 +109,15 @@ describe("Turnstile", () => {
 
     const onExpire = vi.fn();
     const ref = createRef<TurnstileHandle>();
-    render(<Turnstile ref={ref} onVerify={vi.fn()} onExpire={onExpire} onError={vi.fn()} />);
+    render(
+      <Turnstile
+        ref={ref}
+        nonce="test-nonce"
+        onVerify={vi.fn()}
+        onExpire={onExpire}
+        onError={vi.fn()}
+      />,
+    );
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     ref.current?.reset();
@@ -122,7 +134,15 @@ describe("Turnstile", () => {
     const onVerify = vi.fn();
     const onExpire = vi.fn();
     const ref = createRef<TurnstileHandle>();
-    render(<Turnstile ref={ref} onVerify={onVerify} onExpire={onExpire} onError={vi.fn()} />);
+    render(
+      <Turnstile
+        ref={ref}
+        nonce="test-nonce"
+        onVerify={onVerify}
+        onExpire={onExpire}
+        onError={vi.fn()}
+      />,
+    );
 
     expect(onVerify).toHaveBeenCalledTimes(1);
     ref.current?.reset();

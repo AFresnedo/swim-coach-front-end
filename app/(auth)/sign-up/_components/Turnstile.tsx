@@ -25,6 +25,10 @@ export type TurnstileHandle = {
 
 type TurnstileProps = {
   ref?: Ref<TurnstileHandle>;
+  // The page's CSP nonce (read from the x-nonce request header set by
+  // proxy.ts), required so this script tag matches the current request's
+  // Content-Security-Policy — without it the browser refuses to run it.
+  nonce: string | null;
   onVerify: (token: string) => void;
   onExpire: () => void;
   // Called both when Cloudflare's script itself fails to load (ad blocker,
@@ -36,7 +40,7 @@ type TurnstileProps = {
   onError: () => void;
 };
 
-export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) {
+export function Turnstile({ ref, nonce, onVerify, onExpire, onError }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
@@ -85,6 +89,7 @@ export function Turnstile({ ref, onVerify, onExpire, onError }: TurnstileProps) 
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
+        nonce={nonce ?? undefined}
         onReady={() => {
           if (!containerRef.current || !window.turnstile) return;
           widgetId.current = window.turnstile.render(containerRef.current, {
