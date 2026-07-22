@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
-import { buildCspHeader, proxy } from "@/proxy";
+import { buildCspHeader, NEXT_STREAMING_BOOTSTRAP_HASH, proxy } from "@/proxy";
 import { AUTH_COOKIE } from "@/shared/auth";
 
 function makeRequest(path: string, options: { cookie?: string } = {}): NextRequest {
@@ -100,10 +100,22 @@ describe("buildCspHeader", () => {
 
   it("allows the Turnstile origin as a script, frame, and connect source", () => {
     const csp = buildCspHeader("abc", false);
-    expect(csp).toContain(
-      "script-src 'self' 'nonce-abc' 'strict-dynamic' https://challenges.cloudflare.com",
-    );
+    expect(csp).toMatch(/script-src[^;]*https:\/\/challenges\.cloudflare\.com/);
     expect(csp).toContain("frame-src https://challenges.cloudflare.com");
     expect(csp).toContain("connect-src 'self' https://challenges.cloudflare.com");
+  });
+
+  // No 'strict-dynamic' — see the comment above buildCspHeader for why. This
+  // pins that decision so it can't drift back in unnoticed.
+  it("does not include 'strict-dynamic' in script-src", () => {
+    expect(buildCspHeader("abc", false)).not.toContain("'strict-dynamic'");
+  });
+
+  // React's streaming-replay bootstrap script never gets Next's automatic
+  // nonce under cacheComponents, so it's allowed via a hash instead — this
+  // pins that hash so a future edit to buildCspHeader can't drop it
+  // unnoticed.
+  it("hash-pins React's streaming-replay bootstrap script in script-src", () => {
+    expect(buildCspHeader("abc", false)).toContain(NEXT_STREAMING_BOOTSTRAP_HASH);
   });
 });

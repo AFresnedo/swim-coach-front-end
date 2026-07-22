@@ -22,15 +22,30 @@ const CACHED_SHELL_PATHS = new Set([
   "/swim-log",
 ]);
 
-// Turnstile's widget script is the only third-party script this app loads,
-// and only on /sign-up — 'strict-dynamic' already trusts anything it loads
-// once the script itself carries the nonce, but listing the domain too keeps
-// the policy working in the handful of older browsers that don't support
-// 'strict-dynamic' yet.
+// React's own streaming-replay bootstrap ("requestAnimationFrame(function(){
+// $RT=performance.now()});", verified by hashing it directly) never gets
+// Next's automatic nonce stamp under cacheComponents, same root cause as the
+// 'strict-dynamic' issue below (vercel/next.js#89754). Its content is fixed
+// (not per-request data), so it's a legitimate hash-pin rather than a nonce
+// workaround. If a future Next.js version changes this script, the hash
+// stops matching and this specific violation comes back — no worse than not
+// pinning it at all, just back to today's behavior, not a new failure mode.
+export const NEXT_STREAMING_BOOTSTRAP_HASH =
+  "'sha256-7mu4H06fwDCjmnxxr/xNHyuQC6pLTHr4M2E4jXw5WZs='";
+
+// No 'strict-dynamic': Next's own automatic nonce-stamping of its framework
+// chunks doesn't reliably reach every script tag under cacheComponents (see
+// https://github.com/vercel/next.js/issues/89754), and 'strict-dynamic'
+// disables 'self' entirely, so an un-nonced first-party chunk gets blocked
+// outright rather than falling back to being same-origin-trusted. 'self'
+// still requires inline scripts to carry a valid nonce — only script tags
+// with a src get the same-origin pass — and this app has no file-upload or
+// user-content-serving same-origin path an attacker could point a script at
+// instead, so that's a real, checked trade-off, not an unexamined one.
 export function buildCspHeader(nonce: string, isDev: boolean): string {
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://challenges.cloudflare.com${
+    `script-src 'self' 'nonce-${nonce}' ${NEXT_STREAMING_BOOTSTRAP_HASH} https://challenges.cloudflare.com${
       isDev ? " 'unsafe-eval'" : ""
     }`,
     `style-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-inline'" : ""}`,
