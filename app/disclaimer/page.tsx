@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Disclaimer — SwimCoach",
 };
 
-export default function DisclaimerPage() {
+export default async function DisclaimerPage() {
+  "use cache";
+  cacheLife("max");
+
   return (
     <div className="min-h-full bg-page-gradient px-6 py-16">
       <div className="mx-auto max-w-2xl">

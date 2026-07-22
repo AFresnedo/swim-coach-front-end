@@ -1,7 +1,11 @@
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { strokes } from "@/shared/content/strokes";
 
-export default function StrokesPage() {
+export default async function StrokesPage() {
+  "use cache";
+  cacheLife("max");
+
   return (
     <div className="min-h-full bg-page-gradient px-6 py-16">
       <div className="mx-auto max-w-5xl">

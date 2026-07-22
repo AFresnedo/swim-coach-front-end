@@ -1,6 +1,10 @@
+import { cacheLife } from "next/cache";
 import ProfileForm from "@/app/profile/_components/ProfileForm";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  "use cache";
+  cacheLife("max");
+
   return (
     <div className="flex min-h-full items-center justify-center bg-page-gradient px-6 py-24">
       <div className="w-full max-w-sm rounded-2xl border border-slate-100 bg-white p-8 shadow-cyan-500/5 shadow-lg dark:border-slate-800 dark:bg-slate-900">

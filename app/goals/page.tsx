@@ -1,6 +1,10 @@
+import { cacheLife } from "next/cache";
 import GoalsList from "@/app/goals/_components/GoalsList";
 
-export default function GoalsPage() {
+export default async function GoalsPage() {
+  "use cache";
+  cacheLife("max");
+
   return (
     <div className="min-h-full bg-page-gradient px-6 py-16">
       <div className="mx-auto max-w-3xl">
