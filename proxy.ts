@@ -63,35 +63,26 @@ function withNonceAndCsp(request: NextRequest): NextResponse {
   return response;
 }
 
-type RouteContext = {
-  request: NextRequest;
-  pathname: string;
-  isAuthenticated: boolean;
-};
-
 // One decision with two exhaustive branches: a cached-shell path skips CSP,
 // everything else gets it.
-function applyCspUnlessCachedShell(ctx: RouteContext): NextResponse {
-  if (CACHED_SHELL_PATHS.has(ctx.pathname)) {
+function applyCspUnlessCachedShell(request: NextRequest): NextResponse {
+  if (CACHED_SHELL_PATHS.has(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
-  return withNonceAndCsp(ctx.request);
+  return withNonceAndCsp(request);
 }
 
 export function proxy(request: NextRequest) {
-  const ctx: RouteContext = {
-    request,
-    pathname: request.nextUrl.pathname,
-    isAuthenticated: request.cookies.has(AUTH_COOKIE),
-  };
+  const pathname = request.nextUrl.pathname;
+  const isAuthenticated = request.cookies.has(AUTH_COOKIE);
 
   // Guard clause: nothing else about a page (CSP, caching) matters once the
   // visitor is being redirected away from it, so this has to run first.
-  if (PROTECTED_PATH.test(ctx.pathname) && !ctx.isAuthenticated) {
-    return NextResponse.redirect(new URL("/sign-in", ctx.request.url));
+  if (PROTECTED_PATH.test(pathname) && !isAuthenticated) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  return applyCspUnlessCachedShell(ctx);
+  return applyCspUnlessCachedShell(request);
 }
 
 // Broad by default — every route gets CSP unless explicitly excluded above —
