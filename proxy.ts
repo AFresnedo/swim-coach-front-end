@@ -69,10 +69,9 @@ type RouteContext = {
   isAuthenticated: boolean;
 };
 
-// Returns a response if this rule decides the request, or null to let the
-// next rule in ROUTE_RULES take it.
-type RouteRule = (ctx: RouteContext) => NextResponse | null;
-
+// A guard clause, not one rule among several — it must run first, since
+// nothing else about a page (CSP, caching) matters once the visitor is being
+// redirected away from it.
 function redirectIfProtectedAndUnauthenticated(ctx: RouteContext): NextResponse | null {
   if (PROTECTED_PATH.test(ctx.pathname) && !ctx.isAuthenticated) {
     return NextResponse.redirect(new URL("/sign-in", ctx.request.url));
@@ -80,29 +79,14 @@ function redirectIfProtectedAndUnauthenticated(ctx: RouteContext): NextResponse 
   return null;
 }
 
-function skipCspForCachedShell(ctx: RouteContext): NextResponse | null {
+// One decision with two exhaustive branches: a cached-shell path skips CSP,
+// everything else gets it.
+function applyCspUnlessCachedShell(ctx: RouteContext): NextResponse {
   if (CACHED_SHELL_PATHS.has(ctx.pathname)) {
     return NextResponse.next();
   }
-  return null;
-}
-
-// Same RouteRule signature as every other rule — it happens to have no
-// condition that fails, so it always returns a response rather than null,
-// but nothing about its type says it has to be last. That's still down to
-// where it sits in ROUTE_RULES below.
-function applyCsp(ctx: RouteContext): NextResponse | null {
   return withNonceAndCsp(ctx.request);
 }
-
-// Evaluated in order; the first rule to return a response wins. Reordering
-// this array changes precedence — that's the whole point of it being a list
-// instead of nested if-statements.
-const ROUTE_RULES: RouteRule[] = [
-  redirectIfProtectedAndUnauthenticated,
-  skipCspForCachedShell,
-  applyCsp,
-];
 
 export function proxy(request: NextRequest) {
   const ctx: RouteContext = {
@@ -111,12 +95,10 @@ export function proxy(request: NextRequest) {
     isAuthenticated: request.cookies.has(AUTH_COOKIE),
   };
 
-  for (const rule of ROUTE_RULES) {
-    const response = rule(ctx);
-    if (response) return response;
-  }
+  const redirect = redirectIfProtectedAndUnauthenticated(ctx);
+  if (redirect) return redirect;
 
-  throw new Error("No ROUTE_RULES entry matched — at least one rule must handle every request");
+  return applyCspUnlessCachedShell(ctx);
 }
 
 // Broad by default — every route gets CSP unless explicitly excluded above —
