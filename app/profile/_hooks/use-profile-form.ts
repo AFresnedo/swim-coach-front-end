@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  CM_PER_INCH,
+  cmToFtIn,
+  ftInToCm,
+  KG_PER_LB,
+  kgToLbs,
+  lbsToKg,
+} from "@/app/profile/_utils/unit-conversion";
 import { apiErrorDetails } from "@/shared/front-api";
 import { isAuthRedirect, useProtectedFrontFetch } from "@/shared/protected-fetch";
 import { useAbortableEffect } from "@/shared/use-abortable-effect";
@@ -14,32 +22,6 @@ type Profile = {
   sex: string;
   unit_preference: UnitSystem;
 };
-
-const CM_PER_INCH = 2.54;
-const KG_PER_LB = 0.453592;
-
-function cmToFtIn(cm: number) {
-  const totalInches = cm / CM_PER_INCH;
-  let ft = Math.floor(totalInches / 12);
-  let inches = Math.round(totalInches % 12);
-  if (inches === 12) {
-    ft += 1;
-    inches = 0;
-  }
-  return { ft, inches };
-}
-
-function kgToLbs(kg: number) {
-  return Math.round(kg / KG_PER_LB);
-}
-
-function ftInToCm(ft: number, inches: number) {
-  return Math.round((ft * 12 + inches) * CM_PER_INCH * 10) / 10;
-}
-
-function lbsToKg(lbs: number) {
-  return Math.round(lbs * KG_PER_LB * 10) / 10;
-}
 
 export function useProfileForm() {
   const protectedFrontFetch = useProtectedFrontFetch();

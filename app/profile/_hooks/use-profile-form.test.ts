@@ -70,17 +70,20 @@ describe("useProfileForm", () => {
     expect(result.current.heightCm).toBe("");
   });
 
-  it("sets an error when the profile fails to load", async () => {
-    protectedFrontFetch.mockRejectedValueOnce(new ApiError("Server error", 500));
+  async function loadRejecting(err: unknown) {
+    protectedFrontFetch.mockRejectedValueOnce(err);
     const { result } = setUp();
     await waitFor(() => expect(result.current.loadingProfile).toBe(false));
+    return result;
+  }
+
+  it("sets an error when the profile fails to load", async () => {
+    const result = await loadRejecting(new ApiError("Server error", 500));
     expect(result.current.error).toBe("Failed to load your profile. Please try again.");
   });
 
   it("does not set an error when the load fails with an auth redirect", async () => {
-    protectedFrontFetch.mockRejectedValueOnce(new AuthRedirectError());
-    const { result } = setUp();
-    await waitFor(() => expect(result.current.loadingProfile).toBe(false));
+    const result = await loadRejecting(new AuthRedirectError());
     expect(result.current.error).toBe("");
   });
 
