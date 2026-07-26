@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { Goal } from "@/app/goals/_data/goals";
+import type { Goal, GoalFilter } from "@/app/goals/_data/goals";
 import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/protected-fetch";
 import { useAbortableEffect } from "@/shared/use-abortable-effect";
-
-export type GoalFilter = "active" | "all";
 
 export function useGoalsList() {
   const protectedFrontFetch = useProtectedFrontFetch();
@@ -13,10 +11,6 @@ export function useGoalsList() {
   const [filter, setFilter] = useState<GoalFilter>("active");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [newText, setNewText] = useState("");
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState("");
 
   useAbortableEffect(
     (signal) => {
@@ -40,24 +34,8 @@ export function useGoalsList() {
     [filter, protectedFrontFetch],
   );
 
-  async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setCreateError("");
-    setCreating(true);
-
-    try {
-      const goal = await protectedFrontFetch<Goal>("/goals/api", {
-        method: "POST",
-        body: JSON.stringify({ text: newText }),
-      });
-      setGoals((prev) => [goal, ...prev]);
-      setNewText("");
-    } catch (err) {
-      const message = protectedErrorMessage(err, "Failed to create goal. Please try again.");
-      if (message) setCreateError(message);
-    } finally {
-      setCreating(false);
-    }
+  function handleGoalCreated(created: Goal) {
+    setGoals((prev) => [created, ...prev]);
   }
 
   function handleGoalSaved(updated: Goal) {
@@ -78,11 +56,7 @@ export function useGoalsList() {
     setFilter,
     loading,
     error,
-    newText,
-    setNewText,
-    creating,
-    createError,
-    handleCreate,
+    handleGoalCreated,
     handleGoalSaved,
     handleGoalDeactivated,
   };

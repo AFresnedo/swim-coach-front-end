@@ -21,12 +21,11 @@ const baseGoal: Goal = {
   created_at: "2026-01-01T00:00:00Z",
 };
 
-async function submitCreate(result: { current: ReturnType<typeof useGoalsList> }) {
-  await act(async () => {
-    await result.current.handleCreate({
-      preventDefault: () => {},
-    } as React.SubmitEvent<HTMLFormElement>);
-  });
+async function renderLoaded(initialGoals: Goal[] = []) {
+  protectedFrontFetch.mockResolvedValueOnce(initialGoals);
+  const { result } = renderHook(() => useGoalsList());
+  await waitFor(() => expect(result.current.goals).toEqual(initialGoals));
+  return result;
 }
 
 describe("useGoalsList", () => {
@@ -44,9 +43,7 @@ describe("useGoalsList", () => {
   });
 
   it("refetches with the new filter when it changes", async () => {
-    protectedFrontFetch.mockResolvedValue([]);
-    const { result } = renderHook(() => useGoalsList());
-    await waitFor(() => expect(protectedFrontFetch).toHaveBeenCalledTimes(1));
+    const result = await renderLoaded();
 
     act(() => result.current.setFilter("all"));
 
@@ -74,41 +71,19 @@ describe("useGoalsList", () => {
     expect(result.current.error).toBe("");
   });
 
-  describe("handleCreate", () => {
-    it("prepends the created goal and clears the input", async () => {
-      protectedFrontFetch.mockResolvedValueOnce([]);
-      const { result } = renderHook(() => useGoalsList());
-      await waitFor(() => expect(protectedFrontFetch).toHaveBeenCalledTimes(1));
+  describe("handleGoalCreated", () => {
+    it("prepends the created goal", async () => {
+      const result = await renderLoaded();
 
-      act(() => result.current.setNewText("New goal text"));
-      protectedFrontFetch.mockResolvedValueOnce({ ...baseGoal, text: "New goal text" });
-      await submitCreate(result);
+      act(() => result.current.handleGoalCreated(baseGoal));
 
-      expect(protectedFrontFetch).toHaveBeenLastCalledWith("/goals/api", {
-        method: "POST",
-        body: JSON.stringify({ text: "New goal text" }),
-      });
-      expect(result.current.goals).toEqual([{ ...baseGoal, text: "New goal text" }]);
-      expect(result.current.newText).toBe("");
-    });
-
-    it("sets a create error when the request fails", async () => {
-      protectedFrontFetch.mockResolvedValueOnce([]);
-      const { result } = renderHook(() => useGoalsList());
-      await waitFor(() => expect(protectedFrontFetch).toHaveBeenCalledTimes(1));
-
-      protectedFrontFetch.mockRejectedValueOnce(new ApiError("Server error", 500));
-      await submitCreate(result);
-
-      expect(result.current.createError).toBe("Server error");
+      expect(result.current.goals).toEqual([baseGoal]);
     });
   });
 
   describe("handleGoalSaved", () => {
     it("updates the matching goal in place", async () => {
-      protectedFrontFetch.mockResolvedValueOnce([baseGoal]);
-      const { result } = renderHook(() => useGoalsList());
-      await waitFor(() => expect(result.current.goals).toEqual([baseGoal]));
+      const result = await renderLoaded([baseGoal]);
 
       const updated = { ...baseGoal, text: "Updated text" };
       act(() => result.current.handleGoalSaved(updated));
@@ -119,9 +94,7 @@ describe("useGoalsList", () => {
 
   describe("handleGoalDeactivated", () => {
     it("removes the goal from the list when viewing active goals", async () => {
-      protectedFrontFetch.mockResolvedValueOnce([baseGoal]);
-      const { result } = renderHook(() => useGoalsList());
-      await waitFor(() => expect(result.current.goals).toEqual([baseGoal]));
+      const result = await renderLoaded([baseGoal]);
 
       const deactivated = {
         ...baseGoal,
@@ -134,9 +107,7 @@ describe("useGoalsList", () => {
     });
 
     it("updates the goal in place when viewing all goals", async () => {
-      protectedFrontFetch.mockResolvedValueOnce([baseGoal]);
-      const { result } = renderHook(() => useGoalsList());
-      await waitFor(() => expect(protectedFrontFetch).toHaveBeenCalledTimes(1));
+      const result = await renderLoaded([baseGoal]);
 
       act(() => result.current.setFilter("all"));
       protectedFrontFetch.mockResolvedValueOnce([baseGoal]);

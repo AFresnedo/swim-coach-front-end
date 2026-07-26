@@ -8,3 +8,5 @@ export type Goal = {
   deactivation_reason: DeactivationReason | null;
   created_at: string;
 };
+
+export type GoalFilter = "active" | "all";

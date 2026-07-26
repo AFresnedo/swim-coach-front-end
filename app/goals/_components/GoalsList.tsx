@@ -1,7 +1,9 @@
 "use client";
 
 import GoalCard from "@/app/goals/_components/GoalCard";
-import { type GoalFilter, useGoalsList } from "@/app/goals/_hooks/use-goals-list";
+import type { GoalFilter } from "@/app/goals/_data/goals";
+import { useCreateGoalForm } from "@/app/goals/_hooks/use-create-goal-form";
+import { useGoalsList } from "@/app/goals/_hooks/use-goals-list";
 import {
   cardClass,
   inputClass,
@@ -17,14 +19,12 @@ export default function GoalsList() {
     setFilter,
     loading,
     error,
-    newText,
-    setNewText,
-    creating,
-    createError,
-    handleCreate,
+    handleGoalCreated,
     handleGoalSaved,
     handleGoalDeactivated,
   } = useGoalsList();
+  const { newText, setNewText, creating, createError, handleCreate } =
+    useCreateGoalForm(handleGoalCreated);
 
   return (
     <div className="flex flex-col gap-8">
