@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import GoalCard from "@/app/goals/_components/GoalCard";
-import type { Goal } from "@/app/goals/_components/GoalsList";
+import type { Goal } from "@/app/goals/_data/goals";
 
 const { protectedFrontFetch } = vi.hoisted(() => ({ protectedFrontFetch: vi.fn() }));
 

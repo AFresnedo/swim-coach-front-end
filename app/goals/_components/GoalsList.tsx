@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import GoalCard from "@/app/goals/_components/GoalCard";
+import { type GoalFilter, useGoalsList } from "@/app/goals/_hooks/use-goals-list";
 import {
   cardClass,
   inputClass,
@@ -9,84 +9,22 @@ import {
   labelClass,
   primaryButtonClass,
 } from "@/shared/form-styles";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/protected-fetch";
-import { useAbortableEffect } from "@/shared/use-abortable-effect";
-
-export type DeactivationReason = "reached" | "abandoned" | "other";
-export type Goal = {
-  id: number;
-  user_id: number;
-  text: string;
-  is_active: boolean;
-  deactivation_reason: DeactivationReason | null;
-  created_at: string;
-};
-type GoalFilter = "active" | "all";
 
 export default function GoalsList() {
-  const protectedFrontFetch = useProtectedFrontFetch();
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [filter, setFilter] = useState<GoalFilter>("active");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const [newText, setNewText] = useState("");
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState("");
-
-  useAbortableEffect(
-    (signal) => {
-      setLoading(true);
-      setError("");
-
-      protectedFrontFetch<Goal[]>(`/goals/api?status=${filter}`, { signal })
-        .then((data) => {
-          if (signal.aborted) return;
-          setGoals(data);
-        })
-        .catch((err) => {
-          if (signal.aborted) return;
-          const message = protectedErrorMessage(err, "Failed to load goals. Please try again.");
-          if (message) setError(message);
-        })
-        .finally(() => {
-          if (!signal.aborted) setLoading(false);
-        });
-    },
-    [filter, protectedFrontFetch],
-  );
-
-  async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setCreateError("");
-    setCreating(true);
-
-    try {
-      const goal = await protectedFrontFetch<Goal>("/goals/api", {
-        method: "POST",
-        body: JSON.stringify({ text: newText }),
-      });
-      setGoals((prev) => [goal, ...prev]);
-      setNewText("");
-    } catch (err) {
-      const message = protectedErrorMessage(err, "Failed to create goal. Please try again.");
-      if (message) setCreateError(message);
-    } finally {
-      setCreating(false);
-    }
-  }
-
-  function handleGoalSaved(updated: Goal) {
-    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
-  }
-
-  function handleGoalDeactivated(updated: Goal) {
-    setGoals((prev) =>
-      filter === "active"
-        ? prev.filter((g) => g.id !== updated.id)
-        : prev.map((g) => (g.id === updated.id ? updated : g)),
-    );
-  }
+  const {
+    goals,
+    filter,
+    setFilter,
+    loading,
+    error,
+    newText,
+    setNewText,
+    creating,
+    createError,
+    handleCreate,
+    handleGoalSaved,
+    handleGoalDeactivated,
+  } = useGoalsList();
 
   return (
     <div className="flex flex-col gap-8">
