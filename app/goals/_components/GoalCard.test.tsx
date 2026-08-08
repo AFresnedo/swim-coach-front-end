@@ -1,14 +1,16 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import GoalCard from "@/app/goals/_components/GoalCard";
 import type { Goal } from "@/app/goals/_data/goals";
+import type { useGoalCard } from "@/app/goals/_hooks/use-goal-card";
 
-const { protectedFrontFetch } = vi.hoisted(() => ({ protectedFrontFetch: vi.fn() }));
+const { hookState } = vi.hoisted(() => ({
+  hookState: {} as ReturnType<typeof useGoalCard>,
+}));
 
-vi.mock("@/shared/protected-fetch", async (importActual) => {
-  const actual = await importActual<typeof import("@/shared/protected-fetch")>();
-  return { ...actual, useProtectedFrontFetch: () => protectedFrontFetch };
-});
+vi.mock("@/app/goals/_hooks/use-goal-card", () => ({
+  useGoalCard: () => hookState,
+}));
 
 const activeGoal: Goal = {
   id: 1,
@@ -19,118 +21,129 @@ const activeGoal: Goal = {
   created_at: "2026-01-01T00:00:00Z",
 };
 
+function renderCard(goal: Goal = activeGoal) {
+  render(<GoalCard goal={goal} onSaved={vi.fn()} onDeactivated={vi.fn()} />);
+}
+
 describe("GoalCard", () => {
-  afterEach(() => {
-    cleanup();
-    vi.clearAllMocks();
+  beforeEach(() => {
+    Object.assign(hookState, {
+      mode: "view",
+      edit: {
+        text: activeGoal.text,
+        setText: vi.fn(),
+        saving: false,
+        error: "",
+        start: vi.fn(),
+        cancel: vi.fn(),
+        submit: vi.fn((e: React.SubmitEvent<HTMLFormElement>) => e.preventDefault()),
+      },
+      deactivate: {
+        reason: "",
+        setReason: vi.fn(),
+        saving: false,
+        error: "",
+        start: vi.fn(),
+        cancel: vi.fn(),
+        confirm: vi.fn((e: React.SubmitEvent<HTMLFormElement>) => e.preventDefault()),
+      },
+    });
   });
 
-  it("shows Edit and Deactivate buttons for an active goal", () => {
-    render(<GoalCard goal={activeGoal} onSaved={vi.fn()} onDeactivated={vi.fn()} />);
+  afterEach(cleanup);
+
+  it("shows Edit and Deactivate buttons for an active goal in view mode", () => {
+    renderCard();
     expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Deactivate" })).toBeInTheDocument();
   });
 
+  it("forwards Edit and Deactivate clicks to the hook's start handlers", () => {
+    renderCard();
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    expect(hookState.edit.start).toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Deactivate" }));
+    expect(hookState.deactivate.start).toHaveBeenCalled();
+  });
+
   it("shows the deactivation reason label for an inactive goal", () => {
-    render(
-      <GoalCard
-        goal={{ ...activeGoal, is_active: false, deactivation_reason: "reached" }}
-        onSaved={vi.fn()}
-        onDeactivated={vi.fn()}
-      />,
-    );
+    renderCard({ ...activeGoal, is_active: false, deactivation_reason: "reached" });
     expect(screen.getByText(/deactivated.*reached/i)).toBeInTheDocument();
   });
 
   it("falls back to 'Unknown' when an inactive goal has no deactivation reason", () => {
-    render(
-      <GoalCard
-        goal={{ ...activeGoal, is_active: false, deactivation_reason: null }}
-        onSaved={vi.fn()}
-        onDeactivated={vi.fn()}
-      />,
-    );
+    renderCard({ ...activeGoal, is_active: false, deactivation_reason: null });
     expect(screen.getByText(/deactivated.*unknown/i)).toBeInTheDocument();
   });
 
-  it("saves an edit via PATCH /goals/api/{id} and calls onSaved", async () => {
-    const onSaved = vi.fn();
-    const updated = { ...activeGoal, text: "Updated goal text" };
-    protectedFrontFetch.mockResolvedValue(updated);
-    render(<GoalCard goal={activeGoal} onSaved={onSaved} onDeactivated={vi.fn()} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.change(screen.getByLabelText("Edit goal"), {
-      target: { value: "Updated goal text" },
+  describe("edit mode", () => {
+    beforeEach(() => {
+      hookState.mode = "edit";
     });
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Save" }).closest("form") as HTMLFormElement,
-    );
 
-    await waitFor(() =>
-      expect(protectedFrontFetch).toHaveBeenCalledWith(`/goals/api/${activeGoal.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ text: "Updated goal text" }),
-      }),
-    );
-    expect(onSaved).toHaveBeenCalledWith(updated);
+    it("renders the edit form and forwards changes to the hook's setter", () => {
+      renderCard();
+      fireEvent.change(screen.getByLabelText("Edit goal"), { target: { value: "New text" } });
+      expect(hookState.edit.setText).toHaveBeenCalledWith("New text");
+    });
+
+    it("submits via the hook's submit handler", () => {
+      renderCard();
+      fireEvent.submit(
+        screen.getByRole("button", { name: "Save" }).closest("form") as HTMLFormElement,
+      );
+      expect(hookState.edit.submit).toHaveBeenCalled();
+    });
+
+    it("cancels via the hook's cancel handler", () => {
+      renderCard();
+      fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+      expect(hookState.edit.cancel).toHaveBeenCalled();
+    });
+
+    it("shows the edit error and disables the button while saving", () => {
+      hookState.edit.error = "Failed to save goal. Please try again.";
+      hookState.edit.saving = true;
+      renderCard();
+      expect(screen.getByRole("alert")).toHaveTextContent("Failed to save goal. Please try again.");
+      expect(screen.getByRole("button", { name: "Saving…" })).toBeDisabled();
+    });
   });
 
-  it("shows an edit error instead of calling onSaved when the save fails", async () => {
-    const onSaved = vi.fn();
-    protectedFrontFetch.mockRejectedValue(new Error("boom"));
-    render(<GoalCard goal={activeGoal} onSaved={onSaved} onDeactivated={vi.fn()} />);
+  describe("deactivate mode", () => {
+    beforeEach(() => {
+      hookState.mode = "deactivate";
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Save" }).closest("form") as HTMLFormElement,
-    );
+    it("renders the deactivate form and forwards the reason change to the hook's setter", () => {
+      renderCard();
+      fireEvent.change(screen.getByLabelText("Reason"), { target: { value: "reached" } });
+      expect(hookState.deactivate.setReason).toHaveBeenCalledWith("reached");
+    });
 
-    expect(await screen.findByText("Failed to save goal. Please try again.")).toBeInTheDocument();
-    expect(onSaved).not.toHaveBeenCalled();
-  });
+    it("confirms via the hook's confirm handler", () => {
+      renderCard();
+      fireEvent.submit(
+        screen.getByRole("button", { name: "Confirm" }).closest("form") as HTMLFormElement,
+      );
+      expect(hookState.deactivate.confirm).toHaveBeenCalled();
+    });
 
-  it("cancels an edit without saving", () => {
-    render(<GoalCard goal={activeGoal} onSaved={vi.fn()} onDeactivated={vi.fn()} />);
+    it("cancels via the hook's cancel handler", () => {
+      renderCard();
+      fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+      expect(hookState.deactivate.cancel).toHaveBeenCalled();
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-
-    expect(screen.queryByLabelText("Edit goal")).not.toBeInTheDocument();
-    expect(protectedFrontFetch).not.toHaveBeenCalled();
-  });
-
-  it("deactivates a goal via PATCH /goals/api/{id}/deactivate and calls onDeactivated", async () => {
-    const onDeactivated = vi.fn();
-    const deactivated = { ...activeGoal, is_active: false, deactivation_reason: "reached" };
-    protectedFrontFetch.mockResolvedValue(deactivated);
-    render(<GoalCard goal={activeGoal} onSaved={vi.fn()} onDeactivated={onDeactivated} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Deactivate" }));
-    fireEvent.change(screen.getByLabelText("Reason"), { target: { value: "reached" } });
-    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
-
-    await waitFor(() =>
-      expect(protectedFrontFetch).toHaveBeenCalledWith(`/goals/api/${activeGoal.id}/deactivate`, {
-        method: "PATCH",
-        body: JSON.stringify({ reason: "reached" }),
-      }),
-    );
-    expect(onDeactivated).toHaveBeenCalledWith(deactivated);
-  });
-
-  it("shows a deactivate error instead of calling onDeactivated when it fails", async () => {
-    const onDeactivated = vi.fn();
-    protectedFrontFetch.mockRejectedValue(new Error("boom"));
-    render(<GoalCard goal={activeGoal} onSaved={vi.fn()} onDeactivated={onDeactivated} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Deactivate" }));
-    fireEvent.change(screen.getByLabelText("Reason"), { target: { value: "reached" } });
-    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
-
-    expect(
-      await screen.findByText("Failed to deactivate goal. Please try again."),
-    ).toBeInTheDocument();
-    expect(onDeactivated).not.toHaveBeenCalled();
+    it("shows the deactivate error and disables the button while saving", () => {
+      hookState.deactivate.error = "Failed to deactivate goal. Please try again.";
+      hookState.deactivate.saving = true;
+      renderCard();
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Failed to deactivate goal. Please try again.",
+      );
+      expect(screen.getByRole("button", { name: "Deactivating…" })).toBeDisabled();
+    });
   });
 });

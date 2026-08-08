@@ -1,7 +1,8 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
 import type { DeactivationReason, Goal } from "@/app/goals/_data/goals";
+import { useGoalCard } from "@/app/goals/_hooks/use-goal-card";
 import {
   cardClass,
   inputClass,
@@ -10,15 +11,12 @@ import {
   primaryButtonClass,
   secondaryButtonClass,
 } from "@/shared/form-styles";
-import { protectedErrorMessage, useProtectedFrontFetch } from "@/shared/protected-fetch";
 
 const REASON_LABELS: Record<DeactivationReason, string> = {
   reached: "Reached",
   abandoned: "Abandoned",
   other: "Other",
 };
-
-type Mode = "view" | "edit" | "deactivate";
 
 export default function GoalCard({
   goal,
@@ -29,84 +27,14 @@ export default function GoalCard({
   onSaved: (goal: Goal) => void;
   onDeactivated: (goal: Goal) => void;
 }) {
-  const protectedFrontFetch = useProtectedFrontFetch();
   const editTextId = useId();
   const deactivateReasonId = useId();
-
-  const [mode, setMode] = useState<Mode>("view");
-
-  const [editText, setEditText] = useState(goal.text);
-  const [editSaving, setEditSaving] = useState(false);
-  const [editError, setEditError] = useState("");
-
-  const [deactivateReason, setDeactivateReason] = useState<DeactivationReason | "">("");
-  const [deactivateSaving, setDeactivateSaving] = useState(false);
-  const [deactivateError, setDeactivateError] = useState("");
-
-  function startEdit() {
-    setEditText(goal.text);
-    setEditError("");
-    setMode("edit");
-  }
-
-  function cancelEdit() {
-    setMode("view");
-  }
-
-  async function handleEditSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setEditSaving(true);
-    setEditError("");
-
-    try {
-      const updated = await protectedFrontFetch<Goal>(`/goals/api/${goal.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ text: editText }),
-      });
-      onSaved(updated);
-      setMode("view");
-    } catch (err) {
-      const message = protectedErrorMessage(err, "Failed to save goal. Please try again.");
-      if (message) setEditError(message);
-    } finally {
-      setEditSaving(false);
-    }
-  }
-
-  function startDeactivate() {
-    setDeactivateReason("");
-    setDeactivateError("");
-    setMode("deactivate");
-  }
-
-  function cancelDeactivate() {
-    setMode("view");
-  }
-
-  async function handleDeactivateConfirm(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setDeactivateSaving(true);
-    setDeactivateError("");
-
-    try {
-      const updated = await protectedFrontFetch<Goal>(`/goals/api/${goal.id}/deactivate`, {
-        method: "PATCH",
-        body: JSON.stringify({ reason: deactivateReason }),
-      });
-      onDeactivated(updated);
-      setMode("view");
-    } catch (err) {
-      const message = protectedErrorMessage(err, "Failed to deactivate goal. Please try again.");
-      if (message) setDeactivateError(message);
-    } finally {
-      setDeactivateSaving(false);
-    }
-  }
+  const { mode, edit, deactivate } = useGoalCard(goal, onSaved, onDeactivated);
 
   return (
     <div className={cardClass} data-testid={`goal-card-${goal.id}`}>
       {mode === "edit" ? (
-        <form onSubmit={handleEditSubmit} className="flex flex-col gap-3">
+        <form onSubmit={edit.submit} className="flex flex-col gap-3">
           <label htmlFor={editTextId} className={labelClass}>
             Edit goal
           </label>
@@ -114,26 +42,26 @@ export default function GoalCard({
             id={editTextId}
             required
             rows={2}
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
+            value={edit.text}
+            onChange={(e) => edit.setText(e.target.value)}
             className={`${inputClass} ${inputNormalClass}`}
           />
-          {editError && (
+          {edit.error && (
             <p role="alert" className="text-red-600 text-sm dark:text-red-400">
-              {editError}
+              {edit.error}
             </p>
           )}
           <div className="flex gap-2">
-            <button type="submit" disabled={editSaving} className={primaryButtonClass}>
-              {editSaving ? "Saving…" : "Save"}
+            <button type="submit" disabled={edit.saving} className={primaryButtonClass}>
+              {edit.saving ? "Saving…" : "Save"}
             </button>
-            <button type="button" onClick={cancelEdit} className={secondaryButtonClass}>
+            <button type="button" onClick={edit.cancel} className={secondaryButtonClass}>
               Cancel
             </button>
           </div>
         </form>
       ) : mode === "deactivate" ? (
-        <form onSubmit={handleDeactivateConfirm} className="flex flex-col gap-3">
+        <form onSubmit={deactivate.confirm} className="flex flex-col gap-3">
           <p className="text-slate-900 dark:text-slate-50">{goal.text}</p>
           <label htmlFor={deactivateReasonId} className={labelClass}>
             Reason
@@ -141,8 +69,8 @@ export default function GoalCard({
           <select
             id={deactivateReasonId}
             required
-            value={deactivateReason}
-            onChange={(e) => setDeactivateReason(e.target.value as DeactivationReason)}
+            value={deactivate.reason}
+            onChange={(e) => deactivate.setReason(e.target.value as DeactivationReason)}
             className={`${inputClass} ${inputNormalClass}`}
           >
             <option value="" disabled>
@@ -152,16 +80,16 @@ export default function GoalCard({
             <option value="abandoned">Abandoned</option>
             <option value="other">Other</option>
           </select>
-          {deactivateError && (
+          {deactivate.error && (
             <p role="alert" className="text-red-600 text-sm dark:text-red-400">
-              {deactivateError}
+              {deactivate.error}
             </p>
           )}
           <div className="flex gap-2">
-            <button type="submit" disabled={deactivateSaving} className={primaryButtonClass}>
-              {deactivateSaving ? "Deactivating…" : "Confirm"}
+            <button type="submit" disabled={deactivate.saving} className={primaryButtonClass}>
+              {deactivate.saving ? "Deactivating…" : "Confirm"}
             </button>
-            <button type="button" onClick={cancelDeactivate} className={secondaryButtonClass}>
+            <button type="button" onClick={deactivate.cancel} className={secondaryButtonClass}>
               Cancel
             </button>
           </div>
@@ -170,10 +98,10 @@ export default function GoalCard({
         <div className="flex items-start justify-between gap-4">
           <p className="text-slate-900 dark:text-slate-50">{goal.text}</p>
           <div className="flex shrink-0 gap-2">
-            <button type="button" onClick={startEdit} className={secondaryButtonClass}>
+            <button type="button" onClick={edit.start} className={secondaryButtonClass}>
               Edit
             </button>
-            <button type="button" onClick={startDeactivate} className={secondaryButtonClass}>
+            <button type="button" onClick={deactivate.start} className={secondaryButtonClass}>
               Deactivate
             </button>
           </div>
