@@ -38,6 +38,33 @@ When asked a clarifying or double-checking question mid-implementation, answer i
 
 If your own implementation instincts imply scope beyond what was explicitly asked for or written in a ticket (a new capability, not just an implementation detail), raise that mismatch for discussion at the time — don't silently decide solo whether to keep the extra scope or trim back to the literal ask. Concrete trigger: if you catch yourself writing code that only makes sense if some capability exists, and that capability wasn't actually requested, stop and name the gap out loud before choosing to build it or cut it.
 
+## Plan mode stays under developer control
+
+Entering plan mode for a new feature is the developer's call, not something to start on your own.
+
+Approving a plan means:
+- agreeing to start — not approving every piece of implementation in it
+- accepting the design as a starting point, not a frozen spec — expect it to shift as work uncovers things the plan couldn't have anticipated
+
+Approving a plan does not mean:
+- starting the next slice without being told to — the conversation continuing is not the same as being told to continue
+- writing the plan up as a ticket — that needs its own separate ask
+
+## Slicing a feature plan
+
+Once you're in plan mode, break the feature into small, independently verifiable slices as part of the plan.
+
+A slice is a demonstrable piece of the feature's behavior, not a layer of the system — "the API," "the UI," and "the tests" are not slices on their own. Each slice needs:
+- a clear boundary
+- a specific expected outcome
+- its own way to prove it works, checked against real code or an agreed contract — for example, a frontend slice can be verified against a mocked API contract even before the backend exists, since this repo doesn't own the backend
+
+Slices don't have to depend on each other — "create goal" and "delete goal" are both valid slices of the same feature; verifying delete just needs a goal to already exist (seeded for the test), not the create slice itself to be built. Some genuinely do depend, though: "goals due today get a reminder banner" needs a due-date field that doesn't exist on goals yet — that can't be faked with test data, since there's no field to put a value into until an earlier slice adds it.
+
+A simple test: if there's no way to satisfy the dependency short of writing the actual change the other slice is supposed to deliver, it's a real dependency. If a fixture or a mock would do instead, it isn't — the mocked-API-contract case above is independent by this same test, since the mock satisfies verification without anyone writing the real backend.
+
+What counts as "small enough" is a judgment call, not a formula — work it out with the developer per feature rather than applying a fixed rule.
+
 ## Clean code, not just correct code
 
 Code that works correctly can still have a genuine, articulable maintainability problem — mixed concerns, domain-specific logic sitting in a general-purpose file, a missing single-responsibility split — that will bite the next person who builds on it. When asked to assess whether code is good or where something belongs, "it's correct" is not the same bar as "it's clean" — a real maintainability issue deserves to be named, not waved off because nothing is currently broken.
