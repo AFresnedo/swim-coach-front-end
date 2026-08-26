@@ -5,15 +5,8 @@ import CreateSwimTimeForm from "@/app/swim-log/_components/CreateSwimTimeForm";
 import DateAndFilterControls from "@/app/swim-log/_components/DateAndFilterControls";
 import SwimTimesTable from "@/app/swim-log/_components/SwimTimesTable";
 import { useSwimTimesQuery } from "@/app/swim-log/_hooks/use-swim-times-query";
+import { todayLocalDate } from "@/app/swim-log/_utils/today-local-date";
 import { cardClass } from "@/shared/form-styles";
-
-function todayLocalDate(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export default function SwimLog() {
   const [selectedDate, setSelectedDate] = useState(todayLocalDate);
