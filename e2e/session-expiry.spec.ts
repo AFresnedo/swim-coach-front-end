@@ -16,7 +16,7 @@ test("401 from a protected API call redirects to sign-in with a session-expired 
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
-  await page.route("**/api/goals*", (route) =>
+  await page.route("**/goals/api*", (route) =>
     route.fulfill({
       status: 401,
       contentType: "application/json",
@@ -37,5 +37,5 @@ test("401 from a protected API call redirects to sign-in with a session-expired 
   await expect(page).toHaveURL("/");
 });
 
-// e2e/auth-errors.spec.ts already covers that a 401 from /api/auth/login
+// e2e/auth-errors.spec.ts already covers that a 401 from /sign-in/api
 // shows an inline error and stays on /sign-in without redirecting.

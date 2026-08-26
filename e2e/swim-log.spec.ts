@@ -19,11 +19,16 @@ test("swim log flow: log entry → view for date → date-scoped fetch", async (
 
   const todayValue = await page.getByLabel("Date").inputValue();
 
+  // The create form is collapsed behind a disclosure by default
+  await expect(page.getByRole("spinbutton", { name: "Length", exact: true })).not.toBeVisible();
+  await page.getByText("Log a swim time").click();
+  await expect(page.getByRole("spinbutton", { name: "Length", exact: true })).toBeVisible();
+
   // Create — assert on the actual POST response, not just the resulting DOM,
   // so this fails loudly if the backend ever stops persisting/echoing a field.
   const [createResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes("/api/swim-times") && res.request().method() === "POST",
+      (res) => res.url().includes("/swim-log/api") && res.request().method() === "POST",
     ),
     (async () => {
       await page.getByRole("spinbutton", { name: "Length", exact: true }).fill("50");
@@ -47,7 +52,7 @@ test("swim log flow: log entry → view for date → date-scoped fetch", async (
   const otherDate = "2020-01-01";
   const [otherDayResponse] = await Promise.all([
     page.waitForResponse((res) =>
-      res.url().includes(`/api/swim-times?date_from=${otherDate}&date_to=${otherDate}`),
+      res.url().includes(`/swim-log/api?date_from=${otherDate}&date_to=${otherDate}`),
     ),
     page.getByLabel("Date").fill(otherDate),
   ]);
@@ -58,7 +63,7 @@ test("swim log flow: log entry → view for date → date-scoped fetch", async (
   // Switch back to today — the entry reappears
   const [todayResponse] = await Promise.all([
     page.waitForResponse((res) =>
-      res.url().includes(`/api/swim-times?date_from=${todayValue}&date_to=${todayValue}`),
+      res.url().includes(`/swim-log/api?date_from=${todayValue}&date_to=${todayValue}`),
     ),
     page.getByLabel("Date").fill(todayValue),
   ]);
@@ -77,7 +82,7 @@ test("swim log flow: log entry → view for date → date-scoped fetch", async (
   // Clearing filters brings it back
   const [clearedResponse] = await Promise.all([
     page.waitForResponse((res) =>
-      res.url().includes(`/api/swim-times?date_from=${todayValue}&date_to=${todayValue}`),
+      res.url().includes(`/swim-log/api?date_from=${todayValue}&date_to=${todayValue}`),
     ),
     page.getByRole("button", { name: "Clear filters" }).click(),
   ]);
@@ -104,6 +109,7 @@ test("create error surfaces the backend's field-level validation message", async
   await page.goto("/swim-log");
   await expect(page.getByText(/no times logged for this date yet/i)).toBeVisible();
 
+  await page.getByText("Log a swim time").click();
   await page.getByRole("spinbutton", { name: "Length", exact: true }).fill("50");
   await page.getByRole("textbox", { name: "Time", exact: true }).fill("0:32.10");
   await page.getByLabel("Notes").fill("x".repeat(2001));
@@ -127,7 +133,7 @@ test("load error shows a message when the initial fetch fails", async ({ page, t
   await page.getByRole("button", { name: /create account/i }).click();
   await expect(page).toHaveURL("/");
 
-  await page.route("**/api/swim-times?*", (route) =>
+  await page.route("**/swim-log/api?*", (route) =>
     route.fulfill({
       status: 502,
       contentType: "application/json",
@@ -164,7 +170,7 @@ test("Load more appends further results and hides the button once exhausted", as
   const totalRecords = 51;
   await Promise.all(
     Array.from({ length: totalRecords }, (_, i) =>
-      page.request.post("/api/swim-times", {
+      page.request.post("/swim-log/api", {
         data: {
           date: todayValue,
           stroke: "freestyle",
@@ -181,7 +187,7 @@ test("Load more appends further results and hides the button once exhausted", as
 
   const [initialResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes("/api/swim-times?") && res.request().method() === "GET",
+      (res) => res.url().includes("/swim-log/api?") && res.request().method() === "GET",
     ),
     page.reload(),
   ]);
@@ -194,7 +200,7 @@ test("Load more appends further results and hides the button once exhausted", as
 
   const [loadMoreResponse] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes("/api/swim-times?") && res.url().includes("cursor="),
+      (res) => res.url().includes("/swim-log/api?") && res.url().includes("cursor="),
     ),
     loadMoreButton.click(),
   ]);

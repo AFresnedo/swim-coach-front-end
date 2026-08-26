@@ -1,24 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SwimCoach
 
-## Getting Started
+[![CI](https://github.com/AFresnedo/swim-coach-front-end/actions/workflows/ci.yml/badge.svg)](https://github.com/AFresnedo/swim-coach-front-end/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-All%20Rights%20Reserved-red)](LICENSE)
 
-First, run the development server:
+Next.js frontend for [SwimCoach](https://swim-coach-ai.com), a website for personalized,
+AI-assisted swim instruction. Ships auth (sign-up/sign-in/logout), a profile section, a
+goals feature, a swim log, and per-stroke technique/drill pages, backed by the
+[swim-coach-back-end](https://github.com/AFresnedo/swim-coach-back-end) FastAPI API.
+
+Sibling repos: [back-end](https://github.com/AFresnedo/swim-coach-back-end) ·
+[infra](https://github.com/AFresnedo/swim-coach-infra) (shared docker-compose, deploy target)
+
+## Stack
+
+Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · Biome · Vitest · Playwright
+
+## Architecture
+
+Next.js Route Handlers act as a proxy layer in front of the backend (a BFF —
+backend-for-frontend — pattern): the browser never talks to the FastAPI API directly,
+and server-only secrets (like the Turnstile secret key) never reach the client. Route
+handlers are colocated with the page they serve (e.g. `app/goals/api/route.ts` next to
+`app/goals/page.tsx`) rather than grouped under a single `app/api/` directory. Sign-in,
+sign-up, and logout live together under the `app/(auth)/` route group, which organizes
+them in the file tree without adding `/auth` to their URLs (`/sign-in`, `/sign-up`,
+`/logout`). Auth state, protected routes, and session expiry are handled client-side on
+top of that.
+
+## Setup
+
+This app expects the [back-end](https://github.com/AFresnedo/swim-coach-back-end) running
+locally at `http://localhost:8000` (see its README for setup).
 
 ```bash
+npm install
+cp .env.example .env.local  # see Environment variables below; defaults work for local dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All variables are documented in [`.env.example`](.env.example); the notable ones:
+
+| Variable | Default | Notes |
+| --- | --- | --- |
+| `API_URL` | `http://localhost:8000` | server-side only, never exposed to the browser |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | — | Cloudflare Turnstile (sign-up CAPTCHA) site key |
+| `TURNSTILE_SECRET_KEY` | — | Turnstile secret key, verified server-side |
+| `NEXT_PUBLIC_TURNSTILE_TEST_MODE` | `true` | bypasses Turnstile entirely for local dev; never set in staging/prod |
+
+`SITE_INDEXABLE` is a prod-only launch gate with no local-dev use case — it's owned by
+the [infra](https://github.com/AFresnedo/swim-coach-infra) repo's `.env.example` and
+wired through its `docker-compose.yml`, not this repo's.
+
+## Testing
+
+```bash
+npm test            # Vitest — component/unit tests
+npx playwright install chromium   # one-time, before the first e2e run
+npm run test:e2e     # Playwright — end-to-end flows
+```
+
+Vitest unit tests are colocated as `*.test.ts`/`*.test.tsx` directly beside the file
+they cover (e.g. `shared/auth.test.ts` next to `shared/auth.ts`) rather than gathered
+into a separate `__tests__/` tree, so a reader lands on a file's test the moment they
+open its folder. Cross-cutting test infrastructure that isn't specific to one file
+lives at the repo root instead: `domain-isolation.test.ts` checks the whole import
+graph, and `test-helpers/` holds shared test fixtures like the fake JWT builder.
+
+Playwright covers auth, route protection, goals authorization, session expiry, and
+mobile navigation, auto-starting the dev server (`npm run dev`) against
+`http://localhost:3000` if one isn't already running.
+
+## Linting & formatting
+
+```bash
+npm run lint     # Biome lint
+npm run format   # Biome format, auto-fix in place
+npm run check    # Biome lint + format, auto-fix in place
+```
 
 ## Git Hooks (optional)
 
@@ -30,17 +92,24 @@ They're **not active by default** — cloning the repo does not turn them on. To
 git config core.hooksPath .githooks
 ```
 
-## Learn More
+## Continuous Integration & deployment
 
-To learn more about Next.js, take a look at the following resources:
+`main` is a protected branch — all changes go through a pull request, merged
+squash-only once CI passes. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs
+Biome lint/format checks, TypeScript type checking, the Vitest suite, and a Playwright
+e2e run on every PR and push to `main`. [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml)
+runs GitHub's CodeQL security analysis on the same triggers.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+On every push to `main`, [`.github/workflows/cd.yml`](.github/workflows/cd.yml) builds and
+pushes a Docker image to GHCR, then deploys over SSH to the production Droplet, finishing
+with a smoke test. This app deploys as a Docker container behind Caddy on a self-managed
+Droplet (see the [infra](https://github.com/AFresnedo/swim-coach-infra) repo) — not Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+[Dependabot](.github/dependabot.yml) opens PRs weekly for outdated dependencies and
+GitHub Actions versions; they go through the same CI gate as any other PR.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All rights reserved — see [LICENSE](LICENSE). This repo is public for reference and
+portfolio purposes only; no permission is granted to use, copy, modify, or distribute
+this code, and it isn't open to outside contributions.

@@ -20,7 +20,7 @@ test("logout invalidates the token everywhere, not just the local cookie", async
   if (!token) throw new Error("access_token cookie missing after sign-up");
 
   // Sanity check: the token is live before logout.
-  const beforeRes = await page.request.get("/api/profile");
+  const beforeRes = await page.request.get("/profile/api");
   expect(beforeRes.ok()).toBe(true);
 
   await page.getByRole("button", { name: /account/i }).click();
@@ -31,7 +31,7 @@ test("logout invalidates the token everywhere, not just the local cookie", async
   // from this browser's cookie jar - that's what distinguishes a real
   // server-side logout (invalidates all devices) from merely deleting the
   // local cookie.
-  const afterRes = await page.request.get("/api/profile", {
+  const afterRes = await page.request.get("/profile/api", {
     headers: { Cookie: `access_token=${token}` },
   });
   expect(afterRes.status()).toBe(401);
@@ -55,7 +55,7 @@ test("a failed backend revoke keeps the session intact instead of silently loggi
 
   // Simulate the backend revoke call failing (down, timeout, etc.) - the BFF
   // route should refuse to clear the cookie or report success in this case.
-  await page.route("**/api/auth/logout", (route) =>
+  await page.route("**/logout", (route) =>
     route.fulfill({
       status: 502,
       contentType: "application/json",
@@ -70,6 +70,6 @@ test("a failed backend revoke keeps the session intact instead of silently loggi
   await expect(page).not.toHaveURL("/sign-in");
 
   // The session must still be live - the failed logout attempt didn't clear it.
-  const stillAuthedRes = await page.request.get("/api/profile");
+  const stillAuthedRes = await page.request.get("/profile/api");
   expect(stillAuthedRes.ok()).toBe(true);
 });

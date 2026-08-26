@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import Header from "@/components/Header";
-import { SITE_INDEXABLE } from "@/lib/constants";
+import { DynamicHole } from "@/components/DynamicHole";
+import Header, { HeaderFallback } from "@/components/Header";
+import { SITE_INDEXABLE } from "@/shared/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   },
   // Belt-and-suspenders with app/robots.ts: robots.txt is honor-system and
   // some crawlers index pages before checking it, so this meta tag backs it
-  // up. Both are driven by SITE_INDEXABLE (see lib/constants.ts).
+  // up. Both read the same SITE_INDEXABLE flag so they can't drift apart.
   robots: SITE_INDEXABLE ? undefined : { index: false, follow: false },
 };
 
@@ -42,9 +43,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col">
         <DisclaimerBanner />
-        <Header />
+        <DynamicHole fallback={<HeaderFallback />}>
+          <Header />
+        </DynamicHole>
         {children}
       </body>
     </html>
