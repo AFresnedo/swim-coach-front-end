@@ -17,8 +17,8 @@
   "dependencies": {
     "@headlessui/react": "^2.2.10",
     "next": "~16.2.12",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "overrides": {
     "postcss": "^8.5.10",
